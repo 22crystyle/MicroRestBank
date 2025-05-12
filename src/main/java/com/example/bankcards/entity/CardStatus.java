@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 public class CardStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
     private int id;
     @Column(unique=true, nullable=false)
     private String status;

@@ -12,9 +12,12 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.0.105:5432/bankcards
+    url: jdbc:postgresql://192.168.0.105:5432/RestBank
     username: postgres
-    password: 1
+    password: admin
+  liquibase:
+    change-log: classpath:db/migration/db.changelog-master.yaml
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: create-drop
