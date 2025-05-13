@@ -1,11 +1,13 @@
 package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
 @Entity
+@Data
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

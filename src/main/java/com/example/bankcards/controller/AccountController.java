@@ -1,13 +1,12 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.AccountDto;
-import com.example.bankcards.dto.mapper.AccountMapper;
+import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.service.AccountService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/v1/accounts")
 public class AccountController {
 
     private final AccountService service;
@@ -16,18 +15,5 @@ public class AccountController {
     public AccountController(AccountService service, AccountMapper mapper) {
         this.service = service;
         this.mapper = mapper;
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountDto> getById(@PathVariable Long id) {
-        return service.findById(id)
-                .map(mapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<AccountDto> create(@RequestBody AccountDto dto) {
-        
     }
 }

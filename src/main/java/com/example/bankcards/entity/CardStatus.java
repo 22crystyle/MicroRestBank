@@ -7,8 +7,8 @@ public class CardStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @Column(unique=true, nullable=false)
+    @Column(unique = true, nullable = false)
     private String status;
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String description;
 }
