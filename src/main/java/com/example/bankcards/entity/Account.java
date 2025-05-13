@@ -17,11 +17,12 @@ public class Account {
     private String lastName;
     private String email;
     private String phone;
-
     @OneToMany(
             mappedBy = "owner",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
     private List<Card> bank_card;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Role role;
 }

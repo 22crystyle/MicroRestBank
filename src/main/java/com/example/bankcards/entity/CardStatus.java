@@ -2,6 +2,8 @@ package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class CardStatus {
     @Id
@@ -11,4 +13,9 @@ public class CardStatus {
     private String status;
     @Column(nullable = false)
     private String description;
+    @OneToMany(
+            mappedBy = "status",
+            fetch = FetchType.LAZY
+    )
+    private List<Card> cards;
 }

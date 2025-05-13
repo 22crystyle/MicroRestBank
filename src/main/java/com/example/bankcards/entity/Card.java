@@ -11,9 +11,9 @@ import java.time.YearMonth;
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    @Column(name = "card_number")
-    private Long cardNumber;
+    private Integer id;
+    @Column(name = "card_number", length = 16, nullable = false)
+    private String cardNumber;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     private Account owner;
