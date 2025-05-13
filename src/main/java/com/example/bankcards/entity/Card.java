@@ -6,14 +6,15 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 
 @Entity
-@Table(name = "BankCard")
-public class BankCard {
+public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Column(name = "card_number")
     private Long cardNumber;
-    private String owner;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id")
+    private Account owner;
     @Column(name = "expiry_date")
     private YearMonth expiryDate;
 

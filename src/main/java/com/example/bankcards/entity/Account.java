@@ -1,9 +1,9 @@
 package com.example.bankcards.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+
+import java.util.List;
 
 @Entity
 public class Account {
@@ -16,4 +16,11 @@ public class Account {
     private String lastName;
     private String email;
     private String phone;
+
+    @OneToMany(
+            mappedBy = "owner",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    private List<Card> bank_card;
 }

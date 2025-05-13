@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: crystal
+      author: you
       changes:
+        # Создаём таблицу BankCard
         - createTable:
-            tableName: BankCard
+            tableName: card
             columns:
               - column:
                   name: id
@@ -19,14 +20,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: owner
-                  type: VARCHAR(255)
+                  name: account_id
+                  type: BIGINT
                   constraints:
                     nullable: false
               - column:
                   name: expiry_date
                   type: VARCHAR(7)
-                  # хранит формат YYYY-MM
+                  remarks: "формат YYYY-MM (YearMonth)"
                   constraints:
                     nullable: false
               - column:
@@ -39,6 +40,16 @@ databaseChangeLog:
                   type: DECIMAL(19,4)
                   constraints:
                     nullable: false
+
+        # Внешний ключ на таблицу account
+        - addForeignKeyConstraint:
+            baseTableName: BankCard
+            baseColumnNames: account_id
+            referencedTableName: account
+            referencedColumnNames: id
+            constraintName: fk_bankcard_account
+
+        # Внешний ключ на таблицу card_status
         - addForeignKeyConstraint:
             baseTableName: BankCard
             baseColumnNames: status_id
