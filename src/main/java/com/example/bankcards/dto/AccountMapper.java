@@ -4,7 +4,6 @@ import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.entity.Account;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {

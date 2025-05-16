@@ -1,0 +1,255 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1747396210859-1
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: account_seq
+            startValue: 1
+  - changeSet:
+      id: 1747396210859-2
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: bank_card_seq
+            startValue: 1
+  - changeSet:
+      id: 1747396210859-3
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: card_seq
+            startValue: 1
+  - changeSet:
+      id: 1747396210859-4
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: card_status_seq
+            startValue: 1
+  - changeSet:
+      id: 1747396210859-5
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: role_seq
+            startValue: 1
+  - changeSet:
+      id: 1747396210859-6
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: account_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: role_id
+                  type: BIGINT
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: phone
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: username
+                  type: VARCHAR(255)
+            tableName: account
+  - changeSet:
+      id: 1747396210859-7
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: balance
+                  type: NUMBER(38, 2)
+              - column:
+                  name: expiry_date
+                  type: date
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: bank_card_pkey
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: account_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: card_number
+                  type: VARCHAR(16)
+            tableName: bank_card
+  - changeSet:
+      id: 1747396210859-8
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: card_pkey
+                  name: id
+                  type: INT
+              - column:
+                  name: balance
+                  type: NUMBER(38, 2)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: card_number
+                  type: VARCHAR(16)
+              - column:
+                  name: expiry_date
+                  type: date
+              - column:
+                  constraints:
+                    nullable: false
+                  name: account_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status_id
+                  type: INT
+            tableName: card
+  - changeSet:
+      id: 1747396210859-9
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: card_status_pkey
+                  name: id
+                  type: INT
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(255)
+            tableName: card_status
+  - changeSet:
+      id: 1747396210859-10
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: role_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: role
+                  type: VARCHAR(255)
+            tableName: role
+  - changeSet:
+      id: 1747396210859-11
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: username
+            constraintName: account_username_key
+            tableName: account
+  - changeSet:
+      id: 1747396210859-12
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: status
+            constraintName: card_status_status_key
+            tableName: card_status
+  - changeSet:
+      id: 1747396210859-13
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: role_id
+            baseTableName: account
+            constraintName: fkd4vb66o896tay3yy52oqxr9w0
+            onDelete: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: role
+  - changeSet:
+      id: 1747396210859-14
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: status_id
+            baseTableName: bank_card
+            constraintName: fkl9wwc6gxa4stddv4joclf1289
+            onDelete: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: card_status
+  - changeSet:
+      id: 1747396210859-15
+      author: Crystal
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: account_id
+            baseTableName: bank_card
+            constraintName: fko68gelt76c6od7yl9dmqpnqc0
+            onDelete: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: account
+

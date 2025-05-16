@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: make-account-id-auto
+      author: crystal
+      changes:
+        - addAutoIncrement:
+            tableName: account
+            columnName: id
+            columnDataType: BIGINT
+            startWith: 1
+            incrementBy: 1
+  - changeSet:
+      id: init-admin
+      author: crystal
+      changes:
+        - insert:
+            tableName: account
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: '$2a$20$PG3/NKEu2DxpVHfsNDj5zu4QZpzJi4wJVkA4j8PGtR74/sWuJW83u'
+              - column:
+                  name: first_name
+                  value: 'System'
+              - column:
+                  name: last_name
+                  value: 'Administrator'
+              - column:
+                  name: email
+                  value: 'admin@example.com'
+              - column:
+                  name: phone
+                  value: '+70000000000'
+              - column:
+                  name: role_id
+                  valueNumeric: 1

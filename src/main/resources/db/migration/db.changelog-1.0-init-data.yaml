@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0-init-data
+      author: liquibase
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: role, value: "ADMIN" }
+              - column: { name: description, value: "Administrator role" }
+        - insert:
+            tableName: card_status
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: status, value: "ACTIVE" }
+              - column: { name: description, value: "Card is active" }
+        - insert:
+            tableName: card_status
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: status, value: "BLOCKED" }
+              - column: { name: description, value: "Card is blocked" }
+        - insert:
+            tableName: card_status
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: status, value: "EXPIRED" }
+              - column: { name: description, value: "Card has expired" }
+        - insert:
+            tableName: account
+            columns:
+              - column: { name: username, value: "admin" }
+              - column: { name: password, value: "@BCryptOfAdminPasswordHash" }
+              - column: { name: first_name, value: "System" }
+              - column: { name: last_name, value: "Administrator" }
+              - column: { name: email, value: "admin@example.com" }
+              - column: { name: phone, value: "+70000000000" }
+              - column: { name: role_id, valueNumeric: 1 }

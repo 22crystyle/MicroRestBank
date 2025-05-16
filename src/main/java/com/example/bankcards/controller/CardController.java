@@ -3,13 +3,14 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.request.CardRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
@@ -45,12 +46,29 @@ public class CardController {
                     @ApiResponse(responseCode = "204", description = "Карта создана"),
                     @ApiResponse(responseCode = "400", description = "Неправильные данные", content = @Content)
             })
-    @PostMapping
-    public EntityResponse<CardResponse> createCard(@RequestBody @Valid CardRequest cardRequest) {
+    @PostMapping("/create")
+    public ResponseEntity<CardResponse> createCard(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long accountId = userDetails.getAccountId();
+        return cardService.createCardForAccount(accountId)
+                .map(cardMapper::toResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @Operation(
+            summary = "Заблокировать карту",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Карта заблокирована"),
+                    @ApiResponse(responseCode = "404", description = "Карты не существует", content = @Content)
+            })
+    @PatchMapping("/{id}/block")
+    public ResponseEntity<CardResponse> blockCard(@RequestBody CardRequest request) {
         return null;
     }
 
-    @Operation (
+    @Operation(
             summary = "Перевод между счетами",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Успешный перевод"),

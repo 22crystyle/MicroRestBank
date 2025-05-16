@@ -2,11 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.dto.request.CardRequest;
 import com.example.bankcards.dto.response.AccountResponse;
-import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.entity.Account;
-import com.example.bankcards.entity.Card;
 import com.example.bankcards.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,20 +41,10 @@ public class AccountController {
                     @ApiResponse(responseCode = "204", description = "Пользователь создан"),
                     @ApiResponse(responseCode = "400", description = "Неправильные данные", content = @Content)
             })
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest request) {
         return service.createAccount(request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
-    }
-
-    @Operation(
-            summary = "Заблокировать карту",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Карта заблокирована"),
-                    @ApiResponse(responseCode = "404", description = "Карты не существует", content = @Content)
-            })
-    public ResponseEntity<CardResponse> blockCard(@RequestBody CardRequest request) {
-        return null;
     }
 }

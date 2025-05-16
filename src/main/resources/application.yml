@@ -17,7 +17,7 @@ spring:
     password: admin
   liquibase:
     change-log: classpath:db/migration/db.changelog-master.yaml
-    enabled: false
+    enabled: true
   jpa:
     hibernate:
       ddl-auto: update

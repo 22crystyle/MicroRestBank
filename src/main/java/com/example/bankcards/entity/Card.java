@@ -8,6 +8,7 @@ import java.time.YearMonth;
 
 @Entity
 @Data
+@Table(name = "bank_card")
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
