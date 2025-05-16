@@ -8,9 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true)
-        // хешируем сами
+    // @Mapping(target = "id", ignore = true)
+    // @Mapping(target = "password", ignore = true) // хешируем сами
     Account toEntity(AccountRequest dto);
 
     AccountResponse toResponse(Account account);

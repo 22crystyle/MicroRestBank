@@ -1,6 +1,8 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AccountMapper;
+import com.example.bankcards.dto.request.AccountRequest;
+import com.example.bankcards.dto.request.CardRequest;
 import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Account;
@@ -44,8 +46,10 @@ public class AccountController {
                     @ApiResponse(responseCode = "400", description = "Неправильные данные", content = @Content)
             })
     @PostMapping
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody Account account) {
-        return null;
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest request) {
+        return service.createAccount(request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @Operation(
@@ -54,7 +58,7 @@ public class AccountController {
                     @ApiResponse(responseCode = "200", description = "Карта заблокирована"),
                     @ApiResponse(responseCode = "404", description = "Карты не существует", content = @Content)
             })
-    public ResponseEntity<Card> blockCard(@RequestBody Card card) {
+    public ResponseEntity<CardResponse> blockCard(@RequestBody CardRequest request) {
         return null;
     }
 }

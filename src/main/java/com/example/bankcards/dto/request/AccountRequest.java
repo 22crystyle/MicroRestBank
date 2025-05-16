@@ -6,6 +6,7 @@ public record AccountRequest(
         String firstName,
         String lastName,
         String email,
-        String phone
+        String phone,
+        Long role_id
 ) {
 }

@@ -11,6 +11,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(nullable = false, unique = true)
     private String username;
     private String password;
     private String firstName;
@@ -23,6 +24,6 @@ public class Account {
             cascade = CascadeType.ALL
     )
     private List<Card> bank_card;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
 }

@@ -1,17 +1,17 @@
 package com.example.bankcards.entity;
 
-import com.example.bankcards.dto.response.AccountResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
 import java.util.List;
 
 @Entity
+@Data
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     @NotBlank
     private String role;
     private String description;

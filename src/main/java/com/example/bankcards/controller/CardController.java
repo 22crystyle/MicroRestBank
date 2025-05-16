@@ -16,7 +16,7 @@ import org.springframework.web.servlet.function.EntityResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/accounts/{accountId}/cards")
+@RequestMapping("/api/v1/cards")
 @Tag(name = "Cards", description = "Доступ и управление картами аккаунта")
 public class CardController {
 
@@ -35,10 +35,7 @@ public class CardController {
                     @ApiResponse(responseCode = "404", description = "Карты не найдены", content = @Content)
             })
     @GetMapping
-    public EntityResponse<List<CardResponse>> getCards(
-            @PathVariable("accountId")
-            @Parameter(name = "accountId",  description = "Id пользователя", example = "1")
-            int accountId) {
+    public EntityResponse<List<CardResponse>> getCards() {
         return null;
     }
 
@@ -49,10 +46,7 @@ public class CardController {
                     @ApiResponse(responseCode = "400", description = "Неправильные данные", content = @Content)
             })
     @PostMapping
-    public EntityResponse<CardResponse> createCard(
-            @PathVariable("accountId")
-            @Parameter(name = "accountId", description = "Id пользователя", example = "1")
-            int accountId, @RequestBody @Valid CardRequest cardRequest) {
+    public EntityResponse<CardResponse> createCard(@RequestBody @Valid CardRequest cardRequest) {
         return null;
     }
 
@@ -64,7 +58,7 @@ public class CardController {
             }
     )
     @PutMapping("/{id}")
-    public EntityResponse<CardResponse> transfer(int accountId, @PathVariable("id") int id) {
+    public EntityResponse<CardResponse> transfer(@PathVariable("id") int id) {
         return null;
     }
 }

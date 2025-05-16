@@ -20,7 +20,7 @@ public class Card {
     @Column(name = "expiry_date")
     private YearMonth expiryDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "status_id")
     private CardStatus status;
     private BigDecimal balance;
