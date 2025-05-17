@@ -1,6 +1,5 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
@@ -16,19 +15,13 @@ import java.util.Optional;
 public class CardService {
 
     private final CardRepository cardRepository;
-    private final CardMapper cardMapper;
     private final AccountRepository accountRepository;
     private final CardStatusRepository cardStatusRepository;
 
-    public CardService(CardRepository cardRepository, CardMapper cardMapper, AccountRepository accountRepository, CardStatusRepository cardStatusRepository) {
+    public CardService(CardRepository cardRepository, AccountRepository accountRepository, CardStatusRepository cardStatusRepository) {
         this.cardRepository = cardRepository;
-        this.cardMapper = cardMapper;
         this.accountRepository = accountRepository;
         this.cardStatusRepository = cardStatusRepository;
-    }
-
-    public Card findById(int id) {
-        return cardRepository.findById(id).orElse(null);
     }
 
     public Optional<Card> createCardForAccount(Long accountId) {

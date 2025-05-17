@@ -8,11 +8,11 @@ import java.time.YearMonth;
 
 @Entity
 @Data
-@Table(name = "bank_card")
+@Table(name = "bank_cards")
 public class Card {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "card_number", length = 16, nullable = false)
     private String cardNumber;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

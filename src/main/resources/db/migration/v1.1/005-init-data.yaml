@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 170525-01-init-data
+      author: liquibase
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: "ADMIN" }
+              - column: { name: description, value: "Administrator role" }
+        - insert:
+            tableName: card_statuses
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: "ACTIVE" }
+              - column: { name: description, value: "Card is active" }
+        - insert:
+            tableName: card_statuses
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: name, value: "BLOCKED" }
+              - column: { name: description, value: "Card is blocked" }
+        - insert:
+            tableName: card_statuses
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: name, value: "EXPIRED" }
+              - column: { name: description, value: "Card has expired" }

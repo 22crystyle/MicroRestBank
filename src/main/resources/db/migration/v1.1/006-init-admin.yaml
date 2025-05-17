@@ -1,27 +1,17 @@
 databaseChangeLog:
   - changeSet:
-      id: make-account-id-auto
-      author: crystal
-      changes:
-        - addAutoIncrement:
-            tableName: account
-            columnName: id
-            columnDataType: BIGINT
-            startWith: 1
-            incrementBy: 1
-  - changeSet:
-      id: init-admin
-      author: crystal
+      id: 170525-01-init-admin
+      author: Crystal
       changes:
         - insert:
-            tableName: account
+            tableName: accounts
             columns:
               - column:
                   name: username
                   value: admin
               - column:
                   name: password
-                  value: '$2a$20$PG3/NKEu2DxpVHfsNDj5zu4QZpzJi4wJVkA4j8PGtR74/sWuJW83u'
+                  value: '$2a$12$1ldgzk9E9j5/9advczqhvOIDe3cpPaNqNSa9TRFHYBo8crX6DXSnC'
               - column:
                   name: first_name
                   value: 'System'

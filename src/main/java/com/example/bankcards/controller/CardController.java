@@ -1,7 +1,6 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.request.CardRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardService;
@@ -64,7 +63,7 @@ public class CardController {
                     @ApiResponse(responseCode = "404", description = "Карты не существует", content = @Content)
             })
     @PatchMapping("/{id}/block")
-    public ResponseEntity<CardResponse> blockCard(@RequestBody CardRequest request) {
+    public ResponseEntity<CardResponse> blockCard(@PathVariable Long id) {
         return null;
     }
 

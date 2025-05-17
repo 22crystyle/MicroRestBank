@@ -33,6 +33,6 @@ public class AccountService {
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
         account.setPassword(encoder.encode(account.getPassword()));
         account.setRole(defaultRole);
-        return Optional.of(mapper.toResponse(repository.save(account)));
+        return Optional.of(mapper.toResponse(repository.saveAndFlush(account)));
     }
 }

@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 160525-01-create-accounts
+      author: Crystal
+      changes:
+        - createTable:
+            columns:
+            - column:
+                name: id
+                type: BIGINT
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: account_pkey
+                autoIncrement: true
+            - column:
+                name: username
+                type: VARCHAR(255)
+                constraints:
+                  nullable: false
+                  unique: true
+                  uniqueConstraintName: uq_account_username
+            - column:
+                name: password
+                type: VARCHAR(255)
+            - column:
+                name: first_name
+                type: VARCHAR(255)
+            - column:
+                name: last_name
+                type: VARCHAR(255)
+            - column:
+                name: role_id
+                type: BIGINT
+            - column:
+                name: email
+                type: VARCHAR(255)
+                constraints:
+                  unique: true
+                  uniqueConstraintName: uq_account_email
+            - column:
+                name: phone
+                type: VARCHAR(255)
+                constraints:
+                  unique: true
+                  uniqueConstraintName: uq_account_phone
+            tableName: accounts
+  - changeSet:
+          id: 160525-02-account_role_id_fkey
+          author: Crystal
+          changes:
+          - addForeignKeyConstraint:
+                baseColumnNames: role_id
+                baseTableName: accounts
+                constraintName: account_role_id_fkey
+                deferrable: false
+                initiallyDeferrable: false
+                onDelete: NO ACTION
+                onUpdate: NO ACTION
+                referencedColumnNames: id
+                referencedTableName: roles
+                validate: true

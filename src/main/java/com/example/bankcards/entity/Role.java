@@ -8,17 +8,18 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "roles")
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @NotBlank
-    private String role;
+    private String name;
     private String description;
 
     @OneToMany(
             mappedBy = "role",
             fetch = FetchType.LAZY
     )
-    private List<Account> account;
+    private List<Account> accounts;
 }

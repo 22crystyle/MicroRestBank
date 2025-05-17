@@ -1,8 +1,8 @@
 package com.example.bankcards.dto.response;
 
 public record CardStatusResponse(
-        int id,
+        Integer id,
         String description,
-        String status
+        String name
 ) {
 }

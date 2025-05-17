@@ -1,5 +1,7 @@
 package com.example.bankcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,9 +9,11 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "accounts")
+@JsonIgnoreProperties("bank_cards")
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private String username;
@@ -23,7 +27,8 @@ public class Account {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
-    private List<Card> bank_card;
+    @JsonIgnore
+    private List<Card> bank_cards;
     @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
 }

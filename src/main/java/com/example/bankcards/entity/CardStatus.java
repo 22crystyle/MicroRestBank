@@ -7,12 +7,13 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "card_statuses")
 public class CardStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column(unique = true, nullable = false)
-    private String status;
+    private String name;
     private String description;
     @OneToMany(
             mappedBy = "status",
