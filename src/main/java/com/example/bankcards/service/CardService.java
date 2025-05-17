@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.Optional;
 
+import static com.example.bankcards.util.MastercardGenerator.generateMastercardNumber;
+
 @Service
 public class CardService {
 
@@ -26,7 +28,11 @@ public class CardService {
 
     public Optional<Card> createCardForAccount(Long accountId) {
         Card card = new Card();
-        card.setCardNumber("");
+        String number;
+        do {
+            number = generateMastercardNumber();
+        } while (cardRepository.existsCardByCardNumber(number));
+        card.setCardNumber(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
                 () -> new UsernameNotFoundException("UserName not found by id")
         ));
