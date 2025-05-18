@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 170525-01-init-data
-      author: liquibase
+      author: Crystal
       changes:
         - insert:
             tableName: roles
