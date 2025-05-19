@@ -27,12 +27,21 @@ public class AccountService {
         this.roleRepository = roleRepository;
     }
 
-    public Optional<AccountResponse> createAccount(AccountRequest request) {
+    public Account createAccount(AccountRequest request) {
         Account account = mapper.toEntity(request);
         Role defaultRole = roleRepository.findById(request.role_id())
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
-        account.setPassword(encoder.encode(account.getPassword()));
+        account.setPassword(encoder.encode(request.password()));
         account.setRole(defaultRole);
-        return Optional.of(mapper.toResponse(repository.saveAndFlush(account)));
+        repository.save(account);
+        return account;
+    }
+
+    public boolean deleteById(Long id) {
+        if (!repository.existsById(id)) {
+            return false;
+        }
+        repository.deleteById(id);
+        return true;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.bankcards.util.MastercardGenerator.generateMastercardNumber;
@@ -26,7 +27,7 @@ public class CardService {
         this.cardStatusRepository = cardStatusRepository;
     }
 
-    public Optional<Card> createCardForAccount(Long accountId) {
+    public Card createCardForAccount(Long accountId) {
         Card card = new Card();
         String number;
         do {
@@ -41,6 +42,10 @@ public class CardService {
         card.setStatus(cardStatusRepository.findById(1).orElseThrow(
                 () -> new IllegalArgumentException("Unknown status")
         ));
-        return Optional.of(cardRepository.save(card));
+        return cardRepository.save(card);
+    }
+
+    public List<Card> getCardsByUserId(Long userId) {
+        return cardRepository.getCardsByOwnerId(userId);
     }
 }

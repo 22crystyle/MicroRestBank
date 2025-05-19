@@ -2,13 +2,16 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
@@ -50,10 +53,9 @@ public class CardController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long accountId = userDetails.getAccountId();
-        return cardService.createCardForAccount(accountId)
-                .map(cardMapper::toResponse)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
+
+        CardResponse response = cardMapper.toResponse(cardService.createCardForAccount(accountId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(
@@ -77,5 +79,16 @@ public class CardController {
     @PutMapping("/{id}")
     public EntityResponse<CardResponse> transfer(@PathVariable("id") int id) {
         return null;
+    }
+
+    @PreAuthorize(value = "hasRole('ADMIN')")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CardResponse>> getCards(@PathVariable Long userId) {
+        List<Card> cards = cardService.getCardsByUserId(userId);
+        List<CardResponse> dtos = cards.stream()
+                .map(cardMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 }

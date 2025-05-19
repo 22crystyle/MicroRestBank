@@ -3,13 +3,19 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.dto.response.AccountResponse;
+import com.example.bankcards.entity.Account;
+import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/accounts")
@@ -18,10 +24,12 @@ public class AccountController {
 
     private final AccountService service;
     private final AccountMapper mapper;
+    private final AccountService accountService;
 
-    public AccountController(AccountService service, AccountMapper mapper) {
+    public AccountController(AccountService service, AccountMapper mapper, AccountService accountService) {
         this.service = service;
         this.mapper = mapper;
+        this.accountService = accountService;
     }
 
     @Operation(
@@ -43,8 +51,17 @@ public class AccountController {
             })
     @PostMapping("/create")
     public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest request) {
-        return service.createAccount(request)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
+        Account entity = service.createAccount(request);
+        AccountResponse response = mapper.toResponse(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+        boolean deleted = accountService.deleteById(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

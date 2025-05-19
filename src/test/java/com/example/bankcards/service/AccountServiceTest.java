@@ -41,6 +41,7 @@ public class AccountServiceTest {
     void whenValidRequest_thenReturnAccountResponse() {
         AccountRequest request = new AccountRequest("user", "pass", "first", "last", "e@mail", "+100", 1);
         Account entity = new Account();
+        entity.setUsername("user");
         entity.setId(1L);
         entity.setPassword("pass");
         entity.setFirstName("first");
@@ -53,21 +54,17 @@ public class AccountServiceTest {
         role.setName("USER");
         entity.setRole(role);
 
-        AccountResponse response = new AccountResponse("user", "first", "last", "e@mail", "+100");
-
         when(mapper.toEntity(request)).thenReturn(entity);
         when(roleRepository.findById(1)).thenReturn(Optional.of(role));
         when(encoder.encode("pass")).thenReturn("encoded");
-        when(repository.saveAndFlush(entity)).thenReturn(entity);
-        when(mapper.toResponse(entity)).thenReturn(response);
+        when(repository.save(entity)).thenReturn(entity);
 
-        Optional<AccountResponse> result = service.createAccount(request);
+        Account result = service.createAccount(request);
 
-        assertTrue(result.isPresent());
-        assertEquals("user", result.get().username(), "Username should match");
+        assertEquals("user", result.getUsername(), "Username should match");
         verify(roleRepository).findById(1);
         verify(encoder).encode("pass");
-        verify(repository).saveAndFlush(entity);
+        verify(repository).save(entity);
     }
 
     @Test
