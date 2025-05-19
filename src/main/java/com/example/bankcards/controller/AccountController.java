@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,9 +42,11 @@ public class AccountController {
         this.cardMapper = cardMapper;
     }
 
-    @GetMapping
-    public ResponseEntity<AccountResponse> getAccountById(@PathVariable int id) {
-        return null;
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
+        Account account = service.getAccountById(id);
+        AccountResponse response = mapper.toResponse(account);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
@@ -68,6 +72,16 @@ public class AccountController {
                 .map(cardMapper::toResponse)
                 .toList();
 
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<AccountResponse>> getAccounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Account> entities = service.getAllAccounts(PageRequest.of(page, size));
+        Page<AccountResponse> dtos = entities.map(mapper::toResponse);
         return ResponseEntity.ok(dtos);
     }
 }

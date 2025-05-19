@@ -6,6 +6,9 @@ import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,5 +43,13 @@ public class AccountService {
         }
         repository.deleteById(id);
         return true;
+    }
+
+    public Account getAccountById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+    }
+
+    public Page<Account> getAllAccounts(PageRequest pageRequest) {
+        return repository.findAll(PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize()));
     }
 }
