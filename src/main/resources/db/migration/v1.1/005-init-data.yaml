@@ -10,6 +10,12 @@ databaseChangeLog:
               - column: { name: name, value: "ADMIN" }
               - column: { name: description, value: "Administrator role" }
         - insert:
+           tableName: roles
+           columns:
+             - column: { name: id, valueNumeric: 2 }
+             - column: { name: name, value: "USER" }
+             - column: { name: description, value: "User role" }
+        - insert:
             tableName: card_statuses
             columns:
               - column: { name: id, valueNumeric: 1 }

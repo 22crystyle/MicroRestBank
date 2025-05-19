@@ -2,15 +2,12 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AccountService {
