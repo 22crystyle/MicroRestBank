@@ -52,16 +52,15 @@ public class CardController {
         return null;
     }
 
-
     @PostMapping("/{id}/block-approve")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CardResponse> confirmCardBlock(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<CardResponse> confirmCardBlock(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String id) {
         return null;
     }
 
     @PostMapping("/{id}/block-reject")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CardResponse> refuseCardBlock(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<CardResponse> refuseCardBlock(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String id) {
         return null;
     }
 

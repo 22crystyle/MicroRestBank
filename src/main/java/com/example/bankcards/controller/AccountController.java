@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/accounts")
 @PreAuthorize(value = "hasRole('ADMIN')")
-@Tag(name = "Accounts", description = "Пользовательский аккаунт")
 public class AccountController {
 
     private final AccountService service;
@@ -46,12 +45,6 @@ public class AccountController {
         return null;
     }
 
-    @Operation(
-            summary = "Создать пользователя",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Пользователь создан"),
-                    @ApiResponse(responseCode = "400", description = "Неправильные данные", content = @Content)
-            })
     @PostMapping
     public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest request) {
         Account entity = service.createAccount(request);
