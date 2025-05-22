@@ -11,3 +11,5 @@ databaseChangeLog:
       file: classpath:db/migration/v1.1/005-init-data.yaml
   - include:
       file: classpath:db/migration/v1.1/006-init-admin.yaml
+  - include:
+      file: classpath:db/migration/v1.2/007-create-card-block-requests.yaml

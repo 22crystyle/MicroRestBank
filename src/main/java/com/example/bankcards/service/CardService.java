@@ -4,6 +4,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,9 @@ public class CardService {
 
     public List<Card> getCardsByUserId(Long userId) {
         return cardRepository.getCardsByOwnerId(userId);
+    }
+
+    public Card getCard(Long id) {
+        return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found"));
     }
 }
