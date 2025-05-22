@@ -1,16 +1,14 @@
 package com.example.bankcards.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
 @Entity
-@Data
 @Table(name = "accounts")
-@JsonIgnoreProperties("bank_cards")
+@Data
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,7 @@ public class Account {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
-    @JsonIgnore
+    @JsonManagedReference
     private List<Card> bank_cards;
     @ManyToOne(fetch = FetchType.EAGER)
     private Role role;

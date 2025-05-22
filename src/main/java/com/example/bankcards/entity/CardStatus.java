@@ -1,13 +1,14 @@
 package com.example.bankcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
 @Entity
-@Data
 @Table(name = "card_statuses")
+@Data
 public class CardStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,8 @@ public class CardStatus {
     private String description;
     @OneToMany(
             mappedBy = "status",
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
+    @JsonIgnore
     private List<Card> cards;
 }

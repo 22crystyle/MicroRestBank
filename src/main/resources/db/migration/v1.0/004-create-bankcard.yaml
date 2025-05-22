@@ -13,9 +13,7 @@ databaseChangeLog:
                 primaryKey: true
                 primaryKeyName: bank_card_pkey
               autoIncrement: true
-          - column:
-              name: account_id
-              type: BIGINT
+          - column: { name: account_id, type: BIGINT }
           - column:
                 name: card_number
                 type: VARCHAR(16)
@@ -25,12 +23,8 @@ databaseChangeLog:
           - column:
               name: balance
               type: NUMERIC(38, 2)
-          - column:
-              name: expiry_date
-              type: date
-          - column:
-              name: status_id
-              type: INTEGER
+          - column: { name: expiry_date, type: date }
+          - column: { name: status_id, type: INTEGER }
           tableName: bank_cards
   - changeSet:
       id: 160525-02-bankcard_status_id_fkey

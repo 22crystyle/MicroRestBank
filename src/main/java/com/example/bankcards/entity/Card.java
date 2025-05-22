@@ -1,5 +1,7 @@
 package com.example.bankcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,6 +11,7 @@ import java.time.YearMonth;
 @Entity
 @Data
 @Table(name = "bank_cards")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +20,7 @@ public class Card {
     private String cardNumber;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
+    @JsonBackReference
     private Account owner;
     @Column(name = "expiry_date")
     private YearMonth expiryDate;

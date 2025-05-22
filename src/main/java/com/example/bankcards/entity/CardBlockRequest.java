@@ -1,13 +1,19 @@
 package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Entity
-@Data
 @Table(name = "card_block_requests")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CardBlockRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +35,9 @@ public class CardBlockRequest {
     @Column(length = 16)
     private Status status;
 
-    private enum Status {
+    //TODO: добавить описание к запросу на блокировку
+
+    public enum Status {
         PENDING,
         APPROVED,
         REJECTED,
