@@ -26,6 +26,10 @@ spring:
     user:
       name: admin
       password: admin
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
 springdoc:
   swagger-ui:
     path: /docs

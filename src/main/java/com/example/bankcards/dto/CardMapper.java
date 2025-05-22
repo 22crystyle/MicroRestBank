@@ -8,6 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface CardMapper {
     Card toEntity(CardRequest cardRequest);
-
     CardResponse toResponse(Card card);
 }

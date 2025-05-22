@@ -1,0 +1,37 @@
+### Account pagination
+GET http://localhost:1024/api/v1/accounts?
+    page={{page}}&
+    size={{size}}
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Create acount by admin
+POST http://localhost:1024/api/v1/accounts
+Authorization: Basic YWRtaW46YWRtaW4=
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user",
+  "firstName": "First",
+  "lastName": "Last",
+  "email": "a@a.a",
+  "phone": "+71234567880",
+  "role_id": 2
+}
+
+### Create card for user by admin
+POST http://localhost:1024/api/v1/cards?userId={{userId}}
+Authorization: Basic {{adminBasic}}
+Content-Type: application/json
+
+### Request card block by user
+POST http://localhost:1024/api/v1/cards/{{cardId}}/block-request
+Authorization: Basic {{userBasic}}
+
+### Approve card block request by admin
+POST http://localhost:1024/api/v1/cards/{{cardId}}/block-approve
+Authorization: Basic {{adminBasic}}
+
+### Reject card block request by admin
+POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
+Authorization: Basic {{adminBasic}}

@@ -39,13 +39,11 @@ public class CardController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<CardResponse> createCard(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @RequestParam Long userId
     ) {
-        Long accountId = userDetails.getAccountId();
-
-        CardResponse response = mapper.toResponse(service.createCardForAccount(accountId));
+        CardResponse response = mapper.toResponse(service.createCardForAccount(userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
