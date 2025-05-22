@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/v1/cards")
 @Tag(name = "Cards", description = "Доступ и управление картами аккаунта")
@@ -32,9 +34,15 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CardResponse> getCard(@PathVariable Long id) {
+    public ResponseEntity<CardResponse> getCard(@PathVariable Long id, Principal principal) {
         Card card = service.getCard(id);
-        CardResponse cardResponse = mapper.toResponse(card);
+        CardResponse cardResponse;
+        if (!service.isOwner(id, principal)) {
+            cardResponse = mapper.toMaskedResponse(card);
+        }
+        else {
+            cardResponse = mapper.toFullResponse(card);
+        }
         return ResponseEntity.ok(cardResponse);
     }
 
@@ -43,7 +51,7 @@ public class CardController {
     public ResponseEntity<CardResponse> createCard(
             @RequestParam Long userId
     ) {
-        CardResponse response = mapper.toResponse(service.createCardForAccount(userId));
+        CardResponse response = mapper.toMaskedResponse(service.createCardForAccount(userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

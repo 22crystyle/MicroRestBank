@@ -9,8 +9,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.bankcards.util.MastercardGenerator.generateMastercardNumber;
 
@@ -51,5 +53,13 @@ public class CardService {
 
     public Card getCard(Long id) {
         return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found"));
+    }
+
+    public boolean isOwner(Long cardId, Principal principal) {
+        if (principal == null) {
+            return false;
+        }
+
+        return principal.getName().equals(Objects.requireNonNull(cardRepository.findById(cardId).orElse(null)).getOwner().getUsername());
     }
 }

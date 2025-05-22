@@ -24,6 +24,10 @@ POST http://localhost:1024/api/v1/cards?userId={{userId}}
 Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 
+### Get card by id
+GET http://localhost:1024/api/v1/cards/35
+Authorization: Basic {{userBasic}}
+
 ### Request card block by user
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-request
 Authorization: Basic {{userBasic}}

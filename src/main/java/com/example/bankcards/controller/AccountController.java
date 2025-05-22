@@ -65,7 +65,7 @@ public class AccountController {
     public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(@PathVariable Long id) {
         List<Card> cards = cardService.getCardsByUserId(id);
         List<CardResponse> dtos = cards.stream()
-                .map(cardMapper::toResponse)
+                .map(cardMapper::toMaskedResponse)
                 .toList();
 
         return ResponseEntity.ok(dtos);
