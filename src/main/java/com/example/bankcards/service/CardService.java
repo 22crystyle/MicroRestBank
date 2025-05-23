@@ -94,7 +94,7 @@ public class CardService {
         }
 
         if ("BLOCKED".equals(first.getStatus().getName()) || "BLOCKED".equals(second.getStatus().getName())) {
-            throw new CardIsBlockedException();
+            throw new CardIsBlockedException("Card with number=" + first.getCardNumber() + "or with number=" + second.getCardNumber() + " is blocked");
         }
 
         first.setBalance(first.getBalance().subtract(amount));

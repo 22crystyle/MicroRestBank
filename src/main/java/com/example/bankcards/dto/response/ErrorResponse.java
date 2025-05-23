@@ -1,7 +1,10 @@
 package com.example.bankcards.dto.response;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
 public class ErrorResponse {
     private final int status;
     private final String message;

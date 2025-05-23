@@ -12,6 +12,7 @@ import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,22 +25,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/accounts")
 @PreAuthorize(value = "hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService service;
     private final AccountMapper mapper;
     private final CardService cardService;
     private final CardMapperImpl cardMapper;
-
-    public AccountController(AccountService service,
-                             AccountMapper mapper,
-                             CardService cardService,
-                             CardMapperImpl cardMapper) {
-        this.service = service;
-        this.mapper = mapper;
-        this.cardService = cardService;
-        this.cardMapper = cardMapper;
-    }
 
     @GetMapping
     public ResponseEntity<Page<AccountResponse>> getAccounts(

@@ -2,15 +2,20 @@
 GET http://localhost:1024/api/v1/accounts?
     page={{page}}&
     size={{size}}
-Authorization: Basic YWRtaW46YWRtaW4=
+Authorization: Basic {{adminBasic}}
+
+> {% client.test("Request executed successfully", function () {
+    client.assert(response.status === 200, "Response status is not 200")
+    });
+ %}
 
 ### Card pagination
 GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
-Authorization: Basic YWRtaW46YWRtaW4=
+Authorization: Basic {{adminBasic}}
 
 ### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
-Authorization: Basic YWRtaW46YWRtaW4=
+Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 
 {

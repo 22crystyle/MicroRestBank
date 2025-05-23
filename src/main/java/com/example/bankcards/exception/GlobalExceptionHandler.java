@@ -4,12 +4,15 @@ import com.example.bankcards.dto.response.ErrorResponse;
 import com.example.bankcards.dto.response.ValidationErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
@@ -25,16 +28,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 400 Bad Request for validation errors
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getAllErrors().forEach(error -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String message = error.getDefaultMessage();
+//            errors.put(fieldName, message);
+//        });
+//        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation Error", errors);
+//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//    }
+
+    // 400 Bad Request for validation errors
+    @Override
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+        MethodArgumentNotValidException ex,
+        HttpHeaders headers,
+        HttpStatusCode status,
+        WebRequest request
+    ) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
         });
-        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation Error", errors);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        ValidationErrorResponse response = new ValidationErrorResponse(status.value(), "Validation Error", errors);
+        return new ResponseEntity<>(response, status);
     }
 
     // 409 Conflict for data integrity violations
@@ -59,7 +80,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 500 Internal Server Error for all other exceptions
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleApiError(Exception ex) {
         ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         return ResponseEntity
