@@ -176,5 +176,19 @@ pom.xml — файл для управления зависимостями пр
             <version>3.4.5</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>6.5.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>RestBank</artifactId>
+            <version>1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
