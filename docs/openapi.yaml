@@ -1,11 +1,15 @@
 # Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
 openapi: 3.1.0
 info:
-  title: My service
-  description: My service
+  title: Bank_REST API
+  description: Backend-приложение на Java (Spring Boot) для управления банковскими картами
   version: 1.0.0
 servers:
-  - url: '/api/v1'
+  - url: 'http://localhost:1024'
 paths:
+  /api/v1/cards:
+    get:
+      summary: "Get account by ID"
+
 
   

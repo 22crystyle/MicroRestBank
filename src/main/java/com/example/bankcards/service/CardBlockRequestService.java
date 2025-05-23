@@ -6,24 +6,19 @@ import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class CardBlockRequestService {
 
     private final CardBlockRequestRepository cardBlockRequestRepository;
     private final CardRepository cardRepository;
     private final CardStatusRepository cardStatusRepository;
-
-    public CardBlockRequestService(CardBlockRequestRepository cardBlockRequestRepository,
-                                   CardRepository cardRepository, CardStatusRepository cardStatusRepository) {
-        this.cardBlockRequestRepository = cardBlockRequestRepository;
-        this.cardRepository = cardRepository;
-        this.cardStatusRepository = cardStatusRepository;
-    }
 
     @Transactional
     public void createBlockRequest(Long cardId) {

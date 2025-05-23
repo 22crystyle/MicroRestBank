@@ -9,6 +9,9 @@ import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -38,11 +41,42 @@ public class AccountController {
         this.cardMapper = cardMapper;
     }
 
+    @GetMapping
+    public ResponseEntity<Page<AccountResponse>> getAccounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Account> entities = service.getAllAccounts(PageRequest.of(page, size));
+        Page<AccountResponse> dtos = entities.map(mapper::toResponse);
+        return ResponseEntity.ok(dtos);
+    }
+
+    @Operation(
+            summary = "Get account by ID",
+            description = "Returns account details for the specified account ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Account found"),
+                    @ApiResponse(responseCode = "404", description = "Account not found"),
+                    @ApiResponse(responseCode = "403", description = "Unauthorized access")
+            }
+    )
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
+    public ResponseEntity<AccountResponse> getAccountById(
+            @Parameter(description = "ID of the account to retrieve", required = true)
+            @PathVariable Long id) {
         Account account = service.getAccountById(id);
         AccountResponse response = mapper.toResponse(account);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/{id}/cards")
+    public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(@PathVariable Long id) {
+        List<Card> cards = cardService.getCardsByUserId(id);
+        List<CardResponse> dtos = cards.stream()
+                .map(cardMapper::toMaskedResponse)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping
@@ -59,25 +93,5 @@ public class AccountController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/{id}/cards")
-    public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(@PathVariable Long id) {
-        List<Card> cards = cardService.getCardsByUserId(id);
-        List<CardResponse> dtos = cards.stream()
-                .map(cardMapper::toMaskedResponse)
-                .toList();
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<AccountResponse>> getAccounts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<Account> entities = service.getAllAccounts(PageRequest.of(page, size));
-        Page<AccountResponse> dtos = entities.map(mapper::toResponse);
-        return ResponseEntity.ok(dtos);
     }
 }

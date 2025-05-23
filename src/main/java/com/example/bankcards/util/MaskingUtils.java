@@ -3,7 +3,7 @@ package com.example.bankcards.util;
 public class MaskingUtils {
     public static String maskCardNumber(String cardNumber) {
         if (cardNumber == null)
-                return null;
+            return null;
 
         int length = cardNumber.length();
         if (length < 4) return cardNumber;

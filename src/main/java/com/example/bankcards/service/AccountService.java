@@ -6,6 +6,7 @@ import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,19 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
     private final AccountRepository repository;
     private final AccountMapper mapper;
     private final PasswordEncoder encoder;
     private final RoleRepository roleRepository;
-
-    public AccountService(AccountRepository repository, AccountMapper mapper, PasswordEncoder encoder, RoleRepository roleRepository) {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.encoder = encoder;
-        this.roleRepository = roleRepository;
-    }
 
     public Account createAccount(AccountRequest request) {
         Account account = mapper.toEntity(request);

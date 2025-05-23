@@ -1,10 +1,10 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.exception.IsNotOwnerException;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 
 @RestController
@@ -27,12 +28,14 @@ public class CardController {
     private final CardMapper mapper;
     private final CardService service;
     private final CardBlockRequestService cardBlockRequestService;
+    private final CardService cardService;
 
     public CardController(CardMapper mapper,
-                          CardService service, CardBlockRequestService cardBlockRequestService) {
+                          CardService service, CardBlockRequestService cardBlockRequestService, CardService cardService) {
         this.mapper = mapper;
         this.service = service;
         this.cardBlockRequestService = cardBlockRequestService;
+        this.cardService = cardService;
     }
 
     @GetMapping
@@ -52,8 +55,7 @@ public class CardController {
         CardResponse cardResponse;
         if (!service.isOwner(id, principal)) {
             cardResponse = mapper.toMaskedResponse(card);
-        }
-        else {
+        } else {
             cardResponse = mapper.toFullResponse(card);
         }
         return ResponseEntity.ok(cardResponse);
@@ -61,9 +63,7 @@ public class CardController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<CardResponse> createCard(
-            @RequestParam Long userId
-    ) {
+    public ResponseEntity<CardResponse> createCard(@RequestParam Long userId) {
         CardResponse response = mapper.toMaskedResponse(service.createCardForAccount(userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -93,7 +93,19 @@ public class CardController {
 
     @PutMapping("/transfer")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CardResponse> transfer(@RequestBody TransferRequest request) {
-        return null;
+    public ResponseEntity<Void> transfer(
+            @RequestParam String from,
+            @RequestParam String to,
+            @RequestParam BigDecimal amount,
+            Principal principal) {
+        if (!cardService.isOwner(from, principal) || !cardService.isOwner(to, principal)) {
+            throw new IsNotOwnerException("You are not owner of these cards");
+        }
+
+        if (cardService.transfer(from, to, amount)) {
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
