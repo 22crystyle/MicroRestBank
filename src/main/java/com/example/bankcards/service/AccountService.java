@@ -50,6 +50,6 @@ public class AccountService {
     }
 
     public Page<Account> getAllAccounts(PageRequest pageRequest) {
-        return repository.findAll(PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize()));
+        return repository.findAll(pageRequest);
     }
 }

@@ -5,6 +5,8 @@ import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -61,5 +63,9 @@ public class CardService {
         }
 
         return principal.getName().equals(Objects.requireNonNull(cardRepository.findById(cardId).orElse(null)).getOwner().getUsername());
+    }
+
+    public Page<Card> getAllCards(PageRequest pageRequest) {
+        return cardRepository.findAll(pageRequest);
     }
 }

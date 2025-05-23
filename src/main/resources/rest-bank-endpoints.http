@@ -4,7 +4,11 @@ GET http://localhost:1024/api/v1/accounts?
     size={{size}}
 Authorization: Basic YWRtaW46YWRtaW4=
 
-### Create acount by admin
+### Card pagination
+GET http://localhost:1024/api/v1/cards?page=1&size=2
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
 Authorization: Basic YWRtaW46YWRtaW4=
 Content-Type: application/json
@@ -19,23 +23,23 @@ Content-Type: application/json
   "role_id": 2
 }
 
-### Create card for user by admin
+### Creating a card for a user by the admin
 POST http://localhost:1024/api/v1/cards?userId={{userId}}
 Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 
-### Get card by id
+### Get a card by ID
 GET http://localhost:1024/api/v1/cards/35
 Authorization: Basic {{userBasic}}
 
-### Request card block by user
+### Request to block the card by the user
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-request
 Authorization: Basic {{userBasic}}
 
-### Approve card block request by admin
+### Approve the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-approve
 Authorization: Basic {{adminBasic}}
 
-### Reject card block request by admin
+### Reject the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
 Authorization: Basic {{adminBasic}}

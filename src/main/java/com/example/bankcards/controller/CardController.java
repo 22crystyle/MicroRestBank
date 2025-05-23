@@ -9,6 +9,8 @@ import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,17 @@ public class CardController {
         this.mapper = mapper;
         this.service = service;
         this.cardBlockRequestService = cardBlockRequestService;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<CardResponse>> getCards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Card> entities = service.getAllCards(PageRequest.of(page, size));
+        Page<CardResponse> dtos = entities.map(mapper::toMaskedResponse);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
