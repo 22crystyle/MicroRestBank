@@ -1,0 +1,142 @@
+package com.example.bankcards.controller;
+
+import com.example.bankcards.dto.CardMapper;
+import com.example.bankcards.dto.response.AccountResponse;
+import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.CardStatusResponse;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.security.CustomUserDetails;
+import com.example.bankcards.service.CardBlockRequestService;
+import com.example.bankcards.service.CardService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(controllers = CardController.class)
+public class CardControllerTest {
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    private CardMapper cardMapper;
+
+    @MockitoBean
+    private CardService cardService;
+
+    @MockitoBean
+    private CardBlockRequestService cardBlockRequestService;
+
+    @Test
+    @WithMockUser("ADMIN")
+    void getCards_shouldReturnPagedResponse() throws Exception {
+        Page<Card> page = new PageImpl<>(List.of(new Card()));
+        when(cardService.getAllCards(any())).thenReturn(page);
+        when(cardMapper.toMaskedResponse(any())).thenReturn(
+                new CardResponse(1L, "**** **** **** 1234",
+                        new AccountResponse(1L, "", "", "", "", ""),
+                        new CardStatusResponse(1, "", ""),
+                        BigDecimal.ZERO));
+
+        mockMvc.perform(get("/api/v1/cards")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCard_asOwner_shouldReturnFullCard() throws Exception {
+        Card card = new Card();
+        when(cardService.getCard(1L)).thenReturn(card);
+        when(cardService.isOwner(eq(1L), any())).thenReturn(true);
+        when(cardMapper.toFullResponse(card)).thenReturn(
+                new CardResponse(1L, "**** **** **** 1234",
+                        new AccountResponse(1L, "", "", "", "", ""),
+                        new CardStatusResponse(1, "", ""),
+                        BigDecimal.ZERO));
+
+        mockMvc.perform(get("/api/v1/cards/1").principal(() -> "user"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    void createCard_shouldReturnCreatedCard() throws Exception {
+        Card card = new Card();
+        when(cardService.createCardForAccount(1L)).thenReturn(card);
+        when(cardMapper.toMaskedResponse(card)).thenReturn((
+                new CardResponse(1L, "**** **** **** 1234",
+                        new AccountResponse(1L, "", "", "", "", ""),
+                        new CardStatusResponse(1, "", ""),
+                        BigDecimal.ZERO)));
+
+        mockMvc.perform(post("/api/v1/cards")
+                        .param("userId", "1"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void transfer_asOwner_shouldReturnOk() throws Exception {
+        when(cardService.isOwner(eq("1234"), any())).thenReturn(true);
+        when(cardService.isOwner(eq("5678"), any())).thenReturn(true);
+        when(cardService.transfer(eq("1234"), eq("5678"), eq(new BigDecimal("100.00")))).thenReturn(true);
+
+        mockMvc.perform(post("/api/v1/cards/transfer")
+                        .param("from", "1234")
+                        .param("to", "5678")
+                        .param("amount", "100.00")
+                        .principal(() -> "user"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    void transfer_notOwner_shouldReturnForbidden() throws Exception {
+        when(cardService.isOwner((Long) any(), any())).thenReturn(false);
+
+        mockMvc.perform(post("/api/v1/cards/transfer")
+                        .param("from", "1234")
+                        .param("to", "5678")
+                        .param("amount", "100.00")
+                        .principal(() -> "user"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void requestCardBlock_shouldSucceed() throws Exception {
+        mockMvc.perform(post("/api/v1/cards/1/block-request"))
+                .andExpect(status().isOk());
+
+        verify(cardBlockRequestService).createBlockRequest(1L);
+    }
+
+    // Пример с авторизацией (CustomUserDetails)
+    @Test
+    void approveCardBlock_shouldSucceed() throws Exception {
+        CustomUserDetails userDetails = mock(CustomUserDetails.class);
+        when(userDetails.getAccountId()).thenReturn(42L);
+
+        CardBlockRequest mockRequest = new CardBlockRequest();
+        when(cardBlockRequestService.approveBlockRequest(1L, 42L)).thenReturn(mockRequest);
+
+        mockMvc.perform(post("/api/v1/cards/1/block-approve")
+                        .with(user(userDetails)))
+                .andExpect(status().isOk());
+    }
+}

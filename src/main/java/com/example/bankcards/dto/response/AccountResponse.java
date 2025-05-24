@@ -1,6 +1,7 @@
 package com.example.bankcards.dto.response;
 
 public record AccountResponse(
+        Long id,
         String username,
         String firstName,
         String lastName,

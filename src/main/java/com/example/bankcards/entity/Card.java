@@ -3,7 +3,10 @@ package com.example.bankcards.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -11,6 +14,9 @@ import java.time.YearMonth;
 @Entity
 @Data
 @Table(name = "bank_cards")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Card {
     @Id

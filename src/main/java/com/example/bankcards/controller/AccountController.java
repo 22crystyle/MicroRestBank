@@ -1,7 +1,7 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AccountMapper;
-import com.example.bankcards.dto.CardMapperImpl;
+import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.dto.response.CardResponse;
@@ -31,7 +31,7 @@ public class AccountController {
     private final AccountService service;
     private final AccountMapper mapper;
     private final CardService cardService;
-    private final CardMapperImpl cardMapper;
+    private final CardMapper cardMapper;
 
     @GetMapping
     public ResponseEntity<Page<AccountResponse>> getAccounts(
