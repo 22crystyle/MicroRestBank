@@ -7,5 +7,6 @@ public record AccountResponse(
         String lastName,
         String email,
         String phone
+        //TODO: should return role
 ) {
 }

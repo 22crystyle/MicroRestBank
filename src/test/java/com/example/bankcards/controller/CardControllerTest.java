@@ -1,14 +1,13 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.response.AccountResponse;
-import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.dto.response.CardStatusResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.utils.TestDataBuilders;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,75 +27,68 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CardController.class)
 public class CardControllerTest {
+    @MockitoBean
+    public CardMapper cardMapper;
+    @MockitoBean
+    public CardService cardService;
+    @MockitoBean
+    public CardBlockRequestService cardBlockRequestService;
     @Autowired
     MockMvc mockMvc;
 
-    @MockitoBean
-    public CardMapper cardMapper;
-
-    @MockitoBean
-    public CardService cardService;
-
-    @MockitoBean
-    public CardBlockRequestService cardBlockRequestService;
-
     @Test
+    @DisplayName("GET /api/v1/cards - возвращает страницу AccountResponse")
     @WithMockUser("ADMIN")
-    void getCards_shouldReturnPagedResponse() throws Exception {
+    void getCards_returnPage() throws Exception {
         Page<Card> page = new PageImpl<>(List.of(new Card()));
         when(cardService.getAllCards(any())).thenReturn(page);
-        when(cardMapper.toMaskedResponse(any())).thenReturn(
-                new CardResponse(1L, "**** **** **** 1234",
-                        new AccountResponse(1L, "", "", "", "", ""),
-                        new CardStatusResponse(1, "", ""),
-                        BigDecimal.ZERO));
+        when(cardMapper.toMaskedResponse(any())).thenReturn(TestDataBuilders.cardResponse().build());
 
         mockMvc.perform(get("/api/v1/cards")
                         .with(csrf())
                         .param("page", "0")
                         .param("size", "10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("GET /api/v1/cards/{id} - возвращает не замаскированные данные карты пользователя")
     @WithMockUser("USER")
     void getCard_asOwner_shouldReturnFullCard() throws Exception {
         Card card = new Card();
         when(cardService.getCard(1L)).thenReturn(card);
         when(cardService.isOwner(eq(1L), any())).thenReturn(true);
-        when(cardMapper.toFullResponse(card)).thenReturn(
-                new CardResponse(1L, "**** **** **** 1234",
-                        new AccountResponse(1L, "", "", "", "", ""),
-                        new CardStatusResponse(1, "", ""),
-                        BigDecimal.ZERO));
+        when(cardMapper.toFullResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
 
         mockMvc.perform(get("/api/v1/cards/1").principal(() -> "user")
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("POST /api/v1/card - возвращает 201 при создании карты")
     @WithMockUser("ADMIN")
     void createCard_shouldReturnCreatedCard() throws Exception {
         Card card = new Card();
         when(cardService.createCardForAccount(1L)).thenReturn(card);
-        when(cardMapper.toMaskedResponse(card)).thenReturn((
-                new CardResponse(1L, "**** **** **** 1234",
-                        new AccountResponse(1L, "", "", "", "", ""),
-                        new CardStatusResponse(1, "", ""),
-                        BigDecimal.ZERO)));
+        when(cardMapper.toMaskedResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
 
         mockMvc.perform(post("/api/v1/cards")
                         .with(csrf())
                         .param("userId", "1"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("POST /api/v1/card/transfer - перевод между картами владельца")
     @WithMockUser("USER")
     void transfer_asOwner_shouldReturnOk() throws Exception {
         when(cardService.isOwner(eq("1234"), any())).thenReturn(true);
@@ -109,10 +101,12 @@ public class CardControllerTest {
                         .param("to", "5678")
                         .param("amount", "100.00")
                         .principal(() -> "user"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("POST /api/v1/cards/transfer - возвращает 403 если карты не принадлежат пользователю")
     @WithMockUser("USER")
     void transfer_notOwner_shouldReturnForbidden() throws Exception {
         when(cardService.isOwner((Long) any(), any())).thenReturn(false);
@@ -122,21 +116,25 @@ public class CardControllerTest {
                         .param("to", "5678")
                         .param("amount", "100.00")
                         .principal(() -> "user"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("POST /api/v1/cards/{id}/block-request - возвращает 200 при отправке запроса")
     @WithMockUser("USER")
     void requestCardBlock_shouldSucceed() throws Exception {
         mockMvc.perform(post("/api/v1/cards/1/block-request")
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
         verify(cardBlockRequestService).createBlockRequest(1L);
     }
 
     // Пример с авторизацией (CustomUserDetails)
     @Test
+    @DisplayName("POST /api/v1/cards/{id}/block-approve - возвращает 200 при блокировке карты")
     @WithMockUser("ADMIN")
     void approveCardBlock_shouldSucceed() throws Exception {
         CustomUserDetails userDetails = mock(CustomUserDetails.class);
@@ -148,6 +146,7 @@ public class CardControllerTest {
         mockMvc.perform(post("/api/v1/cards/1/block-approve")
                         .with(csrf())
                         .with(user(userDetails)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 }

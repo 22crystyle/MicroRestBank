@@ -2,7 +2,6 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.repository.AccountRepository;
@@ -16,24 +15,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
     @Mock
-    private AccountRepository repository;
-
-    @Mock
     AccountMapper mapper;
-
     @Mock
     PasswordEncoder encoder;
-
     @Mock
     RoleRepository roleRepository;
-
+    @Mock
+    private AccountRepository repository;
     @InjectMocks
     private AccountService service;
 
