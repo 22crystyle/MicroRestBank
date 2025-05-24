@@ -42,16 +42,16 @@ public class AccountControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private AccountService service;
+    public AccountService service;
 
     @MockitoBean
-    private AccountMapper accountMapper;
+    public AccountMapper accountMapper;
 
     @MockitoBean
-    private CardService cardService;
+    public CardService cardService;
 
     @MockitoBean
-    private CardMapper cardMapper;
+    public CardMapper cardMapper;
 
     @Test
     @DisplayName("GET /api/v1/accounts - возвращает страницу AccountResponse")

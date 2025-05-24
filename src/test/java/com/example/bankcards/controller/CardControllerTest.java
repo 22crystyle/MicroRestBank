@@ -24,6 +24,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,13 +36,13 @@ public class CardControllerTest {
     MockMvc mockMvc;
 
     @MockitoBean
-    private CardMapper cardMapper;
+    public CardMapper cardMapper;
 
     @MockitoBean
-    private CardService cardService;
+    public CardService cardService;
 
     @MockitoBean
-    private CardBlockRequestService cardBlockRequestService;
+    public CardBlockRequestService cardBlockRequestService;
 
     @Test
     @WithMockUser("ADMIN")
@@ -55,12 +56,14 @@ public class CardControllerTest {
                         BigDecimal.ZERO));
 
         mockMvc.perform(get("/api/v1/cards")
+                        .with(csrf())
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser("USER")
     void getCard_asOwner_shouldReturnFullCard() throws Exception {
         Card card = new Card();
         when(cardService.getCard(1L)).thenReturn(card);
@@ -71,7 +74,8 @@ public class CardControllerTest {
                         new CardStatusResponse(1, "", ""),
                         BigDecimal.ZERO));
 
-        mockMvc.perform(get("/api/v1/cards/1").principal(() -> "user"))
+        mockMvc.perform(get("/api/v1/cards/1").principal(() -> "user")
+                        .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -87,17 +91,20 @@ public class CardControllerTest {
                         BigDecimal.ZERO)));
 
         mockMvc.perform(post("/api/v1/cards")
+                        .with(csrf())
                         .param("userId", "1"))
                 .andExpect(status().isCreated());
     }
 
     @Test
+    @WithMockUser("USER")
     void transfer_asOwner_shouldReturnOk() throws Exception {
         when(cardService.isOwner(eq("1234"), any())).thenReturn(true);
         when(cardService.isOwner(eq("5678"), any())).thenReturn(true);
         when(cardService.transfer(eq("1234"), eq("5678"), eq(new BigDecimal("100.00")))).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/cards/transfer")
+                        .with(csrf())
                         .param("from", "1234")
                         .param("to", "5678")
                         .param("amount", "100.00")
@@ -119,8 +126,10 @@ public class CardControllerTest {
     }
 
     @Test
+    @WithMockUser("USER")
     void requestCardBlock_shouldSucceed() throws Exception {
-        mockMvc.perform(post("/api/v1/cards/1/block-request"))
+        mockMvc.perform(post("/api/v1/cards/1/block-request")
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
         verify(cardBlockRequestService).createBlockRequest(1L);
@@ -128,6 +137,7 @@ public class CardControllerTest {
 
     // Пример с авторизацией (CustomUserDetails)
     @Test
+    @WithMockUser("ADMIN")
     void approveCardBlock_shouldSucceed() throws Exception {
         CustomUserDetails userDetails = mock(CustomUserDetails.class);
         when(userDetails.getAccountId()).thenReturn(42L);
@@ -136,6 +146,7 @@ public class CardControllerTest {
         when(cardBlockRequestService.approveBlockRequest(1L, 42L)).thenReturn(mockRequest);
 
         mockMvc.perform(post("/api/v1/cards/1/block-approve")
+                        .with(csrf())
                         .with(user(userDetails)))
                 .andExpect(status().isOk());
     }
