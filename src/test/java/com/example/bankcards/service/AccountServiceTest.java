@@ -6,6 +6,7 @@ import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
+import com.example.bankcards.util.TestDataBuilders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,19 +36,10 @@ public class AccountServiceTest {
 
     @Test
     void whenValidRequest_thenReturnAccountResponse() {
-        AccountRequest request = new AccountRequest("user", "pass", "first", "last", "e@mail", "+100", 1);
-        Account entity = new Account();
-        entity.setUsername("user");
-        entity.setId(1L);
-        entity.setPassword("pass");
-        entity.setFirstName("first");
-        entity.setLastName("last");
-        entity.setEmail("e@mail");
-        entity.setPhone("+100");
+        AccountRequest request = TestDataBuilders.accountRequest().build();
+        Account entity = TestDataBuilders.account().build();
 
-        Role role = new Role();
-        role.setId(1);
-        role.setName("USER");
+        Role role = TestDataBuilders.role().build();
         entity.setRole(role);
 
         when(mapper.toEntity(request)).thenReturn(entity);
@@ -65,7 +57,7 @@ public class AccountServiceTest {
 
     @Test
     void whenInvalidRequest_thenReturnAccountResponse() {
-        AccountRequest request = new AccountRequest("u", "p", "F", "L", "e", "ph", 99);
+        AccountRequest request = TestDataBuilders.accountRequest().withRoleId(99).build();
 
         when(roleRepository.findById(99)).thenReturn(Optional.empty());
 

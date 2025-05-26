@@ -4,10 +4,11 @@ GET http://localhost:1024/api/v1/accounts?
     size={{size}}
 Authorization: Basic {{adminBasic}}
 
-> {% client.test("Request executed successfully", function () {
-    client.assert(response.status === 200, "Response status is not 200")
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200")
     });
- %}
+%}
 
 ### Card pagination
 GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
@@ -19,12 +20,12 @@ Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 
 {
-  "username": "user",
+  "username": "user1",
   "password": "user",
   "firstName": "First",
   "lastName": "Last",
-  "email": "a@a.a",
-  "phone": "+71234567880",
+  "email": "a@a.1",
+  "phone": "+712345678810",
   "role_id": 2
 }
 
@@ -50,7 +51,7 @@ POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
 Authorization: Basic {{adminBasic}}
 
 ### Transfer money between users cards
-PUT http://localhost:1024/api/v1/cards/transfer?
+POST http://localhost:1024/api/v1/cards/transfer?
     from=2222064603775853&
     to=2223629877584998&
     amount=1

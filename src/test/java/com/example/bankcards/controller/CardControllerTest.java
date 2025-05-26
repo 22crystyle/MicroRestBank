@@ -6,7 +6,7 @@ import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.utils.TestDataBuilders;
+import com.example.bankcards.util.TestDataBuilders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,22 +61,22 @@ public class CardControllerTest {
     @DisplayName("GET /api/v1/cards/{id} - возвращает не замаскированные данные карты пользователя")
     @WithMockUser("USER")
     void getCard_asOwner_shouldReturnFullCard() throws Exception {
-        Card card = new Card();
+        Card card = TestDataBuilders.card().build();
         when(cardService.getCard(1L)).thenReturn(card);
         when(cardService.isOwner(eq(1L), any())).thenReturn(true);
         when(cardMapper.toFullResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
 
-        mockMvc.perform(get("/api/v1/cards/1").principal(() -> "user")
+        mockMvc.perform(get("/api/v1/cards/1").principal(() -> "USER")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("POST /api/v1/card - возвращает 201 при создании карты")
+    @DisplayName("POST /api/v1/cards - возвращает 201 при создании карты")
     @WithMockUser("ADMIN")
     void createCard_shouldReturnCreatedCard() throws Exception {
-        Card card = new Card();
+        Card card = TestDataBuilders.card().build();
         when(cardService.createCardForAccount(1L)).thenReturn(card);
         when(cardMapper.toMaskedResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
 

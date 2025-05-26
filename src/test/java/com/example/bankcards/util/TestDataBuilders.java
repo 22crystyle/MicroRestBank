@@ -1,17 +1,23 @@
-package com.example.bankcards.utils;
+package com.example.bankcards.util;
 
+import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.response.CardStatusResponse;
 import com.example.bankcards.entity.Account;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.Role;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class TestDataBuilders {
 
-    private TestDataBuilders() { /* не даём создавать экземпляры */ }
+    private TestDataBuilders() {
+    }
 
     // === Account Builder ===
     public static AccountBuilder account() {
@@ -28,9 +34,19 @@ public final class TestDataBuilders {
         return new AccountResponseBuilder();
     }
 
-    // === CardStatusResponse Builder ===
-    public static CardStatusResponseBuilder cardStatusResponse() {
-        return new CardStatusResponseBuilder();
+    // === AccountRequestBuilder ===
+    public static AccountRequestBuilder accountRequest() {
+        return new AccountRequestBuilder();
+    }
+
+    // === Card Builder ===
+    public static CardBuilder card() {
+        return new CardBuilder();
+    }
+
+    // === CardStatus Builder
+    public static CardStatusBuilder cardStatus() {
+        return new CardStatusBuilder();
     }
 
     // === CardResponse Builder ===
@@ -38,8 +54,13 @@ public final class TestDataBuilders {
         return new CardResponseBuilder();
     }
 
+    // === CardStatusResponse Builder ===
+    public static CardStatusResponseBuilder cardStatusResponse() {
+        return new CardStatusResponseBuilder();
+    }
+
     public static class AccountBuilder {
-        private Long id = 1L;
+        private Long id;
         private String username = "user";
         private String password = "pass";
         private String firstName = "First";
@@ -107,7 +128,7 @@ public final class TestDataBuilders {
     }
 
     public static class RoleBuilder {
-        private Integer id = 1;
+        private Integer id;
         private String name = "USER";
 
         private RoleBuilder() {
@@ -177,32 +198,147 @@ public final class TestDataBuilders {
         }
     }
 
-    public static class CardStatusResponseBuilder {
-        private int statusId = 1;
-        private String status = "ACTIVE";
+    public static class AccountRequestBuilder {
+        private String username = "user";
+        private String password = "pass";
+        private String firstName = "firstName";
+        private String lastName = "lastName";
+        private String email = "e@mail.com";
+        private String phone = "+71111155555";
+        private Integer role_id = 1;
 
-        private CardStatusResponseBuilder() {
+        AccountRequestBuilder() {
         }
 
-        public CardStatusResponseBuilder withStatusId(int id) {
-            this.statusId = id;
+        public AccountRequestBuilder withUsername(String username) {
+            this.username = username;
             return this;
         }
 
-        public CardStatusResponseBuilder withStatus(String status) {
-            this.status = status;
+        public AccountRequestBuilder withPassword(String password) {
+            this.password = password;
             return this;
         }
 
-        public CardStatusResponse build() {
-            return new CardStatusResponse(statusId, null, status);
+        public AccountRequestBuilder withFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public AccountRequestBuilder withLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public AccountRequestBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public AccountRequestBuilder withPhone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public AccountRequestBuilder withRoleId(Integer role_id) {
+            this.role_id = role_id;
+            return this;
+        }
+
+        public AccountRequest build() {
+            return new AccountRequest(this.username, this.password, this.firstName, this.lastName, this.email, this.phone, this.role_id);
+        }
+    }
+
+    public static class CardBuilder {
+        private Long id;
+        private String cardNumber;
+        private Account owner;
+        private YearMonth expiryDate;
+        private CardStatus cardStatus;
+
+        private CardBuilder() {
+        }
+
+        public CardBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public CardBuilder withCardNumber(String cardNumber) {
+            this.cardNumber = cardNumber;
+            return this;
+        }
+
+        public CardBuilder withOwner(Account owner) {
+            this.owner = owner;
+            return this;
+        }
+
+        public CardBuilder withExpiryDate(YearMonth expiryDate) {
+            this.expiryDate = expiryDate;
+            return this;
+        }
+
+        public CardBuilder withCardStatus(CardStatus cardStatus) {
+            this.cardStatus = cardStatus;
+            return this;
+        }
+
+        public Card build() {
+            Card card = new Card();
+            card.setId(id);
+            card.setCardNumber(cardNumber);
+            card.setOwner(owner);
+            card.setExpiryDate(expiryDate);
+            card.setStatus(cardStatus);
+            return card;
+        }
+    }
+
+    public static class CardStatusBuilder {
+        private Integer id;
+        private String name = "ACTIVE";
+        private String description = "Card is active";
+        private List<Card> cards = new ArrayList<>();
+
+        private CardStatusBuilder() {
+        }
+
+        public CardStatusBuilder withId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public CardStatusBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public CardStatusBuilder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public CardStatusBuilder withCards(List<Card> cards) {
+            this.cards = cards;
+            return this;
+        }
+
+        public CardStatus build() {
+            CardStatus cardStatus = new CardStatus();
+            cardStatus.setId(id);
+            cardStatus.setName(name);
+            cardStatus.setDescription(description);
+            cardStatus.setCards(cards);
+            return cardStatus;
         }
     }
 
     public static class CardResponseBuilder {
         private Long id = 1L;
         private String number = "1234 1234 1234 1234";
-        private AccountResponse account = accountResponse().build();
+        private AccountResponse owner = accountResponse().build();
         private CardStatusResponse status = cardStatusResponse().build();
         private BigDecimal balance = BigDecimal.ZERO;
         private boolean masked = false;
@@ -225,8 +361,8 @@ public final class TestDataBuilders {
             return this;
         }
 
-        public CardResponseBuilder withAccount(AccountResponse acc) {
-            this.account = acc;
+        public CardResponseBuilder withOwner(AccountResponse owner) {
+            this.owner = owner;
             return this;
         }
 
@@ -244,7 +380,7 @@ public final class TestDataBuilders {
             String toShowNumber = masked
                     ? mask(number)
                     : number;
-            return new CardResponse(id, toShowNumber, account, status, balance);
+            return new CardResponse(id, toShowNumber, owner, status, balance);
         }
 
         private String mask(String number) {
@@ -253,4 +389,27 @@ public final class TestDataBuilders {
             return "**** **** **** " + last4;
         }
     }
+
+    public static class CardStatusResponseBuilder {
+        private int statusId = 1;
+        private String status = "ACTIVE";
+
+        private CardStatusResponseBuilder() {
+        }
+
+        public CardStatusResponseBuilder withStatusId(int id) {
+            this.statusId = id;
+            return this;
+        }
+
+        public CardStatusResponseBuilder withStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public CardStatusResponse build() {
+            return new CardStatusResponse(statusId, null, status);
+        }
+    }
+
 }

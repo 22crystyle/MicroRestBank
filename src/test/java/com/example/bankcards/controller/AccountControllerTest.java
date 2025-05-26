@@ -11,7 +11,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.utils.TestDataBuilders;
+import com.example.bankcards.util.TestDataBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -98,49 +97,48 @@ public class AccountControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(jsonPath("$.content[0].id", is(1)))
-                .andExpect(jsonPath("$.content[0].username", is("admin")))
-                .andExpect(jsonPath("$.content[1].id", is(2)))
-                .andExpect(jsonPath("$.content[1].username", is("user")))
+                .andExpect(jsonPath("$.content[0].id", is(admin.getId().intValue())))
+                .andExpect(jsonPath("$.content[0].username", is(admin.getUsername())))
+                .andExpect(jsonPath("$.content[1].id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.content[1].username", is(user.getUsername())))
                 .andDo(print());
     }
 
     @Test
     @DisplayName("GET /api/v1/accounts/{id} - возвращает AccountResponse")
     @WithMockUser(roles = "ADMIN")
-    void getAccountById_returnsAccount() throws Exception {
+    void getAccountById_returnsAccountResponse() throws Exception {
         Account admin = adminAccount;
-
         AccountResponse dto = adminAccountResponse;
 
-        Mockito.when(service.getAccountById(1L)).thenReturn(admin);
+        Mockito.when(service.getAccountById(admin.getId())).thenReturn(admin);
         Mockito.when(accountMapper.toResponse(any(Account.class))).thenReturn(dto);
 
-        mockMvc.perform(get("/api/v1/accounts/{id}", 1L))
+        mockMvc.perform(get("/api/v1/accounts/{id}", admin.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.username", is("admin")))
+                .andExpect(jsonPath("$.id", is(admin.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(admin.getUsername())))
                 .andDo(print());
     }
 
     @Test
     @DisplayName("GET /api/v1/accounts/{id}/cards - возвращает список карт")
-    @WithMockUser("ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void getAccountCards_returnPage() throws Exception {
-        Card c1 = new Card();
-        Card c2 = new Card();
+        Card c1 = TestDataBuilders.card().withId(1L).build();
+        Card c2 = TestDataBuilders.card().withId(2L).build();
         List<Card> cards = List.of(c1, c2);
 
         AccountResponse adminResponse = adminAccountResponse;
-        CardStatusResponse statusResponse = new CardStatusResponse(1, null, "ACTIVE");
+        CardStatusResponse statusResponse = TestDataBuilders.cardStatusResponse().build();
 
-        CardResponse cr1 = new CardResponse(1L, "9999 9999 9999 9999", adminResponse, statusResponse, BigDecimal.ZERO);
-        CardResponse cr2 = new CardResponse(1L, "0000 0000 0000 0000", adminResponse, statusResponse, BigDecimal.ZERO);
+        CardResponse cr1 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
+        CardResponse cr2 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
 
-        Mockito.when(cardService.getCardsByUserId(2L)).thenReturn(cards);
+        Mockito.when(cardService.getCardsByUserId(adminResponse.id())).thenReturn(cards);
         Mockito.when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);
         Mockito.when(cardMapper.toMaskedResponse(c2)).thenReturn(cr2);
-        mockMvc.perform(get("/api/v1/accounts/{id}/cards", 2L)
+        mockMvc.perform(get("/api/v1/accounts/{id}/cards", adminResponse.id())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -149,10 +147,9 @@ public class AccountControllerTest {
 
     @Test
     @DisplayName("POST /api/v1/accounts — создаёт и возвращает AccountResponse")
-    @WithMockUser("ADMIN")
-    void createAccount_returnsCreated() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void postAccount_returnsCreated() throws Exception {
         Account user = userAccount;
-        user.setId(2L);
 
         AccountResponse dto = userAccountResponse;
 
@@ -177,8 +174,8 @@ public class AccountControllerTest {
                         .content(jsonReq)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(2)))
-                .andExpect(jsonPath("$.username", is("user")))
+                .andExpect(jsonPath("$.id", is(userAccount.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(userAccount.getUsername())))
                 .andDo(print());
     }
 
@@ -186,8 +183,8 @@ public class AccountControllerTest {
     @DisplayName("DELETE /api/v1/accounts/{id} — когда удаление успешно")
     @WithMockUser(roles = "ADMIN")
     public void deleteAccount_whenDeleted_noContent() throws Exception {
-        Mockito.when(service.deleteById(1L)).thenReturn(true);
-        mockMvc.perform(delete("/api/v1/accounts/{id}", 1L)
+        Mockito.when(service.deleteById(userAccount.getId())).thenReturn(true);
+        mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
                         .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andDo(print());
@@ -197,9 +194,9 @@ public class AccountControllerTest {
     @DisplayName("DELETE /api/v1/accounts/{id} — когда не найдено")
     @WithMockUser(roles = "ADMIN")
     void deleteAccount_whenNotFound_notFound() throws Exception {
-        Mockito.when(service.deleteById(2L)).thenReturn(false);
+        Mockito.when(service.deleteById(userAccount.getId())).thenReturn(false);
 
-        mockMvc.perform(delete("/api/v1/accounts/{id}", 2)
+        mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andDo(print());

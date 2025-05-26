@@ -3,29 +3,29 @@ databaseChangeLog:
       id: 160525-01-create-bank-card
       author: Crystal
       changes:
-      - createTable:
-          columns:
-          - column:
-              name: id
-              type: BIGINT
-              constraints:
-                nullable: false
-                primaryKey: true
-                primaryKeyName: bank_card_pkey
-              autoIncrement: true
-          - column: { name: account_id, type: BIGINT }
-          - column:
-                name: card_number
-                type: VARCHAR(16)
-                constraints:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: bank_card_pkey
+                  autoIncrement: true
+              - column: { name: account_id, type: BIGINT }
+              - column:
+                  name: card_number
+                  type: VARCHAR(16)
+                  constraints:
                     unique: true
                     uniqueConstraintName: uq_bank_card_number
-          - column:
-              name: balance
-              type: NUMERIC(38, 2)
-          - column: { name: expiry_date, type: date }
-          - column: { name: status_id, type: INTEGER }
-          tableName: bank_cards
+              - column:
+                  name: balance
+                  type: NUMERIC(38, 2)
+              - column: { name: expiry_date, type: date }
+              - column: { name: status_id, type: INTEGER }
+            tableName: bank_cards
   - changeSet:
       id: 160525-02-bankcard_status_id_fkey
       author: Crystal
