@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -81,8 +82,10 @@ public class CardControllerTest {
         when(cardMapper.toMaskedResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
 
         mockMvc.perform(post("/api/v1/cards")
+                        .param("userId", "1")
                         .with(csrf())
-                        .param("userId", "1"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
@@ -96,11 +99,13 @@ public class CardControllerTest {
         when(cardService.transfer(eq("1234"), eq("5678"), eq(new BigDecimal("100.00")))).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/cards/transfer")
-                        .with(csrf())
                         .param("from", "1234")
                         .param("to", "5678")
                         .param("amount", "100.00")
-                        .principal(() -> "user"))
+                        .principal(() -> "user")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -115,7 +120,9 @@ public class CardControllerTest {
                         .param("from", "1234")
                         .param("to", "5678")
                         .param("amount", "100.00")
-                        .principal(() -> "user"))
+                        .principal(() -> "user")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
                 .andDo(print());
     }
@@ -125,7 +132,9 @@ public class CardControllerTest {
     @WithMockUser("USER")
     void requestCardBlock_shouldSucceed() throws Exception {
         mockMvc.perform(post("/api/v1/cards/1/block-request")
-                        .with(csrf()))
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -144,8 +153,10 @@ public class CardControllerTest {
         when(cardBlockRequestService.approveBlockRequest(1L, 42L)).thenReturn(mockRequest);
 
         mockMvc.perform(post("/api/v1/cards/1/block-approve")
-                        .with(csrf())
-                        .with(user(userDetails)))
+                        .with(user(userDetails))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

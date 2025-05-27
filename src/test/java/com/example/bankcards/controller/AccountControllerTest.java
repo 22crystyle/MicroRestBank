@@ -12,10 +12,13 @@ import com.example.bankcards.entity.Role;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.TestDataBuilders;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
@@ -25,13 +28,16 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,6 +82,17 @@ public class AccountControllerTest {
                 .build();
     }
 
+    static Stream<Arguments> getAccountByIdParams() {
+        return Stream.of(
+                Arguments.of("ADMIN", true, 200),
+                Arguments.of("USER", true, 200),
+                Arguments.of("ADMIN", false, 404),
+                Arguments.of("USER", false, 404),
+                Arguments.of(null, true, 401),
+                Arguments.of(null, false, 401)
+        );
+    }
+
     @Test
     @DisplayName("GET /api/v1/accounts - возвращает страницу AccountResponse")
     @WithMockUser(roles = "ADMIN")
@@ -87,14 +104,15 @@ public class AccountControllerTest {
         AccountResponse adminDto = adminAccountResponse;
         AccountResponse userDto = userAccountResponse;
 
-        Mockito.when(service.getAllAccounts(any(PageRequest.class))).thenReturn(page);
-        Mockito.when(accountMapper.toResponse(admin)).thenReturn(adminDto);
-        Mockito.when(accountMapper.toResponse(user)).thenReturn(userDto);
+        when(service.getAllAccounts(any(PageRequest.class))).thenReturn(page);
+        when(accountMapper.toResponse(admin)).thenReturn(adminDto);
+        when(accountMapper.toResponse(user)).thenReturn(userDto);
 
         mockMvc.perform(get("/api/v1/accounts")
                         .param("page", "0")
                         .param("size", "10")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].id", is(admin.getId().intValue())))
@@ -111,10 +129,12 @@ public class AccountControllerTest {
         Account admin = adminAccount;
         AccountResponse dto = adminAccountResponse;
 
-        Mockito.when(service.getAccountById(admin.getId())).thenReturn(admin);
-        Mockito.when(accountMapper.toResponse(any(Account.class))).thenReturn(dto);
+        when(service.getAccountById(admin.getId())).thenReturn(admin);
+        when(accountMapper.toResponse(any(Account.class))).thenReturn(dto);
 
-        mockMvc.perform(get("/api/v1/accounts/{id}", admin.getId()))
+        mockMvc.perform(get("/api/v1/accounts/{id}", admin.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(admin.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(admin.getUsername())))
@@ -135,11 +155,12 @@ public class AccountControllerTest {
         CardResponse cr1 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
         CardResponse cr2 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
 
-        Mockito.when(cardService.getCardsByUserId(adminResponse.id())).thenReturn(cards);
-        Mockito.when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);
-        Mockito.when(cardMapper.toMaskedResponse(c2)).thenReturn(cr2);
+        when(cardService.getCardsByUserId(adminResponse.id())).thenReturn(cards);
+        when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);
+        when(cardMapper.toMaskedResponse(c2)).thenReturn(cr2);
         mockMvc.perform(get("/api/v1/accounts/{id}/cards", adminResponse.id())
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andDo(print());
@@ -153,8 +174,8 @@ public class AccountControllerTest {
 
         AccountResponse dto = userAccountResponse;
 
-        Mockito.when(service.createAccount(any(AccountRequest.class))).thenReturn(user);
-        Mockito.when(accountMapper.toResponse(user)).thenReturn(dto);
+        when(service.createAccount(any(AccountRequest.class))).thenReturn(user);
+        when(accountMapper.toResponse(user)).thenReturn(dto);
 
         String jsonReq = """
                 {
@@ -170,9 +191,9 @@ public class AccountControllerTest {
 
         mockMvc.perform(post("/api/v1/accounts")
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonReq)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(userAccount.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(userAccount.getUsername())))
@@ -183,8 +204,10 @@ public class AccountControllerTest {
     @DisplayName("DELETE /api/v1/accounts/{id} — когда удаление успешно")
     @WithMockUser(roles = "ADMIN")
     public void deleteAccount_whenDeleted_noContent() throws Exception {
-        Mockito.when(service.deleteById(userAccount.getId())).thenReturn(true);
+        when(service.deleteById(userAccount.getId())).thenReturn(true);
         mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andDo(print());
@@ -194,11 +217,37 @@ public class AccountControllerTest {
     @DisplayName("DELETE /api/v1/accounts/{id} — когда не найдено")
     @WithMockUser(roles = "ADMIN")
     void deleteAccount_whenNotFound_notFound() throws Exception {
-        Mockito.when(service.deleteById(userAccount.getId())).thenReturn(false);
+        when(service.deleteById(userAccount.getId())).thenReturn(false);
 
         mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @ParameterizedTest(name = "[{index}] role={0}, exists={1} => status={2}")
+    @MethodSource("getAccountByIdParams")
+    void getAccountId_withRolesAndExistence(String role, boolean exists, int expectedStatus) throws Exception {
+        Long id = 99L;
+
+        if (exists) {
+            when(service.getAccountById(id)).thenReturn(adminAccount);
+            when(accountMapper.toResponse(adminAccount)).thenReturn(adminAccountResponse);
+        } else {
+            when(service.getAccountById(id)).thenThrow(new EntityNotFoundException("Account not found"));
+        }
+
+        RequestPostProcessor auth = role != null
+                ? user("test").roles(role.replace("ROLE_", ""))
+                : anonymous();
+
+        mockMvc.perform(get("/api/v1/accounts/{id}", id)
+                        .with(auth)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(expectedStatus))
                 .andDo(print());
     }
 }

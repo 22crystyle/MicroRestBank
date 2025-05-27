@@ -139,7 +139,7 @@ public class AccountControllerIntegrationTest {
         Account admin = accountRepository.findByUsername("admin").orElseThrow();
 
         mockMvc.perform(get("/api/v1/accounts/{id}/cards", admin.getId())
-                    .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andDo(print());
@@ -149,7 +149,7 @@ public class AccountControllerIntegrationTest {
     @WithMockUser(authorities = "ADMIN")
     void createAccount_returnsCreated() throws Exception {
         Role role = roleRepository.getRoleByName("USER").orElseThrow();
-        String json = "{\"username\":\"newuser\",\"password\":\"pass\",\"role_id\":"+role.getId()+"}";
+        String json = "{\"username\":\"newuser\",\"password\":\"pass\",\"role_id\":" + role.getId() + "}";
 
         mockMvc.perform(post("/api/v1/accounts")
                         .with(csrf())
