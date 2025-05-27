@@ -1,6 +1,5 @@
 .gradle/
 build/
-target/
 *.iml
 .idea/
 *.log

@@ -1,17 +1,17 @@
 # 
 # docker-compose.yml — определяет сервисы для разработки и тестирования.
-
-version: "3.8"
-
 services:
   app:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "${SERVER_PORT}:1024"
     env_file:
       - ".env"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:17.5-alpine3.21
@@ -22,6 +22,11 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
