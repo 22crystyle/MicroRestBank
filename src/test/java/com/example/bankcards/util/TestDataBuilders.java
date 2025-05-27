@@ -153,7 +153,7 @@ public final class TestDataBuilders {
     }
 
     public static class AccountResponseBuilder {
-        private Long id;
+        private Long id = 1L;
         private String username = "user";
         private String firstName = "First";
         private String lastName = "Last";
@@ -254,7 +254,7 @@ public final class TestDataBuilders {
         private Long id;
         private String cardNumber;
         private Account owner;
-        private YearMonth expiryDate;
+        private YearMonth expiryDate = YearMonth.now().plusYears(4);
         private CardStatus cardStatus;
 
         private CardBuilder() {

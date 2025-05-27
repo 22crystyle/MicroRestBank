@@ -24,9 +24,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -128,5 +131,52 @@ public class AccountControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("admin"))
                 .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    void getAccountCard_returnsOkAndList() throws Exception {
+        Account admin = accountRepository.findByUsername("admin").orElseThrow();
+
+        mockMvc.perform(get("/api/v1/accounts/{id}/cards", admin.getId())
+                    .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    void createAccount_returnsCreated() throws Exception {
+        Role role = roleRepository.getRoleByName("USER").orElseThrow();
+        String json = "{\"username\":\"newuser\",\"password\":\"pass\",\"role_id\":"+role.getId()+"}";
+
+        mockMvc.perform(post("/api/v1/accounts")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value("newuser"))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    void deleteAccount_returnsNoContent() throws Exception {
+        Account admin = accountRepository.findByUsername("admin").orElseThrow();
+
+        mockMvc.perform(delete("/api/v1/accounts/{id}", admin.getId())
+                        .with(csrf()))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    void deleteAccount_missing_returnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/accounts/{id}", 999)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
