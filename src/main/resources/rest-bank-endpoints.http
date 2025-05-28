@@ -18,14 +18,15 @@ Authorization: Basic {{adminBasic}}
 POST http://localhost:1024/api/v1/accounts
 Authorization: Basic {{adminBasic}}
 Content-Type: application/json
+Accept-Language: en
 
 {
-  "username": "user1",
-  "password": "user",
+  "username": "",
+  "password": "",
   "firstName": "First",
   "lastName": "Last",
-  "email": "a@a.1",
-  "phone": "+712345678810",
+  "email": "aaa@aaa.1",
+  "phone": "+7123456788a10",
   "role_id": 2
 }
 

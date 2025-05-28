@@ -12,12 +12,14 @@ import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.List;
 @RequestMapping("/api/v1/accounts")
 @PreAuthorize(value = "hasRole('ADMIN')")
 @RequiredArgsConstructor
+@Validated
 public class AccountController {
 
     private final AccountService service;
@@ -72,7 +75,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest request) {
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody @Valid AccountRequest request) {
         Account entity = service.createAccount(request);
         AccountResponse response = mapper.toResponse(entity);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

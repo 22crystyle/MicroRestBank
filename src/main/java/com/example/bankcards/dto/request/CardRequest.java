@@ -14,7 +14,6 @@ public record CardRequest(
                 maximum = "9999999999999999"
         )
         @Pattern(regexp = "\\d{16}", message = "Номер карты должен состоять из 16 цифр") String cardNumber,
-        //AccountResponse owner, // TODO: AccountRef - отдельный record для сохранения связи ссылок
         YearMonth expiryDate,
         CardStatus status
 ) {
