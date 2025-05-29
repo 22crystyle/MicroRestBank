@@ -3,10 +3,11 @@ package com.example.bankcards.dto.request;
 import com.example.bankcards.annotations.FieldNotEmpty;
 
 public record AccountRequest(
-        @FieldNotEmpty(message = "{validation.notEmpty}", field = "{field.username}")
+        @FieldNotEmpty(field = "{field.username}")
         String username,
-        @FieldNotEmpty(message = "{validation.notEmpty}", field = "{field.password}")
+        @FieldNotEmpty(field = "{field.password}")
         String password,
+        @FieldNotEmpty(field = "{field.firstName}")
         String firstName,
         String lastName,
         String email,
