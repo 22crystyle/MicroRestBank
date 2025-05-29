@@ -16,17 +16,17 @@ Authorization: Basic {{adminBasic}}
 
 ### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
-Authorization: Basic {{adminBasic}}
+Authorization: Basic {{userBasic}}
 Content-Type: application/json
 Accept-Language: en
 
 {
-  "username": "",
-  "password": "",
+  "username": "user",
+  "password": "user",
   "firstName": "First",
   "lastName": "Last",
-  "email": "aaa@aaa.1",
-  "phone": "+7123456788a10",
+  "email": "e@mail.com",
+  "phone": "+71111155555",
   "role_id": 2
 }
 

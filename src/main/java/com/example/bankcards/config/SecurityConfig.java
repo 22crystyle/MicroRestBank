@@ -13,6 +13,7 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -32,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/docs", "/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .userDetailsService(customUserDetailsService)
                 .httpBasic(Customizer.withDefaults());
         return http.build();

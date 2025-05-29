@@ -12,13 +12,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.security.Principal;
 
 @RestController
@@ -56,7 +57,12 @@ public class CardController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardResponse> createCard(@RequestParam Long userId) {
         CardResponse response = mapper.toMaskedResponse(service.createCardForAccount(userId));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @PostMapping("/{id}/block-request")
@@ -97,6 +103,6 @@ public class CardController {
             return ResponseEntity.ok().build();
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.internalServerError().build();
     }
 }

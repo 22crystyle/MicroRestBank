@@ -16,12 +16,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -51,8 +52,8 @@ public class AccountController {
             description = "Returns account details for the specified account ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Account found"),
-                    @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "403", description = "Unauthorized access")
+                    @ApiResponse(responseCode = "403", description = "Unauthorized access"),
+                    @ApiResponse(responseCode = "404", description = "Account not found")
             }
     )
     @GetMapping("/{id}")
@@ -61,7 +62,7 @@ public class AccountController {
             @PathVariable Long id) {
         Account account = service.getAccountById(id);
         AccountResponse response = mapper.toResponse(account);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/cards")
@@ -78,7 +79,12 @@ public class AccountController {
     public ResponseEntity<AccountResponse> createAccount(@RequestBody @Valid AccountRequest request) {
         Account entity = service.createAccount(request);
         AccountResponse response = mapper.toResponse(entity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @DeleteMapping("/{id}")

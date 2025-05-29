@@ -41,7 +41,7 @@ public class AccountService {
     }
 
     public Account getAccountById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+        return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Account not found by id: " + id));
     }
 
     public Page<Account> getAllAccounts(PageRequest pageRequest) {
