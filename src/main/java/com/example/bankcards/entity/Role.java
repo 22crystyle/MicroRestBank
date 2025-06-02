@@ -1,5 +1,6 @@
 package com.example.bankcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -21,5 +22,6 @@ public class Role {
             mappedBy = "role",
             fetch = FetchType.LAZY
     )
+    @JsonIgnore
     private List<Account> accounts;
 }

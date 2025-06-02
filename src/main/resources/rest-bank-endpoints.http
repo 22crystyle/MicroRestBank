@@ -10,6 +10,10 @@ Authorization: Basic {{adminBasic}}
     });
 %}
 
+### Get account by id
+GET http://localhost:1024/api/v1/accounts/{{userId}}
+Authorization: Basic {{adminBasic}}
+
 ### Card pagination
 GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
 Authorization: Basic {{adminBasic}}
