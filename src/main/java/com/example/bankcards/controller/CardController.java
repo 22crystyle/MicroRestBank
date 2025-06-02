@@ -9,6 +9,9 @@ import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,8 +38,8 @@ public class CardController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CardResponse>> getCards(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Max(100) int size
     ) {
         Page<Card> entities = service.getAllCards(PageRequest.of(page, size));
         Page<CardResponse> dtos = entities.map(mapper::toMaskedResponse);
@@ -44,6 +47,7 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CardResponse> getCard(@PathVariable Long id,
                                                 Principal principal) {
         Card card = service.getCard(id);
@@ -91,18 +95,18 @@ public class CardController {
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> transfer(
-            @RequestParam String from,
-            @RequestParam String to,
-            @RequestParam BigDecimal amount,
+            @RequestParam String fromCard,
+            @RequestParam String toCard,
+            @RequestParam @DecimalMin("0.01") BigDecimal amount,
             Principal principal) {
-        if (!service.isOwner(from, principal) || !service.isOwner(to, principal)) {
+        if (!service.isOwner(fromCard, principal) || !service.isOwner(toCard, principal)) { // TODO: перенести проверку с `principal` в сервис
             throw new IsNotOwnerException("You are not owner of these cards");
         }
 
-        if (service.transfer(from, to, amount)) {
+        if (service.transfer(fromCard, toCard, amount)) {
             return ResponseEntity.ok().build();
         }
 
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.unprocessableEntity().build();
     }
 }

@@ -10,6 +10,7 @@ public class ErrorResponse {
     private final String message;
 
     public ErrorResponse(
+            // TODO: status -> "code": CARD_BLOCKED
             int status,
             String message
     ) {

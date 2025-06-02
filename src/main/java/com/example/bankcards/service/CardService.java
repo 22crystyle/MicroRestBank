@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.exception.CardIsBlockedException;
+import com.example.bankcards.exception.InvalidAmountException;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
@@ -35,10 +36,10 @@ public class CardService {
         String number;
         do {
             number = generateMastercardNumber();
-        } while (cardRepository.existsCardByCardNumber(number)); //TODO: оптимизировать постоянное обращение к `exists`
+        } while (cardRepository.existsCardByCardNumber(number)); // TODO: ловить uq_constraint для cardNumber, и создавать новый pan
         card.setCardNumber(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
-                () -> new EntityNotFoundException("Account with id=" + accountId + " not found")
+                () -> new EntityNotFoundException("Account with id=" + accountId + " not found") // TODO: возвращать и обрабатывать собственные ошибки
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
         card.setBalance(BigDecimal.ZERO);
@@ -48,10 +49,12 @@ public class CardService {
         return cardRepository.save(card);
     }
 
+    @Transactional(readOnly = true)
     public List<Card> getCardsByUserId(Long userId) {
         return cardRepository.getCardsByOwnerId(userId);
     }
 
+    @Transactional(readOnly = true)
     public Card getCard(Long id) {
         return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found"));
     }
@@ -72,27 +75,33 @@ public class CardService {
         return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
     }
 
+//  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться отказаться от лишнего маппинга на уровне сервиса и контроллера
+//   @Query("select new com.example.dto.CardResponse(c.id, c.maskedNumber, c.balance, ...) "
+//   + "from Card c where c.owner.id = :userId")
+    @Transactional(readOnly = true)
     public Page<Card> getAllCards(PageRequest pageRequest) {
         return cardRepository.findAll(pageRequest);
     }
 
     @Transactional
-    public boolean transfer(String from, String to, BigDecimal amount) {
-        Card first = cardRepository.findByCardNumber(from).orElseThrow(
+    public boolean transfer(String fromCard, String toCard, BigDecimal amount) {
+        Card first = cardRepository.findByCardNumber(fromCard).orElseThrow(
                 () -> new EntityNotFoundException("Card not found")
         );
-        Card second = cardRepository.findByCardNumber(to).orElseThrow(
+        Card second = cardRepository.findByCardNumber(toCard).orElseThrow(
                 () -> new EntityNotFoundException("Card not found")
         );
 
-        if (amount.signum() < 0) {
-            throw new DataIntegrityViolationException("You cannot transfer a negative value to a card");
+        if (amount.signum() <= 0) {
+            throw new InvalidAmountException("You cannot transfer a negative value to a card");
         }
 
+        // TODO: возвращать и обрабатывать собственные ошибки
         if (first.getBalance().compareTo(amount) < 0) {
             throw new DataIntegrityViolationException("Not enough money: " + (first.getBalance().subtract(second.getBalance())) + " units");
         }
 
+        // TODO: проверка через CardStatusType вместо строкового представления
         if ("BLOCKED".equals(first.getStatus().getName()) || "BLOCKED".equals(second.getStatus().getName())) {
             throw new CardIsBlockedException("Card with number=" + first.getCardNumber() + "or with number=" + second.getCardNumber() + " is blocked");
         }

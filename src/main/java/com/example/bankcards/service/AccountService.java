@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,10 +41,12 @@ public class AccountService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public Account getAccountById(Long id) {
         return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Account not found by id: " + id));
     }
 
+    @Transactional(readOnly = true)
     public Page<Account> getAllAccounts(PageRequest pageRequest) {
         return repository.findAll(pageRequest);
     }
