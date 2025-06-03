@@ -20,14 +20,14 @@ Authorization: Basic {{adminBasic}}
 
 ### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
-Authorization: Basic {{userBasic}}
+Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 Accept-Language: en
 
 {
-  "username": "",
+  "username": "user",
   "password": "user",
-  "firstName": "",
+  "firstName": "first",
   "lastName": "Last",
   "email": "e@mail.com",
   "phone": "+71111155555",
@@ -35,16 +35,16 @@ Accept-Language: en
 }
 
 ### Creating a card for a user by the admin
-POST http://localhost:1024/api/v1/cards?userId={{userId}}
+POST http://localhost:1024/api/v1/cards?userId=5
 Authorization: Basic {{adminBasic}}
 Content-Type: application/json
 
 ### Get a card by ID
-GET http://localhost:1024/api/v1/cards/35
+GET http://localhost:1024/api/v1/cards/1
 Authorization: Basic {{userBasic}}
 
 ### Request to block the card by the user
-POST http://localhost:1024/api/v1/cards/{{cardId}}/block-request
+POST http://localhost:1024/api/v1/cards/4/block-request
 Authorization: Basic {{userBasic}}
 
 ### Approve the request to block the card by the administrator
@@ -61,3 +61,7 @@ POST http://localhost:1024/api/v1/cards/transfer?
     toCard=2223629877584998&
     amount=1
 Authorization: Basic bWF4Om1heA==
+
+### Delete account by id
+DELETE http://localhost:1024/api/v1/accounts/5
+Authorization: Basic {{adminBasic}}

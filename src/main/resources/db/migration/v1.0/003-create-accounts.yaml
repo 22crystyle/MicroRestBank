@@ -28,12 +28,14 @@ databaseChangeLog:
                   name: email
                   type: VARCHAR(255)
                   constraints:
+                    nullable: true
                     unique: true
                     uniqueConstraintName: uq_account_email
               - column:
                   name: phone
                   type: VARCHAR(255)
                   constraints:
+                    nullable: true
                     unique: true
                     uniqueConstraintName: uq_account_phone
             tableName: accounts

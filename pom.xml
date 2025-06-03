@@ -202,5 +202,12 @@ pom.xml — файл для управления зависимостями пр
             <artifactId>spring-boot-starter-validation</artifactId>
             <version>3.5.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.retry/spring-retry -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+            <version>2.0.12</version>
+        </dependency>
     </dependencies>
 </project>

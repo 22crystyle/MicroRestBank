@@ -51,7 +51,7 @@ databaseChangeLog:
             constraintName: bank_card_account_id_fkey
             deferrable: false
             initiallyDeferred: false
-            onDelete: CASCADE
+            onDelete: SET NULL
             onUpdate: NO ACTION
             referencedColumnNames: id
             referencedTableName: accounts

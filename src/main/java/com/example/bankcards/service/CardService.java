@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +33,15 @@ public class CardService {
     private final CardStatusRepository cardStatusRepository;
 
     @Transactional
+    @Retryable(
+            retryFor = {DataIntegrityViolationException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(delay = 1000)
+    )
     public Card createCardForAccount(Long accountId) {
         Card card = new Card();
         String number;
-        do {
-            number = generateMastercardNumber();
-        } while (cardRepository.existsCardByCardNumber(number)); // TODO: ловить uq_constraint для cardNumber, и создавать новый pan
+        number = generateMastercardNumber();
         card.setCardNumber(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
                 () -> new EntityNotFoundException("Account with id=" + accountId + " not found") // TODO: возвращать и обрабатывать собственные ошибки

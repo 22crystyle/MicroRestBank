@@ -17,7 +17,7 @@ databaseChangeLog:
                   name: card_id
                   type: BIGINT
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: created_at
                   type: TIMESTAMP WITH TIME ZONE
@@ -45,8 +45,8 @@ databaseChangeLog:
             constraintName: block_request_bank_card_id_fkey
             deferrable: false
             initiallyDeferrable: false
-            ON DELETE: CASCADE
-            ON UPDATE: NO ACTION
+            onDelete: SET NULL
+            onUpdate: NO ACTION
             referencedColumnNames: id
             referencedTableName: bank_cards
             validate: true
@@ -56,8 +56,8 @@ databaseChangeLog:
             constraintName: block_request_processed_by_fkey
             deferrable: false
             initiallyDeferrable: false
-            ON DELETE: NO ACTION
-            ON UPDATE: NO ACTION
+            onDelete: SET NULL
+            onUpdate: NO ACTION
             referencedColumnNames: id
             referencedTableName: accounts
             validate: true

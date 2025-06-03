@@ -28,8 +28,7 @@ public class Account {
     private String phone;
     @OneToMany(
             mappedBy = "owner",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            fetch = FetchType.LAZY
     )
     @JsonManagedReference
     private List<Card> bank_cards;
