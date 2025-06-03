@@ -89,7 +89,7 @@ public class AccountController {
         return ResponseEntity.created(uri).body(response);
     }
 
-//  TODO: удалить сперва все карты пользователя
+    //  TODO: удалить сперва все карты пользователя
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         boolean deleted = service.deleteById(id);

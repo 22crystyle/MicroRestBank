@@ -28,7 +28,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-//    // 400 Bad Request for validation errors
+    //    // 400 Bad Request for validation errors
 //    @ExceptionHandler(MethodArgumentNotValidException.class)
 //    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
 //        Map<String, String> errors = new HashMap<>();

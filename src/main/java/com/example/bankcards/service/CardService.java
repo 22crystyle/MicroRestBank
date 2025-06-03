@@ -80,7 +80,7 @@ public class CardService {
         return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
     }
 
-//  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться отказаться от лишнего маппинга на уровне сервиса и контроллера
+    //  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться отказаться от лишнего маппинга на уровне сервиса и контроллера
 //   @Query("select new com.example.dto.CardResponse(c.id, c.maskedNumber, c.balance, ...) "
 //   + "from Card c where c.owner.id = :userId")
     @Transactional(readOnly = true)

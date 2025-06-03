@@ -60,6 +60,17 @@ public class AccountControllerTest {
     private AccountResponse userAccountResponse;
     private AccountResponse adminAccountResponse;
 
+    static Stream<Arguments> getAccountByIdParams() {
+        return Stream.of(
+                Arguments.of("ADMIN", true, 200),
+                Arguments.of("USER", true, 200),
+                Arguments.of("ADMIN", false, 404),
+                Arguments.of("USER", false, 404),
+                Arguments.of(null, true, 401),
+                Arguments.of(null, false, 401)
+        );
+    }
+
     @BeforeEach
     void initData() {
         Role adminRole = TestDataBuilders.role().withId(1).withName("ROLE_ADMIN").build();
@@ -80,17 +91,6 @@ public class AccountControllerTest {
                 .withId(2L)
                 .withUsername("user")
                 .build();
-    }
-
-    static Stream<Arguments> getAccountByIdParams() {
-        return Stream.of(
-                Arguments.of("ADMIN", true, 200),
-                Arguments.of("USER", true, 200),
-                Arguments.of("ADMIN", false, 404),
-                Arguments.of("USER", false, 404),
-                Arguments.of(null, true, 401),
-                Arguments.of(null, false, 401)
-        );
     }
 
     @Test

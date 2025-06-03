@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: REST Bank API
-  description: Backend-приложение на Java (Spring Boot) для управления банковскими картами
+  description: A Java (Spring Boot) backend application for managing bank cards.
   version: 1.0.0
 servers:
   - url: 'http://localhost:1024/api/v1'
@@ -11,7 +11,7 @@ paths:
   /accounts:
     get:
       summary: Get paginated list of accounts
-      description: Returns a paginated list of account resources. Requires ADMIN role.
+      description: Returns a paginated list of account resources, requires ADMIN role.
       parameters:
         - name: page
           in: query
@@ -23,7 +23,7 @@ paths:
             minimum: 0
         - name: size
           in: query
-          description: Page size
+          description: Page size (0-based index)
           required: false
           schema:
             type: integer
@@ -38,7 +38,7 @@ paths:
                 $ref: '#/components/schemas/PageOfAccountResponse'
     post:
       summary: Create a new account
-      description: Get account data of new user, save in db and return created object with code 201 + location header
+      description: Receives account data for a new user, saves it to the database, and returns the created object with status code 201 and a Location header.
       requestBody:
         required: true
         content:
@@ -55,10 +55,10 @@ paths:
                   lastName: Doe
                   email: johndoe@example.com
                   phone: "+1-800-555-1234"
-                  role_id: 2
+                  roleId: 2
       responses:
         "201":
-          description: Account is successfully created
+          description: Account successfully created. The response includes a Location header pointing to /accounts/{id}.
           content:
             application/json:
               schema:
@@ -66,7 +66,7 @@ paths:
   /accounts/{id}:
     get:
       summary: Get account by id
-      description: Returns account response by user id. Requires ADMIN role.
+      description: Returns the account with the specified ID. Requires ADMIN role.
       parameters:
         - name: id
           in: path
@@ -107,6 +107,8 @@ paths:
                     status: 404
                     message: Account with id={id} not found
     delete:
+      summary: Delete account by ID
+      description: Deletes the account with the specified ID. Requires ADMIN role.
       responses:
         "204":
           description: Account is successfully deleted
@@ -124,8 +126,8 @@ paths:
                     message: Account with id={id} not found
   /cards:
     get:
-      summary: Get page of cards
-      description: Returns a paginated list of cards
+      summary: Get paginated list of cards
+      description: Returns a paginated list of card resources. Requires ADMIN.
       parameters:
         - name: page
           in: query
@@ -143,16 +145,18 @@ paths:
             minimum: 1
       responses:
         "200":
-          description: A page of accounts
+          description: A page of cards.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageOfCardResponse'
     post:
       summary: Create card for user by id
-      description: Create card for account, pan & year/mont is generated automatically. By default status is 'ACTIVE'
+      description: Creates a new card for the specified user. PAN and expiration year/month are generated automatically. By default, the status is 'ACTIVE'.
       parameters:
         - name: userId
+          description: ID of the user for whom the card is created
+          required: true
           in: query
           schema:
             type: integer
@@ -160,11 +164,16 @@ paths:
             minimum: 1
       responses:
         "201":
-          description: Card is created
-  /cards/{id}:
+          description: Card successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+            Location: /cards/{newId} #TODO: понять как использовать header
+  /cards/{cardId}:
     get:
-      summary: Get Card by id
-      description: Get Card Response by id
+      summary: Get a card by ID
+      description: Returns the card with the specified ID.
       parameters:
         - name: cardId
           in: path
@@ -175,20 +184,87 @@ paths:
       responses:
         "200":
           description: Return card response by id
-  /cards/{id}/block-request:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+  /cards/{cardId}/block-request:
     post:
-  /cards/{id}/block-approve:
+      summary: Sends a block request for the card by its owner.
+      description: Sends a request to block the specified card. Only the card owner can initiate this request.
+      parameters:
+        - name: cardId
+          in: path
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        "200":
+          description: Request submitted successfully
+  /cards/{cardId}/block-approve:
     post:
-  /cards/{id}/block-reject:
+      summary: Approve a card block request (admin)
+      description: Approves a pending block request for the specified card. Requires ADMIN role.
+      parameters:
+        - name: cardId
+          in: path
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        "200":
+          description: Admin approve card block request
+  /cards/{cardId}/block-reject:
     post:
+      summary: Reject a card block request (admin)
+      description: Rejects a pending block request for the specified card. Requires ADMIN role.
+      parameters:
+        - name: cardId
+          in: path
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        "200":
+          description: Admin reject card block request
   /cards/transfer:
     post:
-  /accounts/{id}/cards:
-    get:
-      summary: Get account cards
-      description: Get list of account cards
+      summary: Transfer money between cards
+      description: Transfers the specified amount from the source card to the destination card. Requires sufficient balance.
       parameters:
-        - name: id
+        - name: fromCard
+          description: ID of the source card
+          in: query
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: toCard
+          description: ID of the destination card
+          in: query
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: amount
+          description: Amount to transfer (must be ≥ 1)
+          in: query
+          schema:
+            type: number
+            format: double
+            minimum: 1
+      responses:
+        "200":
+          description: Transfer completed successfully # TODO: нужен TransferResponse
+  /accounts/{cardId}/cards:
+    get:
+      summary: Get all cards for an account
+      description: Returns a list of cards associated with the specified account ID.
+      parameters:
+        - name: cardId
           in: path
           description: id of account
           required: true
@@ -201,7 +277,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
 components:
   securitySchemes:
     basicAuth:
@@ -240,7 +318,7 @@ components:
         phone:
           type: string
           example: "+1-800-555-1234"
-        role_id:
+        roleId:
           type: integer
           example: 2
       required:
@@ -321,7 +399,7 @@ components:
         - totalElements
         - totalPages
     PageOfAccountResponse: # TODO: чтобы ответ страницы соответствовал Page из Spring
-      description: Paginated list of account response
+      description: Paginated list of account responses.
       type: object
       properties:
         content:
@@ -354,11 +432,11 @@ components:
           type: integer
           format: int64
           example: 1
-        cardNumber:
+        cardNumber: # TODO: упоминание что для не владельцев номер замаскирован
           type: string
           example: "1234657890123456"
         owner:
-          $ref: '#/components/schemas/AccountResponse'
+          $ref: '#/components/schemas/AccountResponse' # TODO: подумать про использовании ownerId вместо всего объекта
         status:
           $ref: '#/components/schemas/CardStatusResponse'
         balance:
@@ -372,7 +450,7 @@ components:
         - status
         - balance
     PageOfCardResponse:
-      description: Paginated list of card response
+      description: Returns a paginated list of card responses, requires ADMIN role
       type: object
       properties:
         content:
