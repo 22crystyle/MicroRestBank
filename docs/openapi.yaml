@@ -247,6 +247,23 @@ components:
         - username
         - password
         - firstName
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: USER
+        description:
+          type: string
+          example: User role
+      required:
+        - id
+        - name
+        - description
     AccountResponse:
       type: object
       properties:
@@ -270,6 +287,8 @@ components:
         phone:
           type: string
           example: "+1-800-555-1234"
+        role:
+          $ref: '#/components/schemas/Role'
       required:
         - id
         - username
@@ -277,6 +296,30 @@ components:
         - lastName
         - email
         - phone
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        totalElements:
+          type: integer
+          format: int64
+          example: 1
+        totalPages:
+          type: integer
+          format: int32
+          example: 1
+      required:
+        - size
+        - number
+        - totalElements
+        - totalPages
     PageOfAccountResponse: # TODO: чтобы ответ страницы соответствовал Page из Spring
       description: Paginated list of account response
       type: object
@@ -285,6 +328,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountResponse'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
     CardStatusResponse:
       type: object
       properties:
@@ -334,3 +379,5 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CardResponse'
+        page:
+            $ref: '#/components/schemas/PageMetadata'
