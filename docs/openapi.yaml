@@ -181,6 +181,7 @@ paths:
             type: integer
             default: 1
             minimum: 1
+          required: true
       responses:
         "200":
           description: Return card response by id
@@ -199,6 +200,7 @@ paths:
             type: integer
             format: int64
             minimum: 1
+          required: true
       responses:
         "200":
           description: Request submitted successfully
@@ -213,6 +215,7 @@ paths:
             type: integer
             format: int64
             minimum: 1
+          required: true
       responses:
         "200":
           description: Admin approve card block request
@@ -227,6 +230,7 @@ paths:
             type: integer
             format: int64
             minimum: 1
+          required: true
       responses:
         "200":
           description: Admin reject card block request

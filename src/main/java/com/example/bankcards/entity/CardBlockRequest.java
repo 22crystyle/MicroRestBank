@@ -35,8 +35,6 @@ public class CardBlockRequest {
     @Column(length = 16)
     private Status status;
 
-    //TODO: добавить описание к запросу на блокировку
-
     public enum Status {
         PENDING,
         APPROVED,

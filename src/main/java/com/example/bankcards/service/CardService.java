@@ -1,8 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.exception.CardIsBlockedException;
-import com.example.bankcards.exception.InvalidAmountException;
+import com.example.bankcards.exception.*;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
@@ -44,12 +43,12 @@ public class CardService {
         number = generateMastercardNumber();
         card.setCardNumber(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
-                () -> new EntityNotFoundException("Account with id=" + accountId + " not found") // TODO: возвращать и обрабатывать собственные ошибки
+                () -> new AccountNotFoundException(accountId)
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
         card.setBalance(BigDecimal.ZERO);
         card.setStatus(cardStatusRepository.findById(DEFAULT_STATUS_ID).orElseThrow(
-                () -> new IllegalArgumentException("Unknown status")
+                () -> new CardStatusNotFoundException(DEFAULT_STATUS_ID)
         ));
         return cardRepository.save(card);
     }
@@ -61,7 +60,7 @@ public class CardService {
 
     @Transactional(readOnly = true)
     public Card getCard(Long id) {
-        return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found"));
+        return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(id));
     }
 
     public boolean isOwner(Long cardId, Principal principal) {
@@ -80,7 +79,7 @@ public class CardService {
         return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
     }
 
-    //  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться отказаться от лишнего маппинга на уровне сервиса и контроллера
+//  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться от лишнего маппинга на уровне сервиса и контроллера
 //   @Query("select new com.example.dto.CardResponse(c.id, c.maskedNumber, c.balance, ...) "
 //   + "from Card c where c.owner.id = :userId")
     @Transactional(readOnly = true)
@@ -101,9 +100,8 @@ public class CardService {
             throw new InvalidAmountException("You cannot transfer a negative value to a card");
         }
 
-        // TODO: возвращать и обрабатывать собственные ошибки
         if (first.getBalance().compareTo(amount) < 0) {
-            throw new DataIntegrityViolationException("Not enough money: " + (first.getBalance().subtract(second.getBalance())) + " units");
+            throw new InvalidAmountException((first.getBalance().subtract(second.getBalance())));
         }
 
         // TODO: проверка через CardStatusType вместо строкового представления

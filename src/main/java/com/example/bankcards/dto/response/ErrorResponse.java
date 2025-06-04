@@ -10,7 +10,6 @@ public class ErrorResponse {
     private final String message;
 
     public ErrorResponse(
-            // TODO: code -> "code": CARD_BLOCKED
             String code,
             String message
     ) {
@@ -27,12 +26,9 @@ public class ErrorResponse {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (ErrorResponse) obj;
-        return this.code == that.code &&
-                Objects.equals(this.message, that.message);
+    public boolean equals(Object o) {
+        if (!(o instanceof ErrorResponse that)) return false;
+        return Objects.equals(code, that.code) && Objects.equals(message, that.message);
     }
 
     @Override
