@@ -24,27 +24,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 404 Entity from database not found
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    //    // 400 Bad Request for validation errors
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getAllErrors().forEach(error -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String message = error.getDefaultMessage();
-//            errors.put(fieldName, message);
-//        });
-//        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation Error", errors);
-//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-//    }
-//
     // 403 Forbidden: User don't have enough privileges
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolation(AccessDeniedException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -62,28 +49,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
         });
-        ValidationErrorResponse response = new ValidationErrorResponse(status.value(), "Validation Error", errors);
+        ValidationErrorResponse response = new ValidationErrorResponse(status.toString(), "Validation Error", errors);
         return new ResponseEntity<>(response, status);
     }
 
     // 409 Conflict for data integrity violations
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     // 423 Locked: Card is blocked and unavailable for changes
     @ExceptionHandler(CardIsBlockedException.class)
     public ResponseEntity<ErrorResponse> handleCardIsBlockedException(CardIsBlockedException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.LOCKED.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.LOCKED.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.LOCKED);
     }
 
     // 403 Forbidden: User tries to use someone else's card
     @ExceptionHandler(IsNotOwnerException.class)
     public ResponseEntity<ErrorResponse> handleIsNotOwnerException(IsNotOwnerException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -92,7 +79,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 500 Internal Server Error for all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleApiError(Exception ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);

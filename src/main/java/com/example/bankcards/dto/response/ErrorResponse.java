@@ -6,20 +6,20 @@ import java.util.Objects;
 
 @Getter
 public class ErrorResponse {
-    private final int status;
+    private final String code;
     private final String message;
 
     public ErrorResponse(
-            // TODO: status -> "code": CARD_BLOCKED
-            int status,
+            // TODO: code -> "code": CARD_BLOCKED
+            String code,
             String message
     ) {
-        this.status = status;
+        this.code = code;
         this.message = message;
     }
 
-    public int status() {
-        return status;
+    public String code() {
+        return code;
     }
 
     public String message() {
@@ -31,19 +31,19 @@ public class ErrorResponse {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (ErrorResponse) obj;
-        return this.status == that.status &&
+        return this.code == that.code &&
                 Objects.equals(this.message, that.message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, message);
+        return Objects.hash(code, message);
     }
 
     @Override
     public String toString() {
         return "ErrorResponse[" +
-                "status=" + status + ", " +
+                "status=" + code + ", " +
                 "message=" + message + ']';
     }
 

@@ -8,7 +8,7 @@ import java.util.Map;
 public class ValidationErrorResponse extends ErrorResponse {
     private final Map<String, String> errors;
 
-    public ValidationErrorResponse(int status, String message, Map<String, String> errors) {
+    public ValidationErrorResponse(String status, String message, Map<String, String> errors) {
         super(status, message);
         this.errors = errors;
     }

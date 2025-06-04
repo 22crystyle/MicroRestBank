@@ -25,9 +25,9 @@ Content-Type: application/json
 Accept-Language: en
 
 {
-  "username": "user",
-  "password": "user",
-  "firstName": "first",
+  "username": "",
+  "password": "",
+  "firstName": "",
   "lastName": "Last",
   "email": "e@mail.com",
   "phone": "+71111155555",
