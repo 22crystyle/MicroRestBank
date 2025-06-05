@@ -59,6 +59,11 @@ paths:
       responses:
         "201":
           description: Account successfully created. The response includes a Location header pointing to /accounts/{id}.
+          headers:
+            Location:
+              description: New location for created account
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -165,11 +170,15 @@ paths:
       responses:
         "201":
           description: Card successfully created
+          headers:
+            Location:
+              description: New location for created card
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardResponse'
-            Location: /cards/{newId} #TODO: понять как использовать header
   /cards/{cardId}:
     get:
       summary: Get a card by ID

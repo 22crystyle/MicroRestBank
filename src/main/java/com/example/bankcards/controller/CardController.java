@@ -97,7 +97,7 @@ public class CardController {
     public ResponseEntity<Void> transfer(
             @RequestParam String fromCard,
             @RequestParam String toCard,
-            @RequestParam @DecimalMin("0.01") BigDecimal amount,
+            @RequestParam @DecimalMin("10.00") BigDecimal amount,
             Principal principal) {
         if (!service.isOwner(fromCard, principal) || !service.isOwner(toCard, principal)) { // TODO: перенести проверку с `principal` в сервис
             throw new IsNotOwnerException("You are not owner of these cards");

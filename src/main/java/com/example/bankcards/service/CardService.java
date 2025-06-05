@@ -5,7 +5,6 @@ import com.example.bankcards.exception.*;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -79,7 +78,7 @@ public class CardService {
         return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
     }
 
-//  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться от лишнего маппинга на уровне сервиса и контроллера
+    //  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться от лишнего маппинга на уровне сервиса и контроллера
 //   @Query("select new com.example.dto.CardResponse(c.id, c.maskedNumber, c.balance, ...) "
 //   + "from Card c where c.owner.id = :userId")
     @Transactional(readOnly = true)
@@ -90,10 +89,10 @@ public class CardService {
     @Transactional
     public boolean transfer(String fromCard, String toCard, BigDecimal amount) {
         Card first = cardRepository.findByCardNumber(fromCard).orElseThrow(
-                () -> new EntityNotFoundException("Card not found")
+                CardNotFoundException::new
         );
         Card second = cardRepository.findByCardNumber(toCard).orElseThrow(
-                () -> new EntityNotFoundException("Card not found")
+                CardNotFoundException::new
         );
 
         if (amount.signum() <= 0) {
@@ -105,8 +104,10 @@ public class CardService {
         }
 
         // TODO: проверка через CardStatusType вместо строкового представления
-        if ("BLOCKED".equals(first.getStatus().getName()) || "BLOCKED".equals(second.getStatus().getName())) {
-            throw new CardIsBlockedException("Card with number=" + first.getCardNumber() + "or with number=" + second.getCardNumber() + " is blocked");
+        if ("BLOCKED".equals(first.getStatus().getName())) {
+            throw new CardIsBlockedException("Card with number=" + first.getCardNumber() + " is blocked");
+        } else if ("BLOCKED".equals(second.getStatus().getName())) {
+            throw new CardIsBlockedException("Card with number=" + second.getCardNumber() + " is blocked");
         }
 
         first.setBalance(first.getBalance().subtract(amount));

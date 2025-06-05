@@ -4,12 +4,13 @@ import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
+import com.example.bankcards.exception.AccountNotFoundException;
+import com.example.bankcards.exception.RoleNotFoundException;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +25,10 @@ public class AccountService {
     private final RoleRepository roleRepository;
 
     @Transactional
-    public Account createAccount(AccountRequest request) { // TODO: заранее проверить уникален ли `username` через `repository.existsByUsername(request.username())`
+    public Account createAccount(AccountRequest request) {
         Account account = mapper.toEntity(request);
         Role defaultRole = roleRepository.findById(request.role_id())
-                .orElseThrow(() -> new IllegalArgumentException("Role not found")); // TODO: RoleNotFoundException
+                .orElseThrow(() -> new RoleNotFoundException(request.role_id()));
         account.setPassword(encoder.encode(request.password()));
         account.setRole(defaultRole);
         return repository.save(account);
@@ -44,7 +45,7 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public Account getAccountById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Account not found by id: " + id)); // TODO: AccountNotFoundException
+        return repository.findById(id).orElseThrow(() -> new AccountNotFoundException(id)); // TODO: AccountNotFoundException
     }
 
     @Transactional(readOnly = true)
