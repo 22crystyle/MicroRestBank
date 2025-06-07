@@ -45,7 +45,7 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public Account getAccountById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new AccountNotFoundException(id)); // TODO: AccountNotFoundException
+        return repository.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
     }
 
     @Transactional(readOnly = true)

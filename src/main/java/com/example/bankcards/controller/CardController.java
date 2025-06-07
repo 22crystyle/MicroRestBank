@@ -9,7 +9,6 @@ import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +96,7 @@ public class CardController {
     public ResponseEntity<Void> transfer(
             @RequestParam String fromCard,
             @RequestParam String toCard,
-            @RequestParam @DecimalMin("10.00") BigDecimal amount,
+            @RequestParam BigDecimal amount,
             Principal principal) {
         if (!service.isOwner(fromCard, principal) || !service.isOwner(toCard, principal)) { // TODO: перенести проверку с `principal` в сервис
             throw new IsNotOwnerException("You are not owner of these cards");

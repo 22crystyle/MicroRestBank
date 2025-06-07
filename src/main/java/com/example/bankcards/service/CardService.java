@@ -5,6 +5,7 @@ import com.example.bankcards.exception.*;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
+import com.example.bankcards.util.CardStatusType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -78,9 +79,6 @@ public class CardService {
         return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
     }
 
-    //  TODO: возвращать Page<CardResponse> через JPQL с использованием @Query, чтобы отказаться от лишнего маппинга на уровне сервиса и контроллера
-//   @Query("select new com.example.dto.CardResponse(c.id, c.maskedNumber, c.balance, ...) "
-//   + "from Card c where c.owner.id = :userId")
     @Transactional(readOnly = true)
     public Page<Card> getAllCards(PageRequest pageRequest) {
         return cardRepository.findAll(pageRequest);
@@ -103,11 +101,10 @@ public class CardService {
             throw new InvalidAmountException((first.getBalance().subtract(second.getBalance())));
         }
 
-        // TODO: проверка через CardStatusType вместо строкового представления
-        if ("BLOCKED".equals(first.getStatus().getName())) {
-            throw new CardIsBlockedException("Card with number=" + first.getCardNumber() + " is blocked");
-        } else if ("BLOCKED".equals(second.getStatus().getName())) {
-            throw new CardIsBlockedException("Card with number=" + second.getCardNumber() + " is blocked");
+        if (first.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with PAN=" + first.getCardNumber() + " is blocked");
+        } else if (second.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with PAN=" + second.getCardNumber() + " is blocked");
         }
 
         first.setBalance(first.getBalance().subtract(amount));

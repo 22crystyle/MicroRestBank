@@ -411,7 +411,7 @@ components:
         - number
         - totalElements
         - totalPages
-    PageOfAccountResponse: # TODO: чтобы ответ страницы соответствовал Page из Spring
+    PageOfAccountResponse:
       description: Paginated list of account responses.
       type: object
       properties:
@@ -445,7 +445,7 @@ components:
           type: integer
           format: int64
           example: 1
-        cardNumber: # TODO: упоминание что для не владельцев номер замаскирован
+        cardNumber: # TODO: упоминание что для всех кроме владелица карты номер замаскирован
           type: string
           example: "1234657890123456"
         owner:
@@ -471,4 +471,4 @@ components:
           items:
             $ref: '#/components/schemas/CardResponse'
         page:
-            $ref: '#/components/schemas/PageMetadata'
+          $ref: '#/components/schemas/PageMetadata'

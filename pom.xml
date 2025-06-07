@@ -73,7 +73,8 @@ pom.xml — файл для управления зависимостями пр
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.31.1</version>
                 <configuration>
-                    <outputChangeLogFile>src/main/resources/db/migration/db.changelog-generated.yaml</outputChangeLogFile>
+                    <outputChangeLogFile>src/main/resources/db/migration/db.changelog-generated.yaml
+                    </outputChangeLogFile>
                     <url>jdbc:postgresql://192.168.0.105:5432/RestBank</url>
                     <username>postgres</username>
                     <password>admin</password>
