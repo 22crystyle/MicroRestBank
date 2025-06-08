@@ -1,5 +1,5 @@
 # Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
-openapi: 3.1.0
+openapi: 3.0.4
 info:
   title: REST Bank API
   description: A Java (Spring Boot) backend application for managing bank cards.
@@ -7,9 +7,18 @@ info:
 servers:
   - url: 'http://localhost:1024/api/v1'
     description: Development server
+security:
+  - basicAuth: [ ]
+tags:
+  - name: Accounts
+    description: Управление аккаунтами
+  - name: Cards
+    description: Управление картам
 paths:
   /accounts:
     get:
+      tags:
+        - Accounts
       summary: Get paginated list of accounts
       description: Returns a paginated list of account resources, requires ADMIN role.
       parameters:
@@ -37,6 +46,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/PageOfAccountResponse'
     post:
+      tags:
+        - Accounts
       summary: Create a new account
       description: Receives account data for a new user, saves it to the database, and returns the created object with status code 201 and a Location header.
       requestBody:
@@ -70,6 +81,8 @@ paths:
                 $ref: '#/components/schemas/AccountResponse'
   /accounts/{id}:
     get:
+      tags:
+        - Accounts
       summary: Get account by id
       description: Returns the account with the specified ID. Requires ADMIN role.
       parameters:
@@ -80,6 +93,7 @@ paths:
           schema:
             type: integer
             minimum: 1
+            default: 1
       responses:
         "200":
           description: Return account by id
@@ -112,8 +126,19 @@ paths:
                     status: 404
                     message: Account with id={id} not found
     delete:
+      tags:
+        - Accounts
       summary: Delete account by ID
       description: Deletes the account with the specified ID. Requires ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the account to retrieve
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
       responses:
         "204":
           description: Account is successfully deleted
@@ -131,6 +156,8 @@ paths:
                     message: Account with id={id} not found
   /cards:
     get:
+      tags:
+        - Cards
       summary: Get paginated list of cards
       description: Returns a paginated list of card resources. Requires ADMIN.
       parameters:
@@ -156,6 +183,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/PageOfCardResponse'
     post:
+      tags:
+        - Cards
       summary: Create card for user by id
       description: Creates a new card for the specified user. PAN and expiration year/month are generated automatically. By default, the status is 'ACTIVE'.
       parameters:
@@ -181,6 +210,8 @@ paths:
                 $ref: '#/components/schemas/CardResponse'
   /cards/{cardId}:
     get:
+      tags:
+        - Cards
       summary: Get a card by ID
       description: Returns the card with the specified ID.
       parameters:
@@ -200,6 +231,8 @@ paths:
                 $ref: '#/components/schemas/CardResponse'
   /cards/{cardId}/block-request:
     post:
+      tags:
+        - Cards
       summary: Sends a block request for the card by its owner.
       description: Sends a request to block the specified card. Only the card owner can initiate this request.
       parameters:
@@ -215,6 +248,8 @@ paths:
           description: Request submitted successfully
   /cards/{cardId}/block-approve:
     post:
+      tags:
+        - Cards
       summary: Approve a card block request (admin)
       description: Approves a pending block request for the specified card. Requires ADMIN role.
       parameters:
@@ -230,6 +265,8 @@ paths:
           description: Admin approve card block request
   /cards/{cardId}/block-reject:
     post:
+      tags:
+        - Cards
       summary: Reject a card block request (admin)
       description: Rejects a pending block request for the specified card. Requires ADMIN role.
       parameters:
@@ -245,6 +282,8 @@ paths:
           description: Admin reject card block request
   /cards/transfer:
     post:
+      tags:
+        - Cards
       summary: Transfer money between cards
       description: Transfers the specified amount from the source card to the destination card. Requires sufficient balance.
       parameters:
@@ -271,9 +310,11 @@ paths:
             minimum: 1
       responses:
         "200":
-          description: Transfer completed successfully # TODO: нужен TransferResponse
+          description: Transfer completed successfully
   /accounts/{cardId}/cards:
     get:
+      tags:
+        - Accounts
       summary: Get all cards for an account
       description: Returns a list of cards associated with the specified account ID.
       parameters:
@@ -445,11 +486,11 @@ components:
           type: integer
           format: int64
           example: 1
-        cardNumber: # TODO: упоминание что для всех кроме владелица карты номер замаскирован
+        cardNumber:
           type: string
           example: "1234657890123456"
         owner:
-          $ref: '#/components/schemas/AccountResponse' # TODO: подумать про использовании ownerId вместо всего объекта
+          $ref: '#/components/schemas/AccountResponse'
         status:
           $ref: '#/components/schemas/CardStatusResponse'
         balance:

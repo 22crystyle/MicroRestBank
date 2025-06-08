@@ -4,7 +4,6 @@ import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
-import com.example.bankcards.exception.IsNotOwnerException;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
@@ -98,14 +97,8 @@ public class CardController {
             @RequestParam String toCard,
             @RequestParam BigDecimal amount,
             Principal principal) {
-        if (!service.isOwner(fromCard, principal) || !service.isOwner(toCard, principal)) { // TODO: перенести проверку с `principal` в сервис
-            throw new IsNotOwnerException("You are not owner of these cards");
-        }
 
-        if (service.transfer(fromCard, toCard, amount)) {
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.unprocessableEntity().build();
+        service.transfer(fromCard, toCard, amount, principal);
+        return ResponseEntity.ok().build();
     }
 }

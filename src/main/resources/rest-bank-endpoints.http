@@ -57,8 +57,8 @@ Authorization: Basic {{adminBasic}}
 
 ### Transfer money between users cards
 POST http://localhost:1024/api/v1/cards/transfer?
-    fromCard=2608496819107055&
-    toCard=5489402422251352&
+    fromCard=2227529027274944&
+    toCard=5515251215481686&
     amount=1
 Authorization: Basic {{userBasic}}
 

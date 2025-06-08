@@ -73,7 +73,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
-    // 
+    // 422 Unprocessable Entity: User send correct request, but the business rules do not allow the operation to be performed
+    @ExceptionHandler({InvalidAmountException.class})
+    public ResponseEntity<ErrorResponse> handleUnsupportedEntity(InvalidAmountException ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 
     // 500 Internal Server Error for all other exceptions
     @ExceptionHandler(Exception.class)

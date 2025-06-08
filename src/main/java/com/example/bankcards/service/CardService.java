@@ -85,7 +85,7 @@ public class CardService {
     }
 
     @Transactional
-    public boolean transfer(String fromCard, String toCard, BigDecimal amount) {
+    public boolean transfer(String fromCard, String toCard, BigDecimal amount, Principal principal) {
         Card first = cardRepository.findByCardNumber(fromCard).orElseThrow(
                 CardNotFoundException::new
         );
@@ -93,18 +93,25 @@ public class CardService {
                 CardNotFoundException::new
         );
 
+        if (!first.getOwner().getUsername().equals(principal.getName()) ||
+                !second.getOwner().getUsername().equals(principal.getName())) {
+            throw new IsNotOwnerException("You are not owner of these cards");
+        }
+
+        if (first.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with PAN=" + first.getCardNumber() + " is blocked");
+        }
+
+        if (second.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with PAN=" + second.getCardNumber() + " is blocked");
+        }
+
         if (amount.signum() <= 0) {
             throw new InvalidAmountException("You cannot transfer a negative value to a card");
         }
 
         if (first.getBalance().compareTo(amount) < 0) {
             throw new InvalidAmountException((first.getBalance().subtract(second.getBalance())));
-        }
-
-        if (first.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + first.getCardNumber() + " is blocked");
-        } else if (second.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + second.getCardNumber() + " is blocked");
         }
 
         first.setBalance(first.getBalance().subtract(amount));

@@ -12,6 +12,7 @@ import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -32,6 +33,7 @@ import java.util.List;
 @PreAuthorize(value = "hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Accounts", description = "Доступ и управление аккаунтами. Нужна роль админа")
 public class AccountController {
 
     private final AccountService service;

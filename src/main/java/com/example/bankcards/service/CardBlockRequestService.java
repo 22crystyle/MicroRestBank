@@ -2,10 +2,10 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class CardBlockRequestService {
         }
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found"));
+                .orElseThrow(() -> new CardNotFoundException(cardId));
 
         CardBlockRequest blockRequest = CardBlockRequest.builder()
                 .card(card)
