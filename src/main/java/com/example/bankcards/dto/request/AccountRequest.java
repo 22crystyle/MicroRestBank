@@ -12,6 +12,6 @@ public record AccountRequest(
         String lastName,
         String email,
         String phone,
-        Integer role_id
+        Integer roleId
 ) {
 }

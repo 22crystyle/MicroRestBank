@@ -4,6 +4,7 @@ import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Role;
+import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.util.TestDataBuilders;
@@ -61,7 +62,7 @@ public class AccountServiceTest {
 
         when(roleRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotFoundException.class,
                 () -> service.createAccount(request),
                 "Should throw when role not found");
     }

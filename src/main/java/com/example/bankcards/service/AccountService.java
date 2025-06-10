@@ -27,8 +27,8 @@ public class AccountService {
     @Transactional
     public Account createAccount(AccountRequest request) {
         Account account = mapper.toEntity(request);
-        Role defaultRole = roleRepository.findById(request.role_id())
-                .orElseThrow(() -> new RoleNotFoundException(request.role_id()));
+        Role defaultRole = roleRepository.findById(request.roleId())
+                .orElseThrow(() -> new RoleNotFoundException(request.roleId()));
         account.setPassword(encoder.encode(request.password()));
         account.setRole(defaultRole);
         return repository.save(account);

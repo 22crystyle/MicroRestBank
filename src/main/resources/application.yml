@@ -29,6 +29,7 @@ spring:
         - classpath:/resources/
         - classpath:/static/
         - classpath:/public/
+        - classpath:/docs/
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -48,6 +49,6 @@ springdoc:
     enabled: true
     urls:
       - name: From File
-        url: /docs/openapi.yaml
+        url: /openapi.yaml
       - name: Generated API
         url: /v3/api-docs

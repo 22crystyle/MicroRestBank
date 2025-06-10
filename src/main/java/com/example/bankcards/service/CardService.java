@@ -85,7 +85,7 @@ public class CardService {
     }
 
     @Transactional
-    public boolean transfer(String fromCard, String toCard, BigDecimal amount, Principal principal) {
+    public void transfer(String fromCard, String toCard, BigDecimal amount, Principal principal) {
         Card first = cardRepository.findByCardNumber(fromCard).orElseThrow(
                 CardNotFoundException::new
         );
@@ -118,6 +118,5 @@ public class CardService {
         second.setBalance(second.getBalance().add(amount));
         cardRepository.save(first);
         cardRepository.save(second);
-        return true;
     }
 }

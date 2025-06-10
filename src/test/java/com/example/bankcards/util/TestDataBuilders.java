@@ -159,6 +159,7 @@ public final class TestDataBuilders {
         private String lastName = "Last";
         private String email = "user@example.com";
         private String phone = "+70000000000";
+        private Role role = TestDataBuilders.role().build();
 
         private AccountResponseBuilder() {
         }
@@ -193,8 +194,13 @@ public final class TestDataBuilders {
             return this;
         }
 
+        public AccountResponseBuilder withRole(Role role) {
+            this.role = role;
+            return this;
+        }
+
         public AccountResponse build() {
-            return new AccountResponse(id, username, firstName, lastName, email, phone);
+            return new AccountResponse(id, username, firstName, lastName, email, phone, role);
         }
     }
 

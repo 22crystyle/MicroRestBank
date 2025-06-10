@@ -9,10 +9,10 @@ import com.example.bankcards.dto.response.CardStatusResponse;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
+import com.example.bankcards.exception.AccountNotFoundException;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.TestDataBuilders;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -236,7 +236,7 @@ public class AccountControllerTest {
             when(service.getAccountById(id)).thenReturn(adminAccount);
             when(accountMapper.toResponse(adminAccount)).thenReturn(adminAccountResponse);
         } else {
-            when(service.getAccountById(id)).thenThrow(new EntityNotFoundException("Account not found"));
+            when(service.getAccountById(id)).thenThrow(new AccountNotFoundException(id));
         }
 
         RequestPostProcessor auth = role != null

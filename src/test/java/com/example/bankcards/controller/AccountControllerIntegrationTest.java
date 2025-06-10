@@ -149,7 +149,15 @@ public class AccountControllerIntegrationTest {
     @WithMockUser(authorities = "ADMIN")
     void createAccount_returnsCreated() throws Exception {
         Role role = roleRepository.getRoleByName("USER").orElseThrow();
-        String json = "{\"username\":\"newuser\",\"password\":\"pass\",\"role_id\":" + role.getId() + "}";
+        String json = """
+                {
+                "username": "newuser",
+                "firstName": "John",
+                "lastName": "Doe",
+                "password": "pass",
+                "roleId": "%d"
+                }
+                """.formatted(role.getId());
 
         mockMvc.perform(post("/api/v1/accounts")
                         .with(csrf())

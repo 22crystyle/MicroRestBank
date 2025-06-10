@@ -18,7 +18,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -96,11 +95,10 @@ public class CardControllerTest {
     void transfer_asOwner_shouldReturnOk() throws Exception {
         when(cardService.isOwner(eq("1234"), any())).thenReturn(true);
         when(cardService.isOwner(eq("5678"), any())).thenReturn(true);
-        when(cardService.transfer(eq("1234"), eq("5678"), eq(new BigDecimal("100.00")))).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/cards/transfer")
-                        .param("from", "1234")
-                        .param("to", "5678")
+                        .param("fromCard", "1234")
+                        .param("toCard", "5678")
                         .param("amount", "100.00")
                         .principal(() -> "user")
                         .accept(MediaType.APPLICATION_JSON)

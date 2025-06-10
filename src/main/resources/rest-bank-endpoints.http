@@ -22,16 +22,15 @@ Authorization: Basic {{adminBasic}}
 POST http://localhost:1024/api/v1/accounts
 Authorization: Basic {{adminBasic}}
 Content-Type: application/json
-Accept-Language: en
 
 {
-  "username": "",
-  "password": "",
-  "firstName": "",
-  "lastName": "Last",
-  "email": "e@mail.com",
-  "phone": "+71111155555",
-  "role_id": 2
+  "username": "johndoe",
+  "password": "P@ssw0rd!",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "johndoe@example.com",
+  "phone": "+1-800-555-1234",
+  "roleId": 2
 }
 
 ### Creating a card for a user by the admin
