@@ -20,11 +20,11 @@ Authorization: Basic {{adminBasic}}
 
 ### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
-Authorization: Basic {{adminBasic}}
+Authorization: Basic {{userBasic}}
 Content-Type: application/json
 
 {
-  "username": "johndoe",
+  "username": "johndoee",
   "password": "P@ssw0rd!",
   "firstName": "John",
   "lastName": "Doe",

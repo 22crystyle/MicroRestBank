@@ -149,6 +149,9 @@ paths:
     get:
       tags:
       - Accounts
+      summary: Get paginated list of accounts
+      description: "Returns a paginated list of account resources, requires ADMIN\
+        \ role."
       operationId: getAccounts
       parameters:
       - name: page
@@ -169,14 +172,19 @@ paths:
           maximum: 100
       responses:
         "200":
-          description: OK
+          description: A page of accounts
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PagedModelAccountResponse"
+                $ref: "#/components/schemas/PageAccountResponse"
+        "400":
+          description: The parameters do not match the validation
     post:
       tags:
       - Accounts
+      summary: Create new account
+      description: "Receives account data for a new user, saves it to the database,\
+        \ and returns the created object with status code 201 and a Location header."
       operationId: createAccount
       requestBody:
         content:
@@ -185,12 +193,18 @@ paths:
               $ref: "#/components/schemas/AccountRequest"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Account successfully created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access Denied
+        "409":
+          description: Conflict. User with unique keys already exists
   /api/v1/cards/{id}:
     get:
       tags:
@@ -233,46 +247,46 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccountResponse"
         "403":
-          description: Unauthorized access
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AccountResponse"
+          description: Access Denied
         "404":
           description: Account not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AccountResponse"
     delete:
       tags:
       - Accounts
+      summary: Delete account by id
+      description: Deletes the account with the specified ID. Requires ADMIN role.
       operationId: deleteAccount
       parameters:
       - name: id
         in: path
+        description: ID of the account to delete
         required: true
         schema:
           type: integer
           format: int64
       responses:
-        "200":
-          description: OK
+        "204":
+          description: Account is successfully deleted
+        "404":
+          description: Account not found
   /api/v1/accounts/{id}/cards:
     get:
       tags:
       - Accounts
+      summary: Get all cards for an account
+      description: Returns a list of cards associated with the specified account ID.
       operationId: getAccountCardsByUserId
       parameters:
       - name: id
         in: path
+        description: ID of the account
         required: true
         schema:
           type: integer
           format: int64
       responses:
         "200":
-          description: OK
+          description: List of accounts
           content:
             application/json:
               schema:
@@ -456,15 +470,65 @@ components:
             $ref: "#/components/schemas/CardResponse"
         page:
           $ref: "#/components/schemas/PageMetadata"
-    PagedModelAccountResponse:
+    PageAccountResponse:
       type: object
       properties:
         content:
           type: array
           items:
             $ref: "#/components/schemas/AccountResponse"
-        page:
-          $ref: "#/components/schemas/PageMetadata"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        last:
+          type: boolean
+        totalElements:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        offset:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        empty:
+          type: boolean
+        unsorted:
+          type: boolean
   securitySchemes:
     Basic:
       type: http

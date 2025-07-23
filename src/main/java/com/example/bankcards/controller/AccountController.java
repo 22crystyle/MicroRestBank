@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.CardMapper;
+import com.example.bankcards.dto.pagination.PageAccountResponse;
 import com.example.bankcards.dto.request.AccountRequest;
 import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.dto.response.CardResponse;
@@ -11,6 +12,9 @@ import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -41,6 +46,22 @@ public class AccountController {
     private final CardService cardService;
     private final CardMapper cardMapper;
 
+    @Operation(
+            summary = "Get paginated list of accounts",
+            description = "Returns a paginated list of account resources, requires ADMIN role.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "A page of accounts",
+                            content = @Content(schema = @Schema(implementation = PageAccountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "The parameters do not match the validation",
+                            content = @Content
+                    )
+            }
+    )
     @GetMapping
     public ResponseEntity<Page<AccountResponse>> getAccounts(
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -51,26 +72,50 @@ public class AccountController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/{id}")
     @Operation(
             summary = "Get account by ID",
             description = "Returns account details for the specified account ID",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Account found"),
-                    @ApiResponse(responseCode = "403", description = "Unauthorized access"),
-                    @ApiResponse(responseCode = "404", description = "Account not found")
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Account found",
+                            content = @Content(schema = @Schema(implementation = AccountResponse.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access Denied",
+                            content = @Content),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Account not found",
+                            content = @Content)
             }
     )
-    @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> getAccountById(
             @Parameter(description = "ID of the account to retrieve", required = true)
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         Account account = service.getAccountById(id);
         AccountResponse response = mapper.toResponse(account);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/cards")
-    public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(@PathVariable Long id) {
+    @Operation(
+            summary = "Get all cards for an account",
+            description = "Returns a list of cards associated with the specified account ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of accounts",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = CardResponse.class)))
+                    )
+            }
+    )
+    public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(
+            @Parameter(description = "ID of the account", required = true)
+            @PathVariable Long id
+    ) {
         List<Card> cards = cardService.getCardsByUserId(id);
         List<CardResponse> dtos = cards.stream()
                 .map(cardMapper::toMaskedResponse)
@@ -80,7 +125,35 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody @Valid AccountRequest request) {
+    @Operation(
+            summary = "Create new account",
+            description = "Receives account data for a new user, saves it to the database, and returns the created object with status code 201 and a Location header.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Account successfully created",
+                            content = @Content(schema = @Schema(implementation = AccountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access Denied",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Conflict. User with unique keys already exists",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<AccountResponse> createAccount(
+            @RequestBody @Valid AccountRequest request
+    ) {
         Account entity = service.createAccount(request);
         AccountResponse response = mapper.toResponse(entity);
         URI uri = ServletUriComponentsBuilder
@@ -92,7 +165,26 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+    @Operation(
+            summary = "Delete account by id",
+            description = "Deletes the account with the specified ID. Requires ADMIN role.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Account is successfully deleted",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Account not found",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<Void> deleteAccount(
+            @Parameter(description = "ID of the account to delete", required = true)
+            @PathVariable Long id
+    ) {
         boolean deleted = service.deleteById(id);
         if (deleted) {
             return ResponseEntity.noContent().build();
