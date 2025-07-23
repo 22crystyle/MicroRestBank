@@ -1,6 +1,9 @@
 # Bank_REST
 
-Bank_REST is a backend application built with Java and Spring Boot for managing bank accounts and cards. It provides a RESTful API for creating, retrieving, updating, and deleting accounts and cards, as well as handling card block requests and money transfers between cards. The application uses Spring Security for authentication and authorization, and PostgreSQL as the database, with Liquibase for database migrations.
+Bank_REST is a backend application built with Java and Spring Boot for managing bank accounts and cards. It provides a
+RESTful API for creating, retrieving, updating, and deleting accounts and cards, as well as handling card block requests
+and money transfers between cards. The application uses Spring Security for authentication and authorization, and
+PostgreSQL as the database, with Liquibase for database migrations.
 
 ## Features
 
@@ -54,7 +57,8 @@ To run this application, ensure you have the following installed:
    docker-compose -f docker/docker-compose.yml up -d
    ```
 
-   This will start the Spring Boot application and a PostgreSQL database. The application will be accessible at `http://localhost:1024`.
+   This will start the Spring Boot application and a PostgreSQL database. The application will be accessible at
+   `http://localhost:1024`.
 
 5. **Access Swagger UI**:
    Open `http://localhost:1024/docs` in your browser to view the API documentation.
@@ -87,12 +91,15 @@ The application uses **Basic Authentication**. Roles are defined as:
 - **USER**: Can view their own cards, request card blocks, and transfer money between their cards.
 
 Default accounts (defined in `006-init-admin.yaml`):
+
 - Admin: `username: admin`, `password: admin`
 - User: `username: user`, `password: user`
 
 ## Database
 
-The application uses PostgreSQL with Liquibase for schema management. The database schema is defined in `src/main/resources/db/migration/`. Initial data includes roles (`ADMIN`, `USER`) and card statuses (`ACTIVE`, `BLOCKED`, `EXPIRED`).
+The application uses PostgreSQL with Liquibase for schema management. The database schema is defined in
+`src/main/resources/db/migration/`. Initial data includes roles (`ADMIN`, `USER`) and card statuses (`ACTIVE`,
+`BLOCKED`, `EXPIRED`).
 
 ### Schema Overview
 
@@ -105,6 +112,7 @@ The application uses PostgreSQL with Liquibase for schema management. The databa
 ## Configuration
 
 Key configuration files:
+
 - `src/main/resources/application.yml`: Main Spring Boot configuration (database, port, Swagger, etc.).
 - `docker/.env`: Environment variables for Docker.
 - `docker/docker-compose.yml`: Defines services for the application and PostgreSQL.
@@ -118,6 +126,7 @@ The project includes unit and integration tests using JUnit, Mockito, and Spring
 ```
 
 Key test files:
+
 - `AccountControllerTest.java`: Unit tests for account-related endpoints.
 - `CardControllerTest.java`: Unit tests for card-related endpoints.
 - `AccountControllerIntegrationTest.java`: Integration tests for account endpoints.
