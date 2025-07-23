@@ -45,6 +45,7 @@ public class AccountController {
     private final CardService cardService;
     private final CardMapper cardMapper;
 
+    @GetMapping
     @Operation(
             summary = "Get paginated list of accounts",
             description = "Returns a paginated list of account resources, requires ADMIN role.",
@@ -61,7 +62,6 @@ public class AccountController {
                     )
             }
     )
-    @GetMapping
     public ResponseEntity<Page<AccountResponse>> getAccounts(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Max(100) int size
