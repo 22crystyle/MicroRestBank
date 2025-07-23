@@ -15,7 +15,7 @@ GET http://localhost:1024/api/v1/accounts/{{userId}}
 Authorization: Basic {{adminBasic}}
 
 ### Card pagination
-GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
+GET http://localhost:1024/api/v1/cards?page=0&size=10
 Authorization: Basic {{adminBasic}}
 
 ### Creating an account by an administrator

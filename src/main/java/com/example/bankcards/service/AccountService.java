@@ -49,7 +49,7 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Account> getAllAccounts(PageRequest pageRequest) {
+    public Page<Account> getPage(PageRequest pageRequest) {
         return repository.findAll(pageRequest);
     }
 }

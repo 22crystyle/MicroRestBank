@@ -27,14 +27,14 @@ paths:
       parameters:
       - name: page
         in: query
-        description: Page index (1-based)
+        description: Page index (0-based)
         required: false
         schema:
           type: integer
           format: int32
-          default: 1
-          minimum: 1
-        example: 1
+          default: 0
+          minimum: 0
+        example: 0
       - name: size
         in: query
         description: Page size

@@ -110,7 +110,7 @@ public class AccountControllerIntegrationTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
-    void getAccounts_returnsOkAndPage() throws Exception {
+    void getPageOfAccounts_returnsOkAndPage() throws Exception {
         mockMvc.perform(get("/api/v1/accounts")
                         .param("page", "0")
                         .param("size", "10")

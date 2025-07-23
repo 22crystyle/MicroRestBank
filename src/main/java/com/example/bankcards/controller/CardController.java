@@ -73,8 +73,8 @@ public class CardController {
             }
     )
     public ResponseEntity<Page<CardResponse>> getCards(
-            @Parameter(description = "Page index (1-based)", example = "1")
-            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @Parameter(description = "Page index (0-based)", example = "0")
+            @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {

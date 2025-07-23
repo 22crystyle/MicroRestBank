@@ -1,12 +1,10 @@
 package com.example.bankcards.exception;
 
-import com.example.bankcards.dto.response.ErrorResponse;
+import com.example.bankcards.dto.response.RestErrorResponse;
 import com.example.bankcards.dto.response.ValidationErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,20 +15,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 404 Entity from database not found
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<RestErrorResponse> handleNotFoundException(EntityNotFoundException ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     // 403 Forbidden: User don't have enough privileges
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
+    public ResponseEntity<RestErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -54,36 +53,74 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 409 Conflict for data integrity violations
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.toString(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    public ResponseEntity<RestErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        Throwable cause = ex.getCause();
+        String message = "Data integrity violation";
+        if (cause instanceof org.hibernate.exception.ConstraintViolationException hce) {
+            String constraint = hce.getConstraintName();
+            message = "Нарушено ограничение: " + constraint;
+        }
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.CONFLICT.toString(), message);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     // 423 Locked: Card is blocked and unavailable for changes
     @ExceptionHandler(CardIsBlockedException.class)
-    public ResponseEntity<ErrorResponse> handleCardIsBlockedException(CardIsBlockedException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.LOCKED.toString(), ex.getMessage());
+    public ResponseEntity<RestErrorResponse> handleCardIsBlockedException(CardIsBlockedException ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.LOCKED.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.LOCKED);
     }
 
     // 403 Forbidden: User tries to use someone else's card
     @ExceptionHandler(IsNotOwnerException.class)
-    public ResponseEntity<ErrorResponse> handleIsNotOwnerException(IsNotOwnerException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
+    public ResponseEntity<RestErrorResponse> handleIsNotOwnerException(IsNotOwnerException ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     // 422 Unprocessable Entity: User send correct request, but the business rules do not allow the operation to be performed
-    @ExceptionHandler({InvalidAmountException.class})
-    public ResponseEntity<ErrorResponse> handleUnsupportedEntity(InvalidAmountException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage());
+    @ExceptionHandler(InvalidAmountException.class)
+    public ResponseEntity<RestErrorResponse> handleUnsupportedEntity(InvalidAmountException ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    @Override
+    public ResponseEntity<Object> handleExceptionInternal(
+            Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request
+    ) {
+        RestErrorResponse errorResponse;
+
+        if (body instanceof RestErrorResponse) {
+            errorResponse = (RestErrorResponse) body;
+        } else if (body instanceof ProblemDetail pd) {
+            String fullMsg = ex.getMessage();
+            String shortMsg = (fullMsg != null && fullMsg.contains(":"))
+                    ? fullMsg.substring(0, fullMsg.indexOf(":"))
+                    : fullMsg;
+            errorResponse = RestErrorResponse.builder()
+                    .code(statusCode.toString())
+                    .message(shortMsg)
+                    .build();
+        } else {
+            String message = body != null
+                    ? body.toString()
+                    : Optional.ofNullable(ex.getMessage()).orElse(statusCode.toString());
+
+            errorResponse = RestErrorResponse.builder()
+                    .code(statusCode.toString())
+                    .message(message)
+                    .build();
+        }
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+
     // 500 Internal Server Error for all other exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleApiError(Exception ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
+    public ResponseEntity<RestErrorResponse> handleApiError(Exception ex) {
+        RestErrorResponse error = new RestErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);

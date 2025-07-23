@@ -62,11 +62,11 @@ public class AccountController {
                     )
             }
     )
-    public ResponseEntity<Page<AccountResponse>> getAccounts(
+    public ResponseEntity<Page<AccountResponse>> getPageOfAccounts(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Max(100) int size
     ) {
-        Page<Account> entities = service.getAllAccounts(PageRequest.of(page, size));
+        Page<Account> entities = service.getPage(PageRequest.of(page, size));
         Page<AccountResponse> dtos = entities.map(mapper::toResponse);
         return ResponseEntity.ok(dtos);
     }

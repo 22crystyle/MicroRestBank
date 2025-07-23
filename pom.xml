@@ -1,12 +1,3 @@
-<!--
-pom.xml — файл для управления зависимостями проекта.
-
-Что нужно сделать:
-- Указать зависимости: Spring Boot Starter Web, Spring Security, Spring Data JPA, Liquibase, JWT, Swagger, PostgreSQL/MySQL.
-- Установить Java 17+ как используемую версию.
-- Добавить плагины для компиляции и сборки (например, spring-boot-maven-plugin).
--->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example</groupId>
@@ -17,7 +8,7 @@ pom.xml — файл для управления зависимостями пр
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.5</version>
-        <relativePath/> <!-- чтобы не искать по файловой системе -->
+        <relativePath/>
     </parent>
 
     <properties>

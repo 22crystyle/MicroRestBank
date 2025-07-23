@@ -96,7 +96,7 @@ public class AccountControllerTest {
     @Test
     @DisplayName("GET /api/v1/accounts - возвращает страницу AccountResponse")
     @WithMockUser(roles = "ADMIN")
-    void getAccounts_returnPage() throws Exception {
+    void getPageOfAccounts_returnPage() throws Exception {
         Account admin = adminAccount;
         Account user = userAccount;
 
@@ -104,7 +104,7 @@ public class AccountControllerTest {
         AccountResponse adminDto = adminAccountResponse;
         AccountResponse userDto = userAccountResponse;
 
-        when(service.getAllAccounts(any(PageRequest.class))).thenReturn(page);
+        when(service.getPage(any(PageRequest.class))).thenReturn(page);
         when(accountMapper.toResponse(admin)).thenReturn(adminDto);
         when(accountMapper.toResponse(user)).thenReturn(userDto);
 
