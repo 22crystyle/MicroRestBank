@@ -57,14 +57,31 @@ public class AccountController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "The parameters do not match the validation",
+                            description = "Invalid page or size parameters",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access Denied",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
                             content = @Content
                     )
             }
     )
     public ResponseEntity<Page<AccountResponse>> getPageOfAccounts(
+            @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "10") @Max(100) int size
+            @Parameter(description = "Page size", example = "10")
+            @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         Page<Account> entities = service.getPage(PageRequest.of(page, size));
         Page<AccountResponse> dtos = entities.map(mapper::toResponse);
@@ -79,15 +96,33 @@ public class AccountController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Account found",
-                            content = @Content(schema = @Schema(implementation = AccountResponse.class))),
+                            content = @Content(schema = @Schema(implementation = AccountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid account ID",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content
+                    ),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access Denied",
-                            content = @Content),
+                            content = @Content
+                    ),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Account not found",
-                            content = @Content)
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content
+                    )
             }
     )
     public ResponseEntity<AccountResponse> getAccountById(
@@ -102,12 +137,37 @@ public class AccountController {
     @GetMapping("/{id}/cards")
     @Operation(
             summary = "Get all cards for an account",
-            description = "Returns a list of cards associated with the specified account ID.",
+            description = "Returns a list of cards associated with the specified account ID. Requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "List of accounts",
+                            description = "List of cards",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = CardResponse.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid account ID",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access Denied",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Account not found",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content
                     )
             }
     )
@@ -134,6 +194,11 @@ public class AccountController {
                             content = @Content(schema = @Schema(implementation = AccountResponse.class))
                     ),
                     @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid account data",
+                            content = @Content
+                    ),
+                    @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
                             content = @Content
@@ -145,12 +210,18 @@ public class AccountController {
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict. User with unique keys already exists",
+                            description = "Conflict: User with unique keys already exists",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
                             content = @Content
                     )
             }
     )
     public ResponseEntity<AccountResponse> createAccount(
+            @Parameter(description = "Account data to create", required = true)
             @RequestBody @Valid AccountRequest request
     ) {
         Account entity = service.createAccount(request);
@@ -170,12 +241,32 @@ public class AccountController {
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "Account is successfully deleted",
+                            description = "Account successfully deleted",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid account ID",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access Denied",
                             content = @Content
                     ),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Account not found",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
                             content = @Content
                     )
             }
