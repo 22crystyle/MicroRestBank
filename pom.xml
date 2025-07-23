@@ -47,6 +47,25 @@ pom.xml — файл для управления зависимостями пр
             </plugin>
 
             <plugin>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputFileName>openapi.yaml</outputFileName>
+                    <outputDir>${project.basedir}/docs</outputDir>
+                    <apiDocsUrl>http://localhost:1024/v3/api-docs.yaml</apiDocsUrl>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>${org.codehaus.mojo.version}</version>
