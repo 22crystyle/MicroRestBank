@@ -7,7 +7,8 @@ import com.example.bankcards.entity.Role;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.util.TestDataBuilders;
+import com.example.bankcards.util.data.account.AccountData;
+import com.example.bankcards.util.data.account.role.RoleData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,10 +38,10 @@ public class AccountServiceTest {
 
     @Test
     void whenValidRequest_thenReturnAccountResponse() {
-        AccountRequest request = TestDataBuilders.accountRequest().build();
-        Account entity = TestDataBuilders.account().build();
+        AccountRequest request = AccountData.DEFAULT_REQUEST;
+        Account entity = AccountData.DEFAULT_ENTITY;
 
-        Role role = TestDataBuilders.role().build();
+        Role role = RoleData.DEFAULT_ROLE;
         entity.setRole(role);
 
         when(mapper.toEntity(request)).thenReturn(entity);
@@ -58,7 +59,7 @@ public class AccountServiceTest {
 
     @Test
     void whenInvalidRequest_thenReturnAccountResponse() {
-        AccountRequest request = TestDataBuilders.accountRequest().withRoleId(99).build();
+        AccountRequest request = AccountData.request().withRoleId(99).build();
 
         when(roleRepository.findById(99)).thenReturn(Optional.empty());
 

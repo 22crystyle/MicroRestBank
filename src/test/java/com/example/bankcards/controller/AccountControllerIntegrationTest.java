@@ -1,8 +1,6 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.Main;
-import com.example.bankcards.dto.AccountMapper;
-import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
@@ -11,9 +9,10 @@ import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.service.AccountService;
-import com.example.bankcards.service.CardService;
-import com.example.bankcards.util.TestDataBuilders;
+import com.example.bankcards.util.data.account.AccountData;
+import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.util.data.card.CardData;
+import com.example.bankcards.util.data.card.status.CardStatusData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,19 +46,9 @@ public class AccountControllerIntegrationTest {
     MockMvc mockMvc;
 
     @Autowired
-    private AccountController accountController;
-    @Autowired
     private AccountRepository accountRepository;
     @Autowired
     private CardRepository cardRepository;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private CardService cardService;
-    @Autowired
-    private AccountMapper accountMapper;
-    @Autowired
-    private CardMapper cardMapper;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
@@ -71,23 +60,23 @@ public class AccountControllerIntegrationTest {
         accountRepository.deleteAll();
         cardStatusRepository.deleteAll();
 
-        Role adminRole = TestDataBuilders.role()
+        Role adminRole = RoleData.role()
                 .withName("ADMIN")
                 .build();
 
-        Role userRole = TestDataBuilders.role()
+        Role userRole = RoleData.role()
                 .withName("USER")
                 .build();
 
-        CardStatus cardStatus = TestDataBuilders.cardStatus().build();
+        CardStatus cardStatus = CardStatusData.entity().build();
 
-        Account admin = TestDataBuilders.account()
+        Account admin = AccountData.entity()
                 .withUsername("admin")
                 .withPassword("pass")
                 .withRole(adminRole)
                 .build();
 
-        Account user = TestDataBuilders.account()
+        Account user = AccountData.entity()
                 .withUsername("user")
                 .withPassword("pass")
                 .withRole(userRole)
@@ -100,7 +89,7 @@ public class AccountControllerIntegrationTest {
         accountRepository.save(user);
 
 
-        Card card = TestDataBuilders.card()
+        Card card = CardData.entity()
                 .withOwner(user)
                 .withCardNumber("1234123412341234")
                 .withCardStatus(cardStatus)

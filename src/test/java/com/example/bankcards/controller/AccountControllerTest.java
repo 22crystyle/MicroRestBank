@@ -12,7 +12,10 @@ import com.example.bankcards.entity.Role;
 import com.example.bankcards.exception.AccountNotFoundException;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.util.TestDataBuilders;
+import com.example.bankcards.util.data.account.AccountData;
+import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.util.data.card.CardData;
+import com.example.bankcards.util.data.card.status.CardStatusData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,21 +76,21 @@ public class AccountControllerTest {
 
     @BeforeEach
     void initData() {
-        Role adminRole = TestDataBuilders.role().withId(1).withName("ROLE_ADMIN").build();
-        Role userRole = TestDataBuilders.role().withId(1).withName("ROLE_USER").build();
-        adminAccount = TestDataBuilders.account()
+        Role adminRole = RoleData.role().withId(1).withName("ROLE_ADMIN").build();
+        Role userRole = RoleData.role().withId(2).withName("ROLE_USER").build();
+        adminAccount = AccountData.entity()
                 .withId(1L)
                 .withUsername("admin")
                 .withRole(adminRole).build();
-        adminAccountResponse = TestDataBuilders.accountResponse()
+        adminAccountResponse = AccountData.response()
                 .withId(1L)
                 .withUsername("admin")
                 .build();
-        userAccount = TestDataBuilders.account()
+        userAccount = AccountData.entity()
                 .withId(2L)
                 .withUsername("user")
                 .withRole(userRole).build();
-        userAccountResponse = TestDataBuilders.accountResponse()
+        userAccountResponse = AccountData.response()
                 .withId(2L)
                 .withUsername("user")
                 .build();
@@ -145,15 +148,15 @@ public class AccountControllerTest {
     @DisplayName("GET /api/v1/accounts/{id}/cards - возвращает список карт")
     @WithMockUser(roles = "ADMIN")
     void getAccountCards_returnPage() throws Exception {
-        Card c1 = TestDataBuilders.card().withId(1L).build();
-        Card c2 = TestDataBuilders.card().withId(2L).build();
+        Card c1 = CardData.entity().withId(1L).build();
+        Card c2 = CardData.entity().withId(2L).build();
         List<Card> cards = List.of(c1, c2);
 
         AccountResponse adminResponse = adminAccountResponse;
-        CardStatusResponse statusResponse = TestDataBuilders.cardStatusResponse().build();
+        CardStatusResponse statusResponse = CardStatusData.DEFAULT_RESPONSE;
 
-        CardResponse cr1 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
-        CardResponse cr2 = TestDataBuilders.cardResponse().withOwner(adminResponse).withStatus(statusResponse).build();
+        CardResponse cr1 = CardData.response().withOwner(adminResponse).withStatus(statusResponse).build();
+        CardResponse cr2 = CardData.response().withOwner(adminResponse).withStatus(statusResponse).build();
 
         when(cardService.getCardsByUserId(adminResponse.id())).thenReturn(cards);
         when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);

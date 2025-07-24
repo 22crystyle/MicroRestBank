@@ -6,7 +6,7 @@ import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.util.TestDataBuilders;
+import com.example.bankcards.util.data.card.CardData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class CardControllerTest {
     void getCards_returnPage() throws Exception {
         Page<Card> page = new PageImpl<>(List.of(new Card()));
         when(cardService.getAllCards(any())).thenReturn(page);
-        when(cardMapper.toMaskedResponse(any())).thenReturn(TestDataBuilders.cardResponse().build());
+        when(cardMapper.toMaskedResponse(any())).thenReturn(CardData.DEFAULT_RESPONSE);
 
         mockMvc.perform(get("/api/v1/cards")
                         .with(csrf())
@@ -61,10 +61,10 @@ public class CardControllerTest {
     @DisplayName("GET /api/v1/cards/{id} - возвращает не замаскированные данные карты пользователя")
     @WithMockUser("USER")
     void getCard_asOwner_shouldReturnFullCard() throws Exception {
-        Card card = TestDataBuilders.card().build();
+        Card card = CardData.DEFAULT_ENTITY;
         when(cardService.getCard(1L)).thenReturn(card);
         when(cardService.isOwner(eq(1L), any())).thenReturn(true);
-        when(cardMapper.toFullResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
+        when(cardMapper.toFullResponse(card)).thenReturn(CardData.DEFAULT_RESPONSE);
 
         mockMvc.perform(get("/api/v1/cards/1").principal(() -> "USER")
                         .with(csrf()))
@@ -76,9 +76,9 @@ public class CardControllerTest {
     @DisplayName("POST /api/v1/cards - возвращает 201 при создании карты")
     @WithMockUser("ADMIN")
     void createCard_shouldReturnCreatedCard() throws Exception {
-        Card card = TestDataBuilders.card().build();
+        Card card = CardData.DEFAULT_ENTITY;
         when(cardService.createCardForAccount(1L)).thenReturn(card);
-        when(cardMapper.toMaskedResponse(card)).thenReturn(TestDataBuilders.cardResponse().build());
+        when(cardMapper.toMaskedResponse(card)).thenReturn(CardData.DEFAULT_RESPONSE);
 
         mockMvc.perform(post("/api/v1/cards")
                         .param("userId", "1")
