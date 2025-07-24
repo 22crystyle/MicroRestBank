@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example</groupId>
     <artifactId>RestBank</artifactId>
-    <version>1</version>
+    <version>0.70.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -12,31 +12,56 @@
     </parent>
 
     <properties>
-        <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <org.codehaus.mojo.version>3.3.0</org.codehaus.mojo.version>
-        <org.projectlombok.version>1.18.38</org.projectlombok.version>
-        <org.springframework.boot>3.4.5</org.springframework.boot>
-        <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
-        <com.h2database.version>2.3.232</com.h2database.version>
-        <org.springframework.security.version>6.4.5</org.springframework.security.version>
         <com.fasterxml.jackson.datatype>2.19.0</com.fasterxml.jackson.datatype>
-        <org.postgresql.version>42.7.5</org.postgresql.version>
-        <org.liquibase.version>4.31.1</org.liquibase.version>
-        <org.springdoc.version>2.8.6</org.springdoc.version>
+        <com.h2database.version>2.3.232</com.h2database.version>
+        <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
         <io.swagger.core.v3.version>2.2.30</io.swagger.core.v3.version>
-        <com.auth0.version>4.5.0</com.auth0.version>
-        <org.springframework.retry.version>2.0.12</org.springframework.retry.version>
         <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
+        <org.codehaus.mojo.version>3.3.0</org.codehaus.mojo.version>
+        <org.liquibase.version>4.31.1</org.liquibase.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <org.postgresql.version>42.7.5</org.postgresql.version>
+        <org.projectlombok.version>1.18.38</org.projectlombok.version>
+        <org.springdoc.version>2.8.6</org.springdoc.version>
+        <org.springframework.boot>3.4.5</org.springframework.boot>
+        <org.springframework.retry.version>2.0.12</org.springframework.retry.version>
+        <org.springframework.security.version>6.4.5</org.springframework.security.version>
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${org.apache.maven.plugins.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessorPaths>
+                        <!-- https://projectlombok.org/setup/maven -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${org.projectlombok.version}</version>
+                        </path>
+
+                        <!-- https://mapstruct.org/documentation/installation -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <!-- https://docs.spring.io/spring-boot/maven-plugin/getting-started.html -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+            <!-- https://springdoc.org/plugins.html -->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
@@ -77,27 +102,16 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${org.apache.maven.plugins.version}</version>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${org.liquibase.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <annotationProcessorPaths>
-                        <!-- https://projectlombok.org/setup/maven -->
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${org.projectlombok.version}</version>
-                        </path>
-
-                        <!-- https://mapstruct.org/documentation/installation -->
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
+                    <outputChangeLogFile>src/main/resources/db/migration/db.changelog-generated.yaml
+                    </outputChangeLogFile>
+                    <url>jdbc:postgresql://192.168.0.105:5432/RestBank</url>
+                    <username>postgres</username>
+                    <password>admin</password>
+                    <driver>org.postgresql.Driver</driver>
                 </configuration>
             </plugin>
 
@@ -109,20 +123,6 @@
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
                         -Xshare:off
                     </argLine>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${org.liquibase.version}</version>
-                <configuration>
-                    <outputChangeLogFile>src/main/resources/db/migration/db.changelog-generated.yaml
-                    </outputChangeLogFile>
-                    <url>jdbc:postgresql://192.168.0.105:5432/RestBank</url>
-                    <username>postgres</username>
-                    <password>admin</password>
-                    <driver>org.postgresql.Driver</driver>
                 </configuration>
             </plugin>
         </plugins>
@@ -164,11 +164,11 @@
             <version>${org.liquibase.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>4.5.0</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${org.postgresql.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
@@ -183,13 +183,6 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>${io.swagger.core.v3.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${org.postgresql.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -256,6 +249,29 @@
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
             <version>${org.springframework.retry.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${io.jsonwebtoken.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${io.jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${io.jsonwebtoken.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
