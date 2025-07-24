@@ -227,6 +227,24 @@ paths:
           description: Insufficient funds or invalid transfer
         "500":
           description: Internal Server Error
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthenticationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponse"
   /api/v1/accounts:
     get:
       tags:
@@ -564,6 +582,18 @@ components:
             - ACTIVE
             - BLOCKED
             - EXPIRED
+    AuthenticationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthenticationResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
     AccountRequest:
       type: object
       description: Account data to create
@@ -675,6 +705,7 @@ components:
         empty:
           type: boolean
   securitySchemes:
-    Basic:
+    BearerAuth:
       type: http
-      scheme: basic
+      scheme: bearer
+      bearerFormat: JWT

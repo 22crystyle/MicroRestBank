@@ -5,6 +5,10 @@ public class CardNotFoundException extends EntityNotFoundException {
         super("Card with id=" + cardId + " not found");
     }
 
+    public CardNotFoundException(String message) {
+        super(message);
+    }
+
     public CardNotFoundException() {
         super("Card not found");
     }

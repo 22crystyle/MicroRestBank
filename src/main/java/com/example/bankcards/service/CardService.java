@@ -63,20 +63,16 @@ public class CardService {
         return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(id));
     }
 
-    public boolean isOwner(Long cardId, Principal principal) {
-        if (principal == null) {
-            return false;
-        }
-
-        return cardRepository.existsCardByIdAndOwner_Username(cardId, principal.getName());
+    public boolean isOwner(Long cardId, String username) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardNotFoundException(cardId));
+        return card.getOwner() != null && username != null && username.equals(card.getOwner().getUsername());
     }
 
-    public boolean isOwner(String cardNumber, Principal principal) {
-        if (principal == null) {
-            return false;
-        }
-
-        return cardRepository.existsCardByCardNumberAndOwner_Username(cardNumber, principal.getName());
+    public boolean isOwner(String cardNumber, String username) {
+        Card card = cardRepository.findByCardNumber(cardNumber)
+                .orElseThrow(() -> new CardNotFoundException("Card with number " + cardNumber + " not found"));
+        return card.getOwner() != null && username != null && username.equals(card.getOwner().getUsername());
     }
 
     @Transactional(readOnly = true)

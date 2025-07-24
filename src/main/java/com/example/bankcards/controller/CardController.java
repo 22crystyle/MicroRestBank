@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -123,11 +124,10 @@ public class CardController {
     public ResponseEntity<CardResponse> getCard(
             @Parameter(description = "ID of the card to retrieve", required = true)
             @PathVariable Long id,
-            @Parameter(description = "Authenticated user principal", hidden = true)
-            Principal principal
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
         Card card = service.getCard(id);
-        CardResponse dto = service.isOwner(id, principal) ?
+        CardResponse dto = service.isOwner(id, userDetails.getUsername()) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
         return ResponseEntity.ok(dto);

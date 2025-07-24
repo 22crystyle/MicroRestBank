@@ -19,9 +19,10 @@ import org.springframework.context.annotation.Configuration;
         servers = @Server(url = "http://localhost:1024", description = "Local server")
 )
 @SecurityScheme(
-        name = "Basic",
+        name = "BearerAuth",
         type = SecuritySchemeType.HTTP,
-        scheme = "basic"
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 public class OpenApiConfig {
 }

@@ -1,26 +1,32 @@
+### Login / Each request create rewrite auth_token for intellij
+POST http://localhost:1024/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+> {%
+    client.global.set("auth_token", response.body.jwt);
+%}
+
 ### Account pagination
 GET http://localhost:1024/api/v1/accounts?
     page={{page}}&
     size={{size}}
-Authorization: Basic {{adminBasic}}
-
-> {%
-    client.test("Request executed successfully", function () {
-        client.assert(response.status === 200, "Response status is not 200")
-    });
-%}
+Authorization: Bearer {{auth_token}}
 
 ### Get account by id
 GET http://localhost:1024/api/v1/accounts/{{userId}}
-Authorization: Basic {{adminBasic}}
+Authorization: Bearer {{auth_token}}
 
 ### Card pagination
-GET http://localhost:1024/api/v1/cards?page=0&size=10
-Authorization: Basic {{adminBasic}}
+GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
+Authorization: Bearer {{auth_token}}
 
 ### Creating an account by an administrator
 POST http://localhost:1024/api/v1/accounts
-Authorization: Basic {{userBasic}}
+Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
@@ -35,32 +41,32 @@ Content-Type: application/json
 
 ### Creating a card for a user by the admin
 POST http://localhost:1024/api/v1/cards?userId={{userId}}
-Authorization: Basic {{adminBasic}}
+Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ### Get a card by ID
-GET http://localhost:1024/api/v1/cards/1
-Authorization: Basic {{userBasic}}
+GET http://localhost:1024/api/v1/cards/3
+Authorization: Bearer {{auth_token}}
 
 ### Request to block the card by the user
 POST http://localhost:1024/api/v1/cards/1/block-request
-Authorization: Basic {{userBasic}}
+Authorization: Bearer {{auth_token}}
 
 ### Approve the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-approve
-Authorization: Basic {{adminBasic}}
+Authorization: Bearer {{auth_token}}
 
 ### Reject the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
-Authorization: Basic {{adminBasic}}
+Authorization: Bearer {{auth_token}}
 
 ### Transfer money between users cards
 POST http://localhost:1024/api/v1/cards/transfer?
     fromCard=2227529027274944&
     toCard=5515251215481686&
     amount=1
-Authorization: Basic {{userBasic}}
+Authorization: Bearer {{auth_token}}
 
 ### Delete account by id
-DELETE http://localhost:1024/api/v1/accounts/5
-Authorization: Basic {{adminBasic}}
+DELETE http://localhost:1024/api/v1/accounts/{{userId}}
+Authorization: Bearer {{auth_token}}
