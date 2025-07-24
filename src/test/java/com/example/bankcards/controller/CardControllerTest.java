@@ -4,6 +4,7 @@ import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
+import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.card.CardData;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,11 +35,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CardController.class)
 public class CardControllerTest {
     @MockitoBean
-    public CardMapper cardMapper;
+    private CardMapper cardMapper;
     @MockitoBean
-    public CardService cardService;
+    private CardService cardService;
     @MockitoBean
-    public CardBlockRequestService cardBlockRequestService;
+    private CardBlockRequestService cardBlockRequestService;
+    @MockitoBean
+    private JwtUtil jwtUtil;
+    @MockitoBean(name = "customUserDetailsService")
+    private UserDetailsService userDetailsService;
     @Autowired
     MockMvc mockMvc;
 

@@ -10,6 +10,7 @@ import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.exception.AccountNotFoundException;
+import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.account.AccountData;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,19 +51,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AccountController.class)
 public class AccountControllerTest {
     @MockitoBean
-    public AccountService service;
+    private AccountService service;
     @MockitoBean
-    public AccountMapper accountMapper;
+    private AccountMapper accountMapper;
     @MockitoBean
-    public CardService cardService;
+    private CardService cardService;
     @MockitoBean
-    public CardMapper cardMapper;
+    private CardMapper cardMapper;
+    @MockitoBean(name = "customUserDetailsService")
+    private UserDetailsService userDetailsService;
+    @MockitoBean
+    private JwtUtil jwtUtil;
     @Autowired
     private MockMvc mockMvc;
+
     private Account userAccount;
     private Account adminAccount;
     private AccountResponse userAccountResponse;
     private AccountResponse adminAccountResponse;
+    private String token;
 
     static Stream<Arguments> getAccountByIdParams() {
         return Stream.of(
@@ -94,11 +102,20 @@ public class AccountControllerTest {
                 .withId(2L)
                 .withUsername("user")
                 .build();
+
+        String userToken = jwtUtil.generateToken(userAccount.getUsername(), userAccount.getRole().getName());
+        when(jwtUtil.validateToken(userToken, userAccount.getUsername())).thenReturn(true);
+        when(jwtUtil.extractUsername(userToken)).thenReturn("user");
+
+
+        String adminToken = jwtUtil.generateToken(adminAccount.getUsername(), adminAccount.getRole().getName());
+        when(jwtUtil.validateToken(adminToken, adminAccount.getUsername())).thenReturn(true);
+        when(jwtUtil.extractUsername(adminToken)).thenReturn("admin");
     }
 
     @Test
     @DisplayName("GET /api/v1/accounts - возвращает страницу AccountResponse")
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getPageOfAccounts_returnPage() throws Exception {
         Account admin = adminAccount;
         Account user = userAccount;
