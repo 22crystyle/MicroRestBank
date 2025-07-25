@@ -22,12 +22,12 @@ public class CardBlockRequestService {
 
     @Transactional
     public void createBlockRequest(Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardNotFoundException(cardId));
+
         if (cardBlockRequestRepository.existsCardBlockRequestByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {
             throw new IllegalArgumentException("Card block request already exists");
         }
-
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardNotFoundException(cardId));
 
         CardBlockRequest blockRequest = CardBlockRequest.builder()
                 .card(card)
