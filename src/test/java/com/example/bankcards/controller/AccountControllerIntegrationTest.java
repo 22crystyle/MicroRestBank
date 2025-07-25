@@ -91,7 +91,7 @@ public class AccountControllerIntegrationTest {
 
         Card card = CardData.entity()
                 .withOwner(user)
-                .withCardNumber("1234123412341234")
+                .withPan("1234123412341234")
                 .withCardStatus(cardStatus)
                 .build();
         cardRepository.save(card);

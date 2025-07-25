@@ -31,6 +31,7 @@ public class CardData {
         private Account owner = AccountData.DEFAULT_ENTITY;
         private YearMonth expiryDate = YearMonth.now().plusYears(4);
         private CardStatus cardStatus = CardStatusData.DEFAULT_ENTITY;
+        private BigDecimal balance = BigDecimal.ZERO;
 
         private CardBuilder() {
         }
@@ -38,6 +39,11 @@ public class CardData {
         public CardBuilder withOwner(Account owner) {
             this.owner = owner;
             return this;
+        }
+
+        public CardBuilder withBalance(BigDecimal balance) {
+            this.balance = balance;
+            return self();
         }
 
         public CardBuilder withExpiryDate(YearMonth expiryDate) {
@@ -62,6 +68,7 @@ public class CardData {
             card.setOwner(owner);
             card.setExpiryDate(expiryDate);
             card.setStatus(cardStatus);
+            card.setBalance(balance);
             return card;
         }
     }

@@ -9,7 +9,7 @@ public abstract class BaseCardBuilder<T extends BaseCardBuilder<T>> {
         return self();
     }
 
-    public T withCardNumber(String cardNumber) {
+    public T withPan(String cardNumber) {
         this.cardNumber = cardNumber;
         return self();
     }
