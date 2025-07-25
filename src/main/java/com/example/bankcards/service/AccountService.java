@@ -37,7 +37,7 @@ public class AccountService {
     @Transactional
     public boolean deleteById(Long id) {
         if (!repository.existsById(id)) {
-            return false;
+            throw new AccountNotFoundException(id);
         }
         repository.deleteById(id);
         return true;
