@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/docs", "/v3/api-docs.yaml", "/swagger-ui/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers("/docs", "/v3/**", "/swagger-ui/**", "/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
