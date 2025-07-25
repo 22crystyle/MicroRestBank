@@ -53,26 +53,6 @@ public class AccountController {
                             responseCode = "200",
                             description = "A page of accounts",
                             content = @Content(schema = @Schema(implementation = PageAccountResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid page or size parameters",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -96,31 +76,6 @@ public class AccountController {
                             responseCode = "200",
                             description = "Account found",
                             content = @Content(schema = @Schema(implementation = AccountResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid account ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Account not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -135,38 +90,13 @@ public class AccountController {
 
     @GetMapping("/{id}/cards")
     @Operation(
-            summary = "Get all cards for an account",
+            summary = "Get all cards by account ID",
             description = "Returns a list of cards associated with the specified account ID. Requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "List of cards",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = CardResponse.class)))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid account ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Account not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -191,31 +121,6 @@ public class AccountController {
                             responseCode = "201",
                             description = "Account successfully created",
                             content = @Content(schema = @Schema(implementation = AccountResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid account data",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Conflict: User with unique keys already exists",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -241,31 +146,6 @@ public class AccountController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Account successfully deleted",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid account ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Account not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
                             content = @Content
                     )
             }

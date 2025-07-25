@@ -49,26 +49,6 @@ public class CardController {
                             responseCode = "200",
                             description = "A page of cards",
                             content = @Content(schema = @Schema(implementation = PageCardResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400", //TODO: check
-                            description = "Invalid page or size parameters",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -93,31 +73,6 @@ public class CardController {
                             responseCode = "200",
                             description = "Card found",
                             content = @Content(schema = @Schema(implementation = CardResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid card ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Card not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -143,31 +98,6 @@ public class CardController {
                             responseCode = "201",
                             description = "Card successfully created",
                             content = @Content(schema = @Schema(implementation = CardResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid user ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -194,31 +124,6 @@ public class CardController {
                             responseCode = "200",
                             description = "Block request submitted",
                             content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid card ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Card not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -240,31 +145,6 @@ public class CardController {
                             responseCode = "200",
                             description = "Block request approved",
                             content = @Content(schema = @Schema(implementation = CardBlockRequest.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid card ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Card or block request not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -288,31 +168,6 @@ public class CardController {
                             responseCode = "200",
                             description = "Block request rejected",
                             content = @Content(schema = @Schema(implementation = CardBlockRequest.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid card ID",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Card or block request not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
-                            content = @Content
                     )
             }
     )
@@ -335,36 +190,6 @@ public class CardController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Transfer successful",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid card numbers or amount",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access Denied",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "One or both cards not found",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Insufficient funds or invalid transfer",
-                            content = @Content
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error",
                             content = @Content
                     )
             }
