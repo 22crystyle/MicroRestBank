@@ -1,8 +1,11 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.pan;
+
+import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
-public class MastercardGenerator {
+@Component
+public class MastercardGenerator implements CardPanGenerator {
     private static final String[] MastercardPrefixes = {
             "51", "52", "53", "54", "55",
             "2221", "2222", "2223", "2224", "2225", "2226", "2227", "2228", "2229",
@@ -13,7 +16,8 @@ public class MastercardGenerator {
 
     private static final Random random = new Random();
 
-    public static String generateMastercardNumber() {
+    @Override
+    public String generateCardPan() {
         String prefix = MastercardPrefixes[random.nextInt(MastercardPrefixes.length)];
         int length = 16;
         int numberLength = length - (prefix.length() + 1);

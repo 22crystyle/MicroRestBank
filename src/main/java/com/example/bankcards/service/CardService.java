@@ -6,6 +6,7 @@ import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.util.CardStatusType;
+import com.example.bankcards.util.pan.CardPanGeneratorFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -20,8 +21,6 @@ import java.security.Principal;
 import java.time.YearMonth;
 import java.util.List;
 
-import static com.example.bankcards.util.MastercardGenerator.generateMastercardNumber;
-
 @Service
 @RequiredArgsConstructor
 public class CardService {
@@ -30,6 +29,7 @@ public class CardService {
     private final CardRepository cardRepository;
     private final AccountRepository accountRepository;
     private final CardStatusRepository cardStatusRepository;
+    private final CardPanGeneratorFactory cardPanGeneratorFactory;
 
     @Transactional
     @Retryable(
@@ -40,7 +40,7 @@ public class CardService {
     public Card createCardForAccount(Long accountId) {
         Card card = new Card();
         String number;
-        number = generateMastercardNumber();
+        number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
         card.setCardNumber(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
                 () -> new AccountNotFoundException(accountId)

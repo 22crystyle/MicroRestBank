@@ -1,4 +1,4 @@
-### Login / Each request create rewrite auth_token for intellij
+### Login / Each request rewrite auth_token for intellij
 POST http://localhost:1024/api/v1/auth/login
 Content-Type: application/json
 
