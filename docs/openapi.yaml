@@ -12,10 +12,12 @@ servers:
 - url: http://localhost:1024
   description: Local server
 tags:
-- name: Accounts
-  description: Доступ и управление аккаунтами. Нужна роль админа
 - name: Cards
-  description: Доступ и управление картами аккаунта
+  description: Access and management of account cards
+- name: Accounts
+  description: Account access and management. requires ADMIN role
+- name: Authentication
+  description: Login endpoint
 paths:
   /api/v1/cards:
     get:
@@ -230,7 +232,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-      - authentication-controller
+      - Authentication
       operationId: login
       requestBody:
         content:
@@ -473,7 +475,7 @@ components:
         id:
           type: integer
           format: int64
-        cardNumber:
+        pan:
           type: string
         owner:
           $ref: "#/components/schemas/AccountResponse"
@@ -532,7 +534,7 @@ components:
         id:
           type: integer
           format: int64
-        cardNumber:
+        pan:
           type: string
         owner:
           $ref: "#/components/schemas/Account"

@@ -32,7 +32,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
-@Tag(name = "Cards", description = "Доступ и управление картами аккаунта")
+@Tag(name = "Cards", description = "Access and management of account cards")
 public class CardController {
 
     private final CardMapper mapper;

@@ -36,7 +36,7 @@ import java.util.List;
 @PreAuthorize(value = "hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Validated
-@Tag(name = "Accounts", description = "Доступ и управление аккаунтами. Нужна роль админа")
+@Tag(name = "Accounts", description = "Account access and management. requires ADMIN role")
 public class AccountController {
 
     private final AccountService service;
