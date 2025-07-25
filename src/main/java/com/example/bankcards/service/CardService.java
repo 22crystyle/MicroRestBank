@@ -41,7 +41,7 @@ public class CardService {
         Card card = new Card();
         String number;
         number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
-        card.setCardNumber(number);
+        card.setPan(number);
         card.setOwner(accountRepository.findById(accountId).orElseThrow(
                 () -> new AccountNotFoundException(accountId)
         ));
@@ -70,7 +70,7 @@ public class CardService {
     }
 
     public boolean isOwner(String cardNumber, String username) {
-        Card card = cardRepository.findByCardNumber(cardNumber)
+        Card card = cardRepository.findByPan(cardNumber)
                 .orElseThrow(() -> new CardNotFoundException("Card with number " + cardNumber + " not found"));
         return card.getOwner() != null && username != null && username.equals(card.getOwner().getUsername());
     }
@@ -82,10 +82,10 @@ public class CardService {
 
     @Transactional
     public void transfer(String fromCard, String toCard, BigDecimal amount, Principal principal) {
-        Card first = cardRepository.findByCardNumber(fromCard).orElseThrow(
+        Card first = cardRepository.findByPan(fromCard).orElseThrow(
                 CardNotFoundException::new
         );
-        Card second = cardRepository.findByCardNumber(toCard).orElseThrow(
+        Card second = cardRepository.findByPan(toCard).orElseThrow(
                 CardNotFoundException::new
         );
 
@@ -95,11 +95,11 @@ public class CardService {
         }
 
         if (first.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + first.getCardNumber() + " is blocked");
+            throw new CardIsBlockedException("Card with PAN=" + first.getPan() + " is blocked");
         }
 
         if (second.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + second.getCardNumber() + " is blocked");
+            throw new CardIsBlockedException("Card with PAN=" + second.getPan() + " is blocked");
         }
 
         if (amount.signum() <= 0) {

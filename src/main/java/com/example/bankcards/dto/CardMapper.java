@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 public interface CardMapper {
     Card toEntity(CardRequest cardRequest);
 
-    @Mapping(target = "cardNumber", expression = "java(MaskingUtils.maskCardNumber(card.getCardNumber()))")
+    @Mapping(target = "pan", expression = "java(MaskingUtils.maskCardNumber(card.getPan()))")
     CardResponse toMaskedResponse(Card card);
 
     CardResponse toFullResponse(Card card);

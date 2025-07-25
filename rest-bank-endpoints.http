@@ -45,7 +45,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ### Get a card by ID
-GET http://localhost:1024/api/v1/cards/3
+GET http://localhost:1024/api/v1/cards/{{cardId}}
 Authorization: Bearer {{auth_token}}
 
 ### Request to block the card by the user

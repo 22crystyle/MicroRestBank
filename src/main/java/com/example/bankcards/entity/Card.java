@@ -22,8 +22,8 @@ public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "card_number", length = 16, nullable = false)
-    private String cardNumber;
+    @Column(name = "pan", length = 16, nullable = false)
+    private String pan;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     @JsonBackReference

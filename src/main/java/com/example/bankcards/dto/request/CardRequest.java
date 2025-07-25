@@ -13,7 +13,8 @@ public record CardRequest(
                 minimum = "0000000000000000",      // доп. ограничения в swagger
                 maximum = "9999999999999999"
         )
-        @Pattern(regexp = "\\d{16}", message = "Номер карты должен состоять из 16 цифр") String cardNumber,
+        @Pattern(regexp = "\\d{16}", message = "Номер карты должен состоять из 16 цифр")
+        String cardNumber,
         YearMonth expiryDate,
         CardStatus status
 ) {

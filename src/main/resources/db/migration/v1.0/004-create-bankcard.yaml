@@ -15,11 +15,11 @@ databaseChangeLog:
                   autoIncrement: true
               - column: { name: account_id, type: BIGINT }
               - column:
-                  name: card_number
+                  name: pan
                   type: VARCHAR(16)
                   constraints:
                     unique: true
-                    uniqueConstraintName: uq_bank_card_number
+                    uniqueConstraintName: uq_bank_pan
               - column:
                   name: balance
                   type: NUMERIC(38, 2)
