@@ -39,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = CardController.class)
 public class CardControllerTest {
+    @Autowired
+    MockMvc mockMvc;
     @MockitoBean
     private CardMapper cardMapper;
     @MockitoBean
@@ -49,8 +51,6 @@ public class CardControllerTest {
     private JwtUtil jwtUtil;
     @MockitoBean(name = "customUserDetailsService")
     private UserDetailsService userDetailsService;
-    @Autowired
-    MockMvc mockMvc;
 
     @Test
     @DisplayName("GET /api/v1/cards - возвращает страницу с картами всех пользователей")

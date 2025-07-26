@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -39,6 +40,7 @@ public class CardController {
     private final CardService service;
     private final CardBlockRequestService cardBlockRequestService;
 
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Operation(

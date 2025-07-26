@@ -41,8 +41,6 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
-        //.userDetailsService(customUserDetailsService)
-        //.httpBasic(Customizer.withDefaults());
         return http.build();
     }
 

@@ -16,24 +16,6 @@ public class MastercardGenerator implements CardPanGenerator {
 
     private static final Random random = new Random();
 
-    @Override
-    public String generateCardPan() {
-        String prefix = MastercardPrefixes[random.nextInt(MastercardPrefixes.length)];
-        int length = 16;
-        int numberLength = length - (prefix.length() + 1);
-        StringBuilder builder = new StringBuilder(prefix);
-
-        for (int i = 0; i < numberLength; i++) {
-            builder.append(random.nextInt(10));
-        }
-
-        String numberWithoutCheckDigit = builder.toString();
-        int checkDigit = getLuhnCheckDigit(numberWithoutCheckDigit);
-        builder.append(checkDigit);
-
-        return builder.toString();
-    }
-
     private static int getLuhnCheckDigit(String number) {
         int sum = 0;
         boolean alternate = true;
@@ -50,5 +32,23 @@ public class MastercardGenerator implements CardPanGenerator {
             alternate = !alternate;
         }
         return (10 - (sum % 10)) % 10;
+    }
+
+    @Override
+    public String generateCardPan() {
+        String prefix = MastercardPrefixes[random.nextInt(MastercardPrefixes.length)];
+        int length = 16;
+        int numberLength = length - (prefix.length() + 1);
+        StringBuilder builder = new StringBuilder(prefix);
+
+        for (int i = 0; i < numberLength; i++) {
+            builder.append(random.nextInt(10));
+        }
+
+        String numberWithoutCheckDigit = builder.toString();
+        int checkDigit = getLuhnCheckDigit(numberWithoutCheckDigit);
+        builder.append(checkDigit);
+
+        return builder.toString();
     }
 }
