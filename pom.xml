@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example</groupId>
     <artifactId>RestBank</artifactId>
-    <version>0.70.0</version>
+    <version>1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
