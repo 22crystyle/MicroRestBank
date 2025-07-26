@@ -40,10 +40,10 @@ public class CardController {
     private final CardBlockRequestService cardBlockRequestService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Operation(
             summary = "Get paginated list of cards",
-            description = "Returns a paginated list of card resources. Requires ADMIN role.",
+            description = "ADMIN sees all cards; USER sees only own cards. Supports status pagination",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -56,9 +56,18 @@ public class CardController {
             @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
-            @RequestParam(defaultValue = "10") @Min(1) int size
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Page<Card> entities = service.getAllCards(PageRequest.of(page, size));
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Card> entities;
+        if (isAdmin) {
+            entities = service.getAllCards(pageRequest);
+        } else {
+            entities = service.getByOwner(userDetails.getUsername(), pageRequest);
+        }
         Page<CardResponse> dtos = entities.map(mapper::toMaskedResponse);
         return ResponseEntity.ok(dtos);
     }

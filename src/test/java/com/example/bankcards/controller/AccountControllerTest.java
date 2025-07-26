@@ -175,7 +175,7 @@ public class AccountControllerTest {
         CardResponse cr1 = CardData.response().withOwner(adminResponse).withStatus(statusResponse).build();
         CardResponse cr2 = CardData.response().withOwner(adminResponse).withStatus(statusResponse).build();
 
-        when(cardService.getCardsByUserId(adminResponse.id())).thenReturn(cards);
+        when(cardService.getByOwner(adminResponse.id())).thenReturn(cards);
         when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);
         when(cardMapper.toMaskedResponse(c2)).thenReturn(cr2);
         mockMvc.perform(get("/api/v1/accounts/{id}/cards", adminResponse.id())

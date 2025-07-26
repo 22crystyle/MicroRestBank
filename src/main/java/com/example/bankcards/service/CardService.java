@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.exception.*;
 import com.example.bankcards.repository.AccountRepository;
@@ -54,8 +55,15 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public List<Card> getCardsByUserId(Long userId) {
+    public List<Card> getByOwner(Long userId) {
         return cardRepository.getCardsByOwnerId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Card> getByOwner(String username, PageRequest pageRequest) {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new AccountNotFoundException(username));
+        return cardRepository.findAllByOwner(account, pageRequest);
     }
 
     @Transactional(readOnly = true)

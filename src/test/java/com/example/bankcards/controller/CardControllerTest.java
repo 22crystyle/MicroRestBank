@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -49,11 +50,13 @@ public class CardControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/cards - возвращает страницу AccountResponse")
-    @WithMockUser("ADMIN")
+    @WithMockUser(authorities = {"ADMIN"})
     void getCards_returnPage() throws Exception {
-        Page<Card> page = new PageImpl<>(List.of(new Card()));
-        when(cardService.getAllCards(any())).thenReturn(page);
-        when(cardMapper.toMaskedResponse(any())).thenReturn(CardData.DEFAULT_RESPONSE);
+        Card card = CardData.DEFAULT_ENTITY;
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Card> page = new PageImpl<>(List.of(card));
+        when(cardService.getAllCards(eq(pageRequest))).thenReturn(page);
+        when(cardMapper.toMaskedResponse(any(Card.class))).thenReturn(CardData.DEFAULT_RESPONSE);
 
         mockMvc.perform(get("/api/v1/cards")
                         .with(csrf())

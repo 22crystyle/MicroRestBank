@@ -19,6 +19,11 @@ public class CustomUserDetails implements UserDetails {
         return account.getId();
     }
 
+    public boolean hasRole(String authority) {
+        return getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority));
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(account.getRole().getName()));

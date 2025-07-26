@@ -104,7 +104,7 @@ public class AccountController {
             @Parameter(description = "ID of the account", required = true)
             @PathVariable Long id
     ) {
-        List<Card> cards = cardService.getCardsByUserId(id);
+        List<Card> cards = cardService.getByOwner(id);
         List<CardResponse> dtos = cards.stream()
                 .map(cardMapper::toMaskedResponse)
                 .toList();

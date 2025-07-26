@@ -84,13 +84,13 @@ public class CardServiceTest {
     }
 
     @Test
-    void getCardsByUserId_whenCalled_thenReturnCardList() {
+    void getByOwner_whenCalled_thenReturnCardList() {
         Long userId = 1L;
         Card card = CardData.DEFAULT_ENTITY;
         List<Card> cards = List.of(card);
         when(cardRepository.getCardsByOwnerId(userId)).thenReturn(cards);
 
-        List<Card> result = service.getCardsByUserId(userId);
+        List<Card> result = service.getByOwner(userId);
 
         assertEquals(cards, result);
         verify(cardRepository).getCardsByOwnerId(userId);
