@@ -63,12 +63,14 @@ public class CardController {
                 .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Card> entities;
+        Page<CardResponse> dtos;
         if (isAdmin) {
             entities = service.getAllCards(pageRequest);
+            dtos = entities.map(mapper::toMaskedResponse);
         } else {
             entities = service.getByOwner(userDetails.getUsername(), pageRequest);
+            dtos = entities.map(mapper::toFullResponse);
         }
-        Page<CardResponse> dtos = entities.map(mapper::toMaskedResponse);
         return ResponseEntity.ok(dtos);
     }
 
