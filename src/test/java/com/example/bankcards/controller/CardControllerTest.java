@@ -49,7 +49,7 @@ public class CardControllerTest {
     MockMvc mockMvc;
 
     @Test
-    @DisplayName("GET /api/v1/cards - возвращает страницу AccountResponse")
+    @DisplayName("GET /api/v1/cards - возвращает страницу с картами всех пользователей")
     @WithMockUser(authorities = {"ADMIN"})
     void getCards_returnPage() throws Exception {
         Card card = CardData.DEFAULT_ENTITY;
