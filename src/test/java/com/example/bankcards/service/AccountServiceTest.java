@@ -70,13 +70,12 @@ public class AccountServiceTest {
     }
 
     @Test
-    void deleteById_whenAccountNotExists_thenReturnFalse() {
+    void deleteById_whenAccountNotExists_thenThrowAccountNotFoundException() {
         Long id = 1L;
         when(repository.existsById(id)).thenReturn(false);
 
-        boolean result = service.deleteById(id);
+        assertThrows(AccountNotFoundException.class, () -> service.deleteById(id));
 
-        assertFalse(result);
         verify(repository).existsById(id);
         verify(repository, never()).deleteById(id);
     }
