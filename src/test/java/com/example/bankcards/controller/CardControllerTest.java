@@ -1,6 +1,7 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
+import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
@@ -8,6 +9,8 @@ import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.card.CardData;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +75,7 @@ public class CardControllerTest {
     @WithMockUser("USER")
     void getCard_asOwner_shouldReturnFullCard() throws Exception {
         Card card = CardData.DEFAULT_ENTITY;
-        when(cardService.getCard(1L)).thenReturn(card);
+        when(cardService.getById(1L)).thenReturn(card);
         when(cardService.isOwner(eq(1L), any())).thenReturn(true);
         when(cardMapper.toFullResponse(card)).thenReturn(CardData.DEFAULT_RESPONSE);
 
@@ -102,13 +106,14 @@ public class CardControllerTest {
     @DisplayName("POST /api/v1/card/transfer - перевод между картами владельца")
     @WithMockUser("USER")
     void transfer_asOwner_shouldReturnOk() throws Exception {
+        TransferRequest body = new TransferRequest(1L, 2L, new BigDecimal("100"));
+        ObjectMapper objectMapper = new ObjectMapper(JsonFactory.builder().build());
+
         when(cardService.isOwner(eq("1234"), any())).thenReturn(true);
         when(cardService.isOwner(eq("5678"), any())).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/cards/transfer")
-                        .param("fromCard", "1234")
-                        .param("toCard", "5678")
-                        .param("amount", "100.00")
+                        .content(objectMapper.writeValueAsString(body))
                         .principal(() -> "user")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)

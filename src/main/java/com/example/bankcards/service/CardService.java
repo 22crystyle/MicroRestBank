@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.exception.*;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public Card getCard(Long id) {
+    public Card getById(Long id) {
         return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(id));
     }
 
@@ -89,38 +89,38 @@ public class CardService {
     }
 
     @Transactional
-    public void transfer(String fromCard, String toCard, BigDecimal amount, Principal principal) {
-        Card first = cardRepository.findByPan(fromCard).orElseThrow(
-                CardNotFoundException::new
+    public void transfer(TransferRequest request, String username) {
+        Card from = cardRepository.findById(request.fromCardId()).orElseThrow(
+                () -> new CardNotFoundException(request.fromCardId())
         );
-        Card second = cardRepository.findByPan(toCard).orElseThrow(
-                CardNotFoundException::new
+        Card to = cardRepository.findById(request.toCardId()).orElseThrow(
+                () -> new CardNotFoundException(request.toCardId())
         );
 
-        if (!first.getOwner().getUsername().equals(principal.getName()) ||
-                !second.getOwner().getUsername().equals(principal.getName())) {
+        if (!from.getOwner().getUsername().equals(username) ||
+                !to.getOwner().getUsername().equals(username)) {
             throw new IsNotOwnerException("You are not owner of these cards");
         }
 
-        if (first.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + first.getPan() + " is blocked");
+        if (from.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with id=" + request.fromCardId() + " is blocked");
         }
 
-        if (second.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with PAN=" + second.getPan() + " is blocked");
+        if (to.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
+            throw new CardIsBlockedException("Card with id=" + request.toCardId() + " is blocked");
         }
 
-        if (amount.signum() <= 0) {
+        if (request.amount().signum() <= 0) {
             throw new InvalidAmountException("You cannot transfer a negative value to a card");
         }
 
-        if (first.getBalance().compareTo(amount) < 0) {
-            throw new InvalidAmountException((first.getBalance().subtract(second.getBalance())));
+        if (from.getBalance().compareTo(request.amount()) < 0) {
+            throw new InvalidAmountException((from.getBalance().subtract(to.getBalance())));
         }
 
-        first.setBalance(first.getBalance().subtract(amount));
-        second.setBalance(second.getBalance().add(amount));
-        cardRepository.save(first);
-        cardRepository.save(second);
+        from.setBalance(from.getBalance().subtract(request.amount()));
+        to.setBalance(to.getBalance().add(request.amount()));
+        cardRepository.save(from);
+        cardRepository.save(to);
     }
 }

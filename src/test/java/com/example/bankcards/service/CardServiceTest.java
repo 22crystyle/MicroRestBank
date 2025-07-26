@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,23 +97,23 @@ public class CardServiceTest {
     }
 
     @Test
-    void getCard_whenCardExists_thenReturnCard() {
+    void getCard_whenCardExists_thenReturnById() {
         Long cardId = 1L;
         Card card = CardData.DEFAULT_ENTITY;
         when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
 
-        Card result = service.getCard(cardId);
+        Card result = service.getById(cardId);
 
         assertEquals(card, result);
         verify(cardRepository).findById(cardId);
     }
 
     @Test
-    void getCard_whenCardNotExists_thenThrowException() {
+    void getCard_whenByIdNotExists_thenThrowException() {
         Long cardId = 1L;
         when(cardRepository.findById(cardId)).thenReturn(Optional.empty());
 
-        assertThrows(CardNotFoundException.class, () -> service.getCard(cardId));
+        assertThrows(CardNotFoundException.class, () -> service.getById(cardId));
         verify(cardRepository).findById(cardId);
     }
 
@@ -171,102 +171,94 @@ public class CardServiceTest {
 
     @Test
     void transfer_whenValid_thenSuccess() {
-        String fromCard = "1234";
-        String toCard = "5678";
         BigDecimal amount = new BigDecimal("100.00");
-        Principal principal = () -> "user";
         Card from = CardData.entity()
-                .withPan(fromCard)
-                .withBalance(new BigDecimal("200.00"))
-                .withOwner(AccountData.entity().withUsername("user").build())
-                .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
+                .withId(1L)
+                .withBalance(amount)
+                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withCardStatus(CardStatusData.DEFAULT_ENTITY)
                 .build();
         Card to = CardData.entity()
-                .withPan(toCard)
+                .withId(2L)
                 .withBalance(BigDecimal.ZERO)
-                .withOwner(AccountData.entity().withUsername("user").build())
-                .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
+                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withCardStatus(CardStatusData.DEFAULT_ENTITY)
                 .build();
+        TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
 
-        when(cardRepository.findByPan(fromCard)).thenReturn(Optional.of(from));
-        when(cardRepository.findByPan(toCard)).thenReturn(Optional.of(to));
+        when(cardRepository.findById(from.getId())).thenReturn(Optional.of(from));
+        when(cardRepository.findById(to.getId())).thenReturn(Optional.of(to));
         when(cardRepository.save(any(Card.class))).thenReturn(from).thenReturn(to);
 
-        service.transfer(fromCard, toCard, amount, principal);
+        service.transfer(request, "user");
 
         verify(cardRepository).save(from);
         verify(cardRepository).save(to);
-        assertEquals(new BigDecimal("100.00"), from.getBalance());
+        assertEquals(new BigDecimal("0.00"), from.getBalance());
         assertEquals(new BigDecimal("100.00"), to.getBalance());
     }
 
     @Test
     void transfer_whenNotOwner_thenThrowException() {
-        String fromCard = "1234";
-        String toCard = "5678";
         BigDecimal amount = new BigDecimal("100.00");
-        Principal principal = () -> "other";
         Card from = CardData.entity()
-                .withPan(fromCard)
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withId(1L)
+                .withBalance(amount)
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .build();
         Card to = CardData.entity()
-                .withPan(toCard)
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withId(2L)
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .build();
+        TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
 
-        when(cardRepository.findByPan(fromCard)).thenReturn(Optional.of(from));
-        when(cardRepository.findByPan(toCard)).thenReturn(Optional.of(to));
+        when(cardRepository.findById(from.getId())).thenReturn(Optional.of(from));
+        when(cardRepository.findById(to.getId())).thenReturn(Optional.of(to));
 
-        assertThrows(IsNotOwnerException.class, () -> service.transfer(fromCard, toCard, amount, principal));
+        assertThrows(IsNotOwnerException.class, () -> service.transfer(request, "other"));
         verifyNoMoreInteractions(cardRepository);
     }
 
     @Test
     void transfer_whenCardBlocked_thenThrowException() {
-        String fromCard = "1234";
-        String toCard = "5678";
         BigDecimal amount = new BigDecimal("100.00");
-        Principal principal = () -> "user";
         Card from = CardData.entity()
-                .withPan(fromCard)
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withId(1L)
+                .withBalance(amount)
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("BLOCKED").build())
                 .build();
         Card to = CardData.entity()
-                .withPan(toCard)
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withId(2L)
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .build();
 
-        when(cardRepository.findByPan(fromCard)).thenReturn(Optional.of(from));
-        when(cardRepository.findByPan(toCard)).thenReturn(Optional.of(to));
+        when(cardRepository.findById(from.getId())).thenReturn(Optional.of(from));
+        when(cardRepository.findById(to.getId())).thenReturn(Optional.of(to));
+        TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
 
-        assertThrows(CardIsBlockedException.class, () -> service.transfer(fromCard, toCard, amount, principal));
+        assertThrows(CardIsBlockedException.class, () -> service.transfer(request, "user"));
         verifyNoMoreInteractions(cardRepository);
     }
 
     @Test
     void transfer_whenInsufficientFunds_thenThrowException() {
-        String fromCard = "1234";
-        String toCard = "5678";
         BigDecimal amount = new BigDecimal("100.00");
-        Principal principal = () -> "user";
         Card from = CardData.entity()
-                .withPan(fromCard)
                 .withBalance(new BigDecimal("50.00"))
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
                 .build();
         Card to = CardData.entity()
-                .withPan(toCard)
-                .withOwner(AccountData.entity().withUsername("user").build())
+                .withOwner(AccountData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
                 .build();
+        TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
 
-        when(cardRepository.findByPan(fromCard)).thenReturn(Optional.of(from));
-        when(cardRepository.findByPan(toCard)).thenReturn(Optional.of(to));
+        when(cardRepository.findById(from.getId())).thenReturn(Optional.of(from));
+        when(cardRepository.findById(to.getId())).thenReturn(Optional.of(to));
 
-        assertThrows(InvalidAmountException.class, () -> service.transfer(fromCard, toCard, amount, principal));
+        assertThrows(InvalidAmountException.class, () -> service.transfer(request, "user"));
         verifyNoMoreInteractions(cardRepository);
     }
 }

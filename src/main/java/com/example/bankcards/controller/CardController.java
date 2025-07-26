@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.pagination.PageCardResponse;
+import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,9 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.math.BigDecimal;
 import java.net.URI;
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/cards")
@@ -78,7 +78,7 @@ public class CardController {
     @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Get card by ID",
-            description = "Returns card details for the specified card ID. Full details are returned if the authenticated user is the owner; otherwise, masked details are provided.",
+            description = "USER sees full if owner, else masked.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -92,7 +92,7 @@ public class CardController {
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Card card = service.getCard(id);
+        Card card = service.getById(id);
         CardResponse dto = service.isOwner(id, userDetails.getUsername()) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
@@ -103,7 +103,7 @@ public class CardController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Create a new card",
-            description = "Creates a new card for the specified user ID. Requires ADMIN role.",
+            description = "Creates a new card for user. Requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -116,7 +116,8 @@ public class CardController {
             @Parameter(description = "ID of the user for whom the card is created", required = true)
             @RequestParam Long userId
     ) {
-        CardResponse response = mapper.toMaskedResponse(service.createCardForAccount(userId));
+        Card card = service.createCardForAccount(userId);
+        CardResponse response = mapper.toMaskedResponse(card);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
@@ -207,15 +208,10 @@ public class CardController {
     )
     public ResponseEntity<Void> transfer(
             @Parameter(description = "Card number to transfer from", required = true)
-            @RequestParam String fromCard,
-            @Parameter(description = "Card number to transfer to", required = true)
-            @RequestParam String toCard,
-            @Parameter(description = "Amount to transfer", required = true)
-            @RequestParam BigDecimal amount,
-            @Parameter(description = "Authenticated user principal", hidden = true)
-            Principal principal
+            @RequestBody @Valid TransferRequest request,
+            @AuthenticationPrincipal UserDetails user
     ) {
-        service.transfer(fromCard, toCard, amount, principal);
+        service.transfer(request, user.getUsername());
         return ResponseEntity.ok().build();
     }
 }
