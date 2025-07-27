@@ -4,7 +4,7 @@ databaseChangeLog:
   - include:
       file: classpath:db/migration/v1.0/002-create-card_statuses.yaml
   - include:
-      file: classpath:db/migration/v1.0/003-create-accounts.yaml
+      file: classpath:db/migration/v1.0/003-create-users.yaml
   - include:
       file: classpath:db/migration/v1.0/004-create-bankcard.yaml
   - include:

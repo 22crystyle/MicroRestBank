@@ -1,9 +1,9 @@
-package com.example.bankcards.util.data.account;
+package com.example.bankcards.util.data.user;
 
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.util.data.user.role.RoleData;
 
-public abstract class BaseAccountBuilder<T extends BaseAccountBuilder<T>> {
+public abstract class BaseUserBuilder<T extends BaseUserBuilder<T>> {
     protected Long id;
     protected String username = "user";
     protected String password = "pass";

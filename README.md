@@ -69,10 +69,10 @@ The API is documented using OpenAPI 3.1.0 and can be explored via Swagger UI at 
 
 - **Accounts**:
     - `GET /api/v1/accounts`: Retrieve a paginated list of accounts (Admin only).
-    - `GET /api/v1/accounts/{id}`: Get account details by ID (Admin only).
-    - `POST /api/v1/accounts`: Create a new account (Admin only).
-    - `DELETE /api/v1/accounts/{id}`: Delete an account by ID (Admin only).
-    - `GET /api/v1/accounts/{id}/cards`: Get all cards for an account (Admin only).
+    - `GET /api/v1/accounts/{id}`: Get user details by ID (Admin only).
+    - `POST /api/v1/accounts`: Create a new user (Admin only).
+    - `DELETE /api/v1/accounts/{id}`: Delete an user by ID (Admin only).
+    - `GET /api/v1/accounts/{id}/cards`: Get all cards for an user (Admin only).
 
 - **Cards**:
     - `GET /api/v1/cards`: Retrieve a paginated list of cards (Admin only).
@@ -105,7 +105,7 @@ The application uses PostgreSQL with Liquibase for schema management. The databa
 
 - **roles**: Stores user roles (e.g., ADMIN, USER).
 - **card_statuses**: Stores card status types (ACTIVE, BLOCKED, EXPIRED).
-- **accounts**: Stores user account details (username, password, role, etc.).
+- **accounts**: Stores user user details (username, password, role, etc.).
 - **bank_cards**: Stores card details (card number, owner, balance, status, expiry date).
 - **card_block_requests**: Stores card block requests (card, status, created/processed timestamps).
 
@@ -127,10 +127,10 @@ The project includes unit and integration tests using JUnit, Mockito, and Spring
 
 Key test files:
 
-- `AccountControllerTest.java`: Unit tests for account-related endpoints.
+- `AccountControllerTest.java`: Unit tests for user-related endpoints.
 - `CardControllerTest.java`: Unit tests for card-related endpoints.
-- `AccountControllerIntegrationTest.java`: Integration tests for account endpoints.
-- `AccountServiceTest.java`: Unit tests for account service logic.
+- `AccountControllerIntegrationTest.java`: Integration tests for user endpoints.
+- `AccountServiceTest.java`: Unit tests for user service logic.
 
 ## Contact
 

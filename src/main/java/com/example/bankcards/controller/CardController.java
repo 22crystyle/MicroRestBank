@@ -33,7 +33,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
-@Tag(name = "Cards", description = "Access and management of account cards")
+@Tag(name = "Cards", description = "Access and management of user cards")
 public class CardController {
 
     private final CardMapper mapper;

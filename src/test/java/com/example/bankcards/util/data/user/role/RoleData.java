@@ -1,4 +1,4 @@
-package com.example.bankcards.util.data.account.role;
+package com.example.bankcards.util.data.user.role;
 
 import com.example.bankcards.entity.Role;
 

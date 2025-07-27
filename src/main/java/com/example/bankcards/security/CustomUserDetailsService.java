@@ -1,7 +1,7 @@
 package com.example.bankcards.security;
 
-import com.example.bankcards.entity.Account;
-import com.example.bankcards.repository.AccountRepository;
+import com.example.bankcards.entity.User;
+import com.example.bankcards.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,18 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final AccountRepository repository;
+    private final UserRepository repository;
 
-    public CustomUserDetailsService(AccountRepository repository) {
+    public CustomUserDetailsService(UserRepository repository) {
         this.repository = repository;
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = repository.findByUsername(username)
+        User user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + username));
 
-        return new CustomUserDetails(account);
+        return new CustomUserDetails(user);
     }
 }

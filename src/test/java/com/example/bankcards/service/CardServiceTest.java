@@ -1,16 +1,16 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.*;
-import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
-import com.example.bankcards.util.data.account.AccountData;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
+import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.pan.CardPanGenerator;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class CardServiceTest {
     private CardRepository cardRepository;
 
     @Mock
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Mock
     private CardStatusRepository cardStatusRepository;
@@ -53,12 +53,12 @@ public class CardServiceTest {
     @Test
     void createCardForAccount_whenAccountExists_thenReturnCard() {
         Long accountId = 1L;
-        Account account = AccountData.DEFAULT_ENTITY;
+        User user = UserData.DEFAULT_ENTITY;
         CardStatus cardStatus = CardStatusData.DEFAULT_ENTITY;
         Card card = CardData.DEFAULT_ENTITY;
         String cardNumber = "1234567890123456";
 
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(userRepository.findById(accountId)).thenReturn(Optional.of(user));
         when(cardStatusRepository.findById(1)).thenReturn(Optional.of(cardStatus));
         when(cardPanGeneratorFactory.getGenerator("mastercard")).thenReturn(cardPanGenerator);
         when(cardPanGenerator.generateCardPan()).thenReturn(cardNumber);
@@ -67,7 +67,7 @@ public class CardServiceTest {
         Card result = service.createCardForAccount(accountId);
 
         assertEquals(card, result);
-        verify(accountRepository).findById(accountId);
+        verify(userRepository).findById(accountId);
         verify(cardStatusRepository).findById(1);
         verify(cardRepository).save(any(Card.class));
     }
@@ -75,11 +75,11 @@ public class CardServiceTest {
     @Test
     void createCardForAccount_whenAccountNotExists_thenThrowException() {
         Long accountId = 1L;
-        when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
+        when(userRepository.findById(accountId)).thenReturn(Optional.empty());
         when(cardPanGeneratorFactory.getGenerator("mastercard")).thenReturn(cardPanGenerator);
 
-        assertThrows(AccountNotFoundException.class, () -> service.createCardForAccount(accountId));
-        verify(accountRepository).findById(accountId);
+        assertThrows(UserNotFoundException.class, () -> service.createCardForAccount(accountId));
+        verify(userRepository).findById(accountId);
         verifyNoInteractions(cardStatusRepository, cardRepository);
     }
 
@@ -121,7 +121,7 @@ public class CardServiceTest {
     void isOwner_byCardId_whenOwnerMatches_thenReturnTrue() {
         Long cardId = 1L;
         String username = "user";
-        Card card = CardData.entity().withOwner(AccountData.entity().withUsername(username).build()).build();
+        Card card = CardData.entity().withOwner(UserData.entity().withUsername(username).build()).build();
         when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
 
         boolean result = service.isOwner(cardId, username);
@@ -134,7 +134,7 @@ public class CardServiceTest {
     void isOwner_byCardId_whenOwnerDoesNotMatch_thenReturnFalse() {
         Long cardId = 1L;
         String username = "user";
-        Card card = CardData.entity().withOwner(AccountData.entity().withUsername("other").build()).build();
+        Card card = CardData.entity().withOwner(UserData.entity().withUsername("other").build()).build();
         when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
 
         boolean result = service.isOwner(cardId, username);
@@ -147,7 +147,7 @@ public class CardServiceTest {
     void isOwner_byCardNumber_whenOwnerMatches_thenReturnTrue() {
         String cardNumber = "1234567890123456";
         String username = "user";
-        Card card = CardData.entity().withOwner(AccountData.entity().withUsername(username).build()).build();
+        Card card = CardData.entity().withOwner(UserData.entity().withUsername(username).build()).build();
         when(cardRepository.findByPan(cardNumber)).thenReturn(Optional.of(card));
 
         boolean result = service.isOwner(cardNumber, username);
@@ -175,13 +175,13 @@ public class CardServiceTest {
         Card from = CardData.entity()
                 .withId(1L)
                 .withBalance(amount)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.DEFAULT_ENTITY)
                 .build();
         Card to = CardData.entity()
                 .withId(2L)
                 .withBalance(BigDecimal.ZERO)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.DEFAULT_ENTITY)
                 .build();
         TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
@@ -204,11 +204,11 @@ public class CardServiceTest {
         Card from = CardData.entity()
                 .withId(1L)
                 .withBalance(amount)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .build();
         Card to = CardData.entity()
                 .withId(2L)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .build();
         TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);
 
@@ -225,12 +225,12 @@ public class CardServiceTest {
         Card from = CardData.entity()
                 .withId(1L)
                 .withBalance(amount)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("BLOCKED").build())
                 .build();
         Card to = CardData.entity()
                 .withId(2L)
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .build();
 
         when(cardRepository.findById(from.getId())).thenReturn(Optional.of(from));
@@ -246,11 +246,11 @@ public class CardServiceTest {
         BigDecimal amount = new BigDecimal("100.00");
         Card from = CardData.entity()
                 .withBalance(new BigDecimal("50.00"))
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
                 .build();
         Card to = CardData.entity()
-                .withOwner(AccountData.DEFAULT_ENTITY)
+                .withOwner(UserData.DEFAULT_ENTITY)
                 .withCardStatus(CardStatusData.entity().withName("ACTIVE").build())
                 .build();
         TransferRequest request = new TransferRequest(from.getId(), to.getId(), amount);

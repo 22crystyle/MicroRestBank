@@ -13,7 +13,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: bank_card_pkey
                   autoIncrement: true
-              - column: { name: account_id, type: BIGINT }
+              - column: { name: user_id, type: BIGINT }
               - column:
                   name: pan
                   type: VARCHAR(16)
@@ -42,17 +42,17 @@ databaseChangeLog:
             referencedTableName: card_statuses
             validate: true
   - changeSet:
-      id: 160525-007-bankcard_account_id_fkey
+      id: 160525-007-bankcard_user_id_fkey
       author: Crystal
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: account_id
+            baseColumnNames: user_id
             baseTableName: bank_cards
-            constraintName: bank_card_account_id_fkey
+            constraintName: bank_card_user_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: SET NULL
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: accounts
+            referencedTableName: users
             validate: true

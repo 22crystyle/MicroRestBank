@@ -1,13 +1,13 @@
 package com.example.bankcards.util.data.card;
 
-import com.example.bankcards.dto.response.AccountResponse;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.response.CardStatusResponse;
-import com.example.bankcards.entity.Account;
+import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.util.data.account.AccountData;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.util.data.card.status.CardStatusData;
+import com.example.bankcards.util.data.user.UserData;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -28,7 +28,7 @@ public class CardData {
     }
 
     public static class CardBuilder extends BaseCardBuilder<CardBuilder> {
-        private Account owner = AccountData.DEFAULT_ENTITY;
+        private User owner = UserData.DEFAULT_ENTITY;
         private YearMonth expiryDate = YearMonth.now().plusYears(4);
         private CardStatus cardStatus = CardStatusData.DEFAULT_ENTITY;
         private BigDecimal balance = BigDecimal.ZERO;
@@ -36,7 +36,7 @@ public class CardData {
         private CardBuilder() {
         }
 
-        public CardBuilder withOwner(Account owner) {
+        public CardBuilder withOwner(User owner) {
             this.owner = owner;
             return this;
         }
@@ -74,7 +74,7 @@ public class CardData {
     }
 
     public static class CardResponseBuilder extends BaseCardBuilder<CardResponseBuilder> {
-        private AccountResponse owner = AccountData.DEFAULT_RESPONSE;
+        private UserResponse owner = UserData.DEFAULT_RESPONSE;
         private CardStatusResponse status = CardStatusData.DEFAULT_RESPONSE;
         private BigDecimal balance = BigDecimal.ZERO;
         private boolean masked = false;
@@ -82,7 +82,7 @@ public class CardData {
         private CardResponseBuilder() {
         }
 
-        public CardResponseBuilder withOwner(AccountResponse owner) {
+        public CardResponseBuilder withOwner(UserResponse owner) {
             this.owner = owner;
             return this;
         }

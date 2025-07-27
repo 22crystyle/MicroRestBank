@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 160525-01-create-accounts
+      id: 160525-01-create-users
       author: Crystal
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: account_pkey
+                    primaryKeyName: user_pkey
                   autoIncrement: true
               - column:
                   name: username
@@ -19,7 +19,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
-                    uniqueConstraintName: uq_account_username
+                    uniqueConstraintName: uq_user_username
               - column: { name: password, type: VARCHAR(255) }
               - column: { name: first_name, type: VARCHAR(255) }
               - column: { name: last_name, type: VARCHAR(255) }
@@ -30,23 +30,23 @@ databaseChangeLog:
                   constraints:
                     nullable: true
                     unique: true
-                    uniqueConstraintName: uq_account_email
+                    uniqueConstraintName: uq_user_email
               - column:
                   name: phone
                   type: VARCHAR(255)
                   constraints:
                     nullable: true
                     unique: true
-                    uniqueConstraintName: uq_account_phone
-            tableName: accounts
+                    uniqueConstraintName: uq_user_phone
+            tableName: users
   - changeSet:
-      id: 160525-02-account_role_id_fkey
+      id: 160525-02-user_role_id_fkey
       author: Crystal
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: role_id
-            baseTableName: accounts
-            constraintName: account_role_id_fkey
+            baseTableName: users
+            constraintName: user_role_id_fkey
             deferrable: false
             initiallyDeferrable: false
             onDelete: NO ACTION

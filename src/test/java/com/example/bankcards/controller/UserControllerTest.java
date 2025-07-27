@@ -1,22 +1,22 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.dto.response.AccountResponse;
+import com.example.bankcards.dto.UserMapper;
+import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.response.CardStatusResponse;
-import com.example.bankcards.entity.Account;
+import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.exception.AccountNotFoundException;
+import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.security.JwtUtil;
-import com.example.bankcards.service.AccountService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.util.data.account.AccountData;
-import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
+import com.example.bankcards.util.data.user.UserData;
+import com.example.bankcards.util.data.user.role.RoleData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,12 +48,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = AccountController.class)
-public class AccountControllerTest {
+@WebMvcTest(controllers = UserController.class)
+public class UserControllerTest {
     @MockitoBean
-    private AccountService service;
+    private UserService service;
     @MockitoBean
-    private AccountMapper accountMapper;
+    private UserMapper userMapper;
     @MockitoBean
     private CardService cardService;
     @MockitoBean
@@ -65,13 +65,13 @@ public class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private Account userAccount;
-    private Account adminAccount;
-    private AccountResponse userAccountResponse;
-    private AccountResponse adminAccountResponse;
+    private User user;
+    private User admin;
+    private UserResponse userResponse;
+    private UserResponse adminResponse;
     private String token;
 
-    static Stream<Arguments> getAccountByIdParams() {
+    static Stream<Arguments> getUserByIdParams() {
         return Stream.of(
                 Arguments.of("ADMIN", true, 200),
                 Arguments.of("USER", true, 200),
@@ -86,30 +86,30 @@ public class AccountControllerTest {
     void initData() {
         Role adminRole = RoleData.role().withId(1).withName("ROLE_ADMIN").build();
         Role userRole = RoleData.role().withId(2).withName("ROLE_USER").build();
-        adminAccount = AccountData.entity()
+        admin = UserData.entity()
                 .withId(1L)
                 .withUsername("admin")
                 .withRole(adminRole).build();
-        adminAccountResponse = AccountData.response()
+        adminResponse = UserData.response()
                 .withId(1L)
                 .withUsername("admin")
                 .build();
-        userAccount = AccountData.entity()
+        user = UserData.entity()
                 .withId(2L)
                 .withUsername("user")
                 .withRole(userRole).build();
-        userAccountResponse = AccountData.response()
+        userResponse = UserData.response()
                 .withId(2L)
                 .withUsername("user")
                 .build();
 
-        String userToken = jwtUtil.generateToken(userAccount.getUsername(), userAccount.getRole().getName());
-        when(jwtUtil.validateToken(userToken, userAccount.getUsername())).thenReturn(true);
+        String userToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
+        when(jwtUtil.validateToken(userToken, user.getUsername())).thenReturn(true);
         when(jwtUtil.extractUsername(userToken)).thenReturn("user");
 
 
-        String adminToken = jwtUtil.generateToken(adminAccount.getUsername(), adminAccount.getRole().getName());
-        when(jwtUtil.validateToken(adminToken, adminAccount.getUsername())).thenReturn(true);
+        String adminToken = jwtUtil.generateToken(admin.getUsername(), admin.getRole().getName());
+        when(jwtUtil.validateToken(adminToken, admin.getUsername())).thenReturn(true);
         when(jwtUtil.extractUsername(adminToken)).thenReturn("admin");
     }
 
@@ -117,18 +117,18 @@ public class AccountControllerTest {
     @DisplayName("GET /api/v1/accounts - возвращает страницу AccountResponse")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getPageOfAccounts_returnPage() throws Exception {
-        Account admin = adminAccount;
-        Account user = userAccount;
+        User admin = this.admin;
+        User user = this.user;
 
-        Page<Account> page = new PageImpl<>(List.of(admin, user));
-        AccountResponse adminDto = adminAccountResponse;
-        AccountResponse userDto = userAccountResponse;
+        Page<User> page = new PageImpl<>(List.of(admin, user));
+        UserResponse adminDto = adminResponse;
+        UserResponse userDto = userResponse;
 
         when(service.getPage(any(PageRequest.class))).thenReturn(page);
-        when(accountMapper.toResponse(admin)).thenReturn(adminDto);
-        when(accountMapper.toResponse(user)).thenReturn(userDto);
+        when(userMapper.toResponse(admin)).thenReturn(adminDto);
+        when(userMapper.toResponse(user)).thenReturn(userDto);
 
-        mockMvc.perform(get("/api/v1/accounts")
+        mockMvc.perform(get("/api/v1/users")
                         .param("page", "0")
                         .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON)
@@ -145,14 +145,14 @@ public class AccountControllerTest {
     @Test
     @DisplayName("GET /api/v1/accounts/{id} - возвращает AccountResponse")
     @WithMockUser(roles = "ADMIN")
-    void getAccountById_returnsAccountResponse() throws Exception {
-        Account admin = adminAccount;
-        AccountResponse dto = adminAccountResponse;
+    void getUserById_returnsUserResponse() throws Exception {
+        User admin = this.admin;
+        UserResponse dto = adminResponse;
 
-        when(service.getAccountById(admin.getId())).thenReturn(admin);
-        when(accountMapper.toResponse(any(Account.class))).thenReturn(dto);
+        when(service.getUserById(admin.getId())).thenReturn(admin);
+        when(userMapper.toResponse(any(User.class))).thenReturn(dto);
 
-        mockMvc.perform(get("/api/v1/accounts/{id}", admin.getId())
+        mockMvc.perform(get("/api/v1/users/{id}", admin.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -169,7 +169,7 @@ public class AccountControllerTest {
         Card c2 = CardData.entity().withId(2L).build();
         List<Card> cards = List.of(c1, c2);
 
-        AccountResponse adminResponse = adminAccountResponse;
+        UserResponse adminResponse = this.adminResponse;
         CardStatusResponse statusResponse = CardStatusData.DEFAULT_RESPONSE;
 
         CardResponse cr1 = CardData.response().withOwner(adminResponse).withStatus(statusResponse).build();
@@ -178,7 +178,7 @@ public class AccountControllerTest {
         when(cardService.getByOwner(adminResponse.id())).thenReturn(cards);
         when(cardMapper.toMaskedResponse(c1)).thenReturn(cr1);
         when(cardMapper.toMaskedResponse(c2)).thenReturn(cr2);
-        mockMvc.perform(get("/api/v1/accounts/{id}/cards", adminResponse.id())
+        mockMvc.perform(get("/api/v1/users/{id}/cards", adminResponse.id())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -190,12 +190,12 @@ public class AccountControllerTest {
     @DisplayName("POST /api/v1/accounts — создаёт и возвращает AccountResponse")
     @WithMockUser(roles = "ADMIN")
     void postAccount_returnsCreated() throws Exception {
-        Account user = userAccount;
+        User user = this.user;
 
-        AccountResponse dto = userAccountResponse;
+        UserResponse dto = userResponse;
 
-        when(service.createAccount(any(AccountRequest.class))).thenReturn(user);
-        when(accountMapper.toResponse(user)).thenReturn(dto);
+        when(service.createUser(any(UserRequest.class))).thenReturn(user);
+        when(userMapper.toResponse(user)).thenReturn(dto);
 
         String jsonReq = """
                 {
@@ -209,23 +209,23 @@ public class AccountControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/v1/accounts")
+        mockMvc.perform(post("/api/v1/users")
                         .with(csrf())
                         .content(jsonReq)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(userAccount.getId().intValue())))
-                .andExpect(jsonPath("$.username", is(userAccount.getUsername())))
+                .andExpect(jsonPath("$.id", is(this.user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(this.user.getUsername())))
                 .andDo(print());
     }
 
     @Test
     @DisplayName("DELETE /api/v1/accounts/{id} — когда удаление успешно")
     @WithMockUser(roles = "ADMIN")
-    public void deleteAccount_whenDeleted_noContent() throws Exception {
-        when(service.deleteById(userAccount.getId())).thenReturn(true);
-        mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
+    public void deleteUser_whenDeleted_noContent() throws Exception {
+        when(service.deleteById(user.getId())).thenReturn(true);
+        mockMvc.perform(delete("/api/v1/users/{id}", user.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
@@ -236,10 +236,10 @@ public class AccountControllerTest {
     @Test
     @DisplayName("DELETE /api/v1/accounts/{id} — когда не найдено")
     @WithMockUser(roles = "ADMIN")
-    void deleteAccount_whenNotFound_notFound() throws Exception {
-        when(service.deleteById(userAccount.getId())).thenReturn(false);
+    void deleteUser_whenNotFound_notFound() throws Exception {
+        when(service.deleteById(user.getId())).thenReturn(false);
 
-        mockMvc.perform(delete("/api/v1/accounts/{id}", userAccount.getId())
+        mockMvc.perform(delete("/api/v1/users/{id}", user.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
@@ -248,22 +248,22 @@ public class AccountControllerTest {
     }
 
     @ParameterizedTest(name = "[{index}] role={0}, exists={1} => status={2}")
-    @MethodSource("getAccountByIdParams")
+    @MethodSource("getUserByIdParams")
     void getAccountId_withRolesAndExistence(String role, boolean exists, int expectedStatus) throws Exception {
         Long id = 99L;
 
         if (exists) {
-            when(service.getAccountById(id)).thenReturn(adminAccount);
-            when(accountMapper.toResponse(adminAccount)).thenReturn(adminAccountResponse);
+            when(service.getUserById(id)).thenReturn(admin);
+            when(userMapper.toResponse(admin)).thenReturn(adminResponse);
         } else {
-            when(service.getAccountById(id)).thenThrow(new AccountNotFoundException(id));
+            when(service.getUserById(id)).thenThrow(new UserNotFoundException(id));
         }
 
         RequestPostProcessor auth = role != null
                 ? user("test").roles(role.replace("ROLE_", ""))
                 : anonymous();
 
-        mockMvc.perform(get("/api/v1/accounts/{id}", id)
+        mockMvc.perform(get("/api/v1/users/{id}", id)
                         .with(auth)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))

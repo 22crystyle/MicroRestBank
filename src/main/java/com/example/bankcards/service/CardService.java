@@ -1,12 +1,12 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.*;
-import com.example.bankcards.repository.AccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardStatusType;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class CardService {
     private static final Integer DEFAULT_STATUS_ID = 1;
 
     private final CardRepository cardRepository;
-    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final CardStatusRepository cardStatusRepository;
     private final CardPanGeneratorFactory cardPanGeneratorFactory;
 
@@ -43,8 +43,8 @@ public class CardService {
         String number;
         number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
         card.setPan(number);
-        card.setOwner(accountRepository.findById(accountId).orElseThrow(
-                () -> new AccountNotFoundException(accountId)
+        card.setOwner(userRepository.findById(accountId).orElseThrow(
+                () -> new UserNotFoundException(accountId)
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
         card.setBalance(BigDecimal.ZERO);
@@ -61,9 +61,9 @@ public class CardService {
 
     @Transactional(readOnly = true)
     public Page<Card> getByOwner(String username, PageRequest pageRequest) {
-        Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new AccountNotFoundException(username));
-        return cardRepository.findAllByOwner(account, pageRequest);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+        return cardRepository.findAllByOwner(user, pageRequest);
     }
 
     @Transactional(readOnly = true)

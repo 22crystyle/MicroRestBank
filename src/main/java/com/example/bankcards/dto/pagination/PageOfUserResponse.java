@@ -1,11 +1,11 @@
 package com.example.bankcards.dto.pagination;
 
-import com.example.bankcards.dto.response.AccountResponse;
+import com.example.bankcards.dto.response.UserResponse;
 
 import java.util.List;
 
-public record PageAccountResponse(
-        List<AccountResponse> content,
+public record PageOfUserResponse(
+        List<UserResponse> content,
         PageableObject pageable,
         boolean last,
         int totalElements,

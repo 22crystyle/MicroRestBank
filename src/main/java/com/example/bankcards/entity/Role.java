@@ -23,5 +23,5 @@ public class Role {
             fetch = FetchType.LAZY
     )
     @JsonIgnore
-    private List<Account> accounts;
+    private List<User> users;
 }

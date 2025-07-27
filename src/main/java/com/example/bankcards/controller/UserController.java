@@ -1,15 +1,15 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.AccountMapper;
 import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.pagination.PageAccountResponse;
-import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.dto.response.AccountResponse;
+import com.example.bankcards.dto.UserMapper;
+import com.example.bankcards.dto.pagination.PageOfUserResponse;
+import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.entity.Account;
+import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.service.AccountService;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,66 +32,66 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("/api/v1/users")
 @PreAuthorize(value = "hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Validated
-@Tag(name = "Accounts", description = "Account access and management. requires ADMIN role")
-public class AccountController {
+@Tag(name = "Users", description = "User access and management. requires ADMIN role")
+public class UserController {
 
-    private final AccountService service;
-    private final AccountMapper mapper;
+    private final UserService service;
+    private final UserMapper mapper;
     private final CardService cardService;
     private final CardMapper cardMapper;
 
     @GetMapping
     @Operation(
-            summary = "Get paginated list of accounts",
-            description = "Returns a paginated list of account resources, requires ADMIN role.",
+            summary = "Get paginated list of users",
+            description = "Returns a paginated list of user resources, requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "A page of accounts",
-                            content = @Content(schema = @Schema(implementation = PageAccountResponse.class))
+                            description = "A page of users",
+                            content = @Content(schema = @Schema(implementation = PageOfUserResponse.class))
                     )
             }
     )
-    public ResponseEntity<Page<AccountResponse>> getPageOfAccounts(
+    public ResponseEntity<Page<UserResponse>> getPageOfUsers(
             @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
-        Page<Account> entities = service.getPage(PageRequest.of(page, size));
-        Page<AccountResponse> dtos = entities.map(mapper::toResponse);
+        Page<User> entities = service.getPage(PageRequest.of(page, size));
+        Page<UserResponse> dtos = entities.map(mapper::toResponse);
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Get account by ID",
-            description = "Returns account details for the specified account ID",
+            summary = "Get user by ID",
+            description = "Returns user details for the specified user ID",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Account found",
-                            content = @Content(schema = @Schema(implementation = AccountResponse.class))
+                            description = "User found",
+                            content = @Content(schema = @Schema(implementation = UserResponse.class))
                     )
             }
     )
-    public ResponseEntity<AccountResponse> getAccountById(
-            @Parameter(description = "ID of the account to retrieve", required = true)
+    public ResponseEntity<UserResponse> getUserById(
+            @Parameter(description = "ID of the user to retrieve", required = true)
             @PathVariable Long id
     ) {
-        Account account = service.getAccountById(id);
-        AccountResponse response = mapper.toResponse(account);
+        User user = service.getUserById(id);
+        UserResponse response = mapper.toResponse(user);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/cards")
     @Operation(
-            summary = "Get all cards by account ID",
-            description = "Returns a list of cards associated with the specified account ID. Requires ADMIN role.",
+            summary = "Get all cards by user ID",
+            description = "Returns a list of cards associated with the specified user ID. Requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -100,8 +100,8 @@ public class AccountController {
                     )
             }
     )
-    public ResponseEntity<List<CardResponse>> getAccountCardsByUserId(
-            @Parameter(description = "ID of the account", required = true)
+    public ResponseEntity<List<CardResponse>> getUserCardsByUserId(
+            @Parameter(description = "ID of the user", required = true)
             @PathVariable Long id
     ) {
         List<Card> cards = cardService.getByOwner(id);
@@ -114,22 +114,22 @@ public class AccountController {
 
     @PostMapping
     @Operation(
-            summary = "Create new account",
-            description = "Receives account data for a new user, saves it to the database, and returns the created object with status code 201 and a Location header.",
+            summary = "Create new user",
+            description = "Receives user data for a new user, saves it to the database, and returns the created object with status code 201 and a location header.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Account successfully created",
-                            content = @Content(schema = @Schema(implementation = AccountResponse.class))
+                            description = "User successfully created",
+                            content = @Content(schema = @Schema(implementation = UserResponse.class))
                     )
             }
     )
-    public ResponseEntity<AccountResponse> createAccount(
-            @Parameter(description = "Account data to create", required = true)
-            @RequestBody @Valid AccountRequest request
+    public ResponseEntity<UserResponse> createUser(
+            @Parameter(description = "User data to create", required = true)
+            @RequestBody @Valid UserRequest request
     ) {
-        Account entity = service.createAccount(request);
-        AccountResponse response = mapper.toResponse(entity);
+        User entity = service.createUser(request);
+        UserResponse response = mapper.toResponse(entity);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -140,18 +140,18 @@ public class AccountController {
 
     @DeleteMapping("/{id}")
     @Operation(
-            summary = "Delete account by id",
-            description = "Deletes the account with the specified ID. Requires ADMIN role.",
+            summary = "Delete user by id",
+            description = "Deletes the user with the specified ID. Requires ADMIN role.",
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "Account successfully deleted",
+                            description = "User successfully deleted",
                             content = @Content
                     )
             }
     )
-    public ResponseEntity<Void> deleteAccount(
-            @Parameter(description = "ID of the account to delete", required = true)
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "ID of the user to delete", required = true)
             @PathVariable Long id
     ) {
         boolean deleted = service.deleteById(id);

@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Crystal
       changes:
         - insert:
-            tableName: accounts
+            tableName: users
             columns:
               - column: { name: username,   value: admin }
               - column: { name: password,   value: '$2a$12$1ldgzk9E9j5/9advczqhvOIDe3cpPaNqNSa9TRFHYBo8crX6DXSnC' }
@@ -14,7 +14,7 @@ databaseChangeLog:
               - column: { name: phone,      value: '+70000000000' }
               - column: { name: role_id,    valueNumeric: 1 }
         - insert:
-            tableName: accounts
+            tableName: users
             columns:
               - column: { name: username,   value: user }
               - column: { name: password,   value: '$2y$12$jkKBqvXedKnb50qNBTGKBuAhtz4Ex2WvEwSczFnduJYHYmuaTp6bi' }

@@ -1,4 +1,4 @@
-package com.example.bankcards.util.data.account.role;
+package com.example.bankcards.util.data.user.role;
 
 public abstract class BaseRoleBuilder<T extends BaseRoleBuilder<T>> {
     protected Integer id;

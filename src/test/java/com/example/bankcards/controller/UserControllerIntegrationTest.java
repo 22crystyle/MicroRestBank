@@ -1,18 +1,18 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.Main;
-import com.example.bankcards.entity.Account;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.repository.AccountRepository;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.util.data.account.AccountData;
-import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
+import com.example.bankcards.util.data.user.UserData;
+import com.example.bankcards.util.data.user.role.RoleData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +41,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
 @Transactional
-public class AccountControllerIntegrationTest {
+public class UserControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
     @Autowired
     private CardRepository cardRepository;
     @Autowired
@@ -57,7 +57,7 @@ public class AccountControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         cardRepository.deleteAll();
-        accountRepository.deleteAll();
+        userRepository.deleteAll();
         cardStatusRepository.deleteAll();
 
         Role adminRole = RoleData.role()
@@ -70,13 +70,13 @@ public class AccountControllerIntegrationTest {
 
         CardStatus cardStatus = CardStatusData.entity().build();
 
-        Account admin = AccountData.entity()
+        User admin = UserData.entity()
                 .withUsername("admin")
                 .withPassword("pass")
                 .withRole(adminRole)
                 .build();
 
-        Account user = AccountData.entity()
+        User user = UserData.entity()
                 .withUsername("user")
                 .withPassword("pass")
                 .withRole(userRole)
@@ -85,8 +85,8 @@ public class AccountControllerIntegrationTest {
         roleRepository.save(adminRole);
         roleRepository.save(userRole);
         cardStatusRepository.save(cardStatus);
-        accountRepository.save(admin);
-        accountRepository.save(user);
+        userRepository.save(admin);
+        userRepository.save(user);
 
 
         Card card = CardData.entity()
@@ -100,7 +100,7 @@ public class AccountControllerIntegrationTest {
     @Test
     @WithMockUser(authorities = "ADMIN")
     void getPageOfAccounts_returnsOkAndPage() throws Exception {
-        mockMvc.perform(get("/api/v1/accounts")
+        mockMvc.perform(get("/api/v1/users")
                         .param("page", "0")
                         .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
@@ -112,10 +112,10 @@ public class AccountControllerIntegrationTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
-    void getAccountById_returnsOk() throws Exception {
-        Account admin = accountRepository.findByUsername("admin").orElseThrow();
+    void getUserById_returnsOk() throws Exception {
+        User admin = userRepository.findByUsername("admin").orElseThrow();
 
-        mockMvc.perform(get("/api/v1/accounts/{id}", admin.getId())
+        mockMvc.perform(get("/api/v1/users/{id}", admin.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("admin"))
@@ -125,9 +125,9 @@ public class AccountControllerIntegrationTest {
     @Test
     @WithMockUser(authorities = "ADMIN")
     void getAccountCard_returnsOkAndList() throws Exception {
-        Account admin = accountRepository.findByUsername("admin").orElseThrow();
+        User admin = userRepository.findByUsername("admin").orElseThrow();
 
-        mockMvc.perform(get("/api/v1/accounts/{id}/cards", admin.getId())
+        mockMvc.perform(get("/api/v1/users/{id}/cards", admin.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -136,7 +136,7 @@ public class AccountControllerIntegrationTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
-    void createAccount_returnsCreated() throws Exception {
+    void createUser_returnsCreated() throws Exception {
         Role role = roleRepository.getRoleByName("USER").orElseThrow();
         String json = """
                 {
@@ -148,7 +148,7 @@ public class AccountControllerIntegrationTest {
                 }
                 """.formatted(role.getId());
 
-        mockMvc.perform(post("/api/v1/accounts")
+        mockMvc.perform(post("/api/v1/users")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
@@ -160,10 +160,10 @@ public class AccountControllerIntegrationTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
-    void deleteAccount_returnsNoContent() throws Exception {
-        Account admin = accountRepository.findByUsername("admin").orElseThrow();
+    void deleteUser_returnsNoContent() throws Exception {
+        User admin = userRepository.findByUsername("admin").orElseThrow();
 
-        mockMvc.perform(delete("/api/v1/accounts/{id}", admin.getId())
+        mockMvc.perform(delete("/api/v1/users/{id}", admin.getId())
                         .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andDo(print());
@@ -171,8 +171,8 @@ public class AccountControllerIntegrationTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
-    void deleteAccount_missing_returnsNotFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/accounts/{id}", 999)
+    void deleteUser_missing_returnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/{id}", 999)
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }

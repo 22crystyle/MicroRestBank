@@ -1,14 +1,14 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.AccountMapper;
-import com.example.bankcards.dto.request.AccountRequest;
-import com.example.bankcards.entity.Account;
+import com.example.bankcards.dto.UserMapper;
+import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.exception.AccountNotFoundException;
-import com.example.bankcards.repository.AccountRepository;
+import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.util.data.account.AccountData;
-import com.example.bankcards.util.data.account.role.RoleData;
+import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.util.data.user.UserData;
+import com.example.bankcards.util.data.user.role.RoleData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,22 +26,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AccountServiceTest {
+public class UserServiceTest {
     @Mock
-    AccountMapper mapper;
+    UserMapper mapper;
     @Mock
     PasswordEncoder encoder;
     @Mock
     RoleRepository roleRepository;
     @Mock
-    private AccountRepository repository;
+    private UserRepository repository;
     @InjectMocks
-    private AccountService service;
+    private UserService service;
 
     @Test
-    void createAccount_whenValidRequest_thenReturnAccount() {
-        AccountRequest request = AccountData.DEFAULT_REQUEST;
-        Account entity = AccountData.DEFAULT_ENTITY;
+    void createUser_whenValidRequest_thenReturnUser() {
+        UserRequest request = UserData.DEFAULT_REQUEST;
+        User entity = UserData.DEFAULT_ENTITY;
         Role role = RoleData.DEFAULT_ROLE;
 
         when(mapper.toEntity(request)).thenReturn(entity);
@@ -49,7 +49,7 @@ public class AccountServiceTest {
         when(encoder.encode("pass")).thenReturn("encoded");
         when(repository.save(entity)).thenReturn(entity);
 
-        Account result = service.createAccount(request);
+        User result = service.createUser(request);
 
         assertEquals("user", result.getUsername());
         verify(roleRepository).findById(1);
@@ -74,41 +74,41 @@ public class AccountServiceTest {
         Long id = 1L;
         when(repository.existsById(id)).thenReturn(false);
 
-        assertThrows(AccountNotFoundException.class, () -> service.deleteById(id));
+        assertThrows(UserNotFoundException.class, () -> service.deleteById(id));
 
         verify(repository).existsById(id);
         verify(repository, never()).deleteById(id);
     }
 
     @Test
-    void getAccountById_whenAccountExists_thenReturnAccount() {
+    void getUserById_whenUserExists_thenReturnUser() {
         Long id = 1L;
-        Account account = AccountData.DEFAULT_ENTITY;
-        when(repository.findById(id)).thenReturn(Optional.of(account));
+        User user = UserData.DEFAULT_ENTITY;
+        when(repository.findById(id)).thenReturn(Optional.of(user));
 
-        Account result = service.getAccountById(id);
+        User result = service.getUserById(id);
 
-        assertEquals(account, result);
+        assertEquals(user, result);
         verify(repository).findById(id);
     }
 
     @Test
-    void getAccountById_whenAccountNotExists_thenThrowException() {
+    void getUserById_whenUserNotExists_thenThrowException() {
         Long id = 1L;
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> service.getAccountById(id));
+        assertThrows(UserNotFoundException.class, () -> service.getUserById(id));
         verify(repository).findById(id);
     }
 
     @Test
     void getPage_whenCalled_thenReturnPage() {
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Account account = AccountData.DEFAULT_ENTITY;
-        Page<Account> page = new PageImpl<>(List.of(account));
+        User user = UserData.DEFAULT_ENTITY;
+        Page<User> page = new PageImpl<>(List.of(user));
         when(repository.findAll(pageRequest)).thenReturn(page);
 
-        Page<Account> result = service.getPage(pageRequest);
+        Page<User> result = service.getPage(pageRequest);
 
         assertEquals(page, result);
         verify(repository).findAll(pageRequest);

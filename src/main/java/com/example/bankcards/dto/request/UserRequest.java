@@ -2,7 +2,7 @@ package com.example.bankcards.dto.request;
 
 import com.example.bankcards.annotations.FieldNotEmpty;
 
-public record AccountRequest(
+public record UserRequest(
         @FieldNotEmpty(field = "{field.username}")
         String username,
         @FieldNotEmpty(field = "{field.password}")

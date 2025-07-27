@@ -27,7 +27,7 @@ public class Card {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     @JsonBackReference
-    private Account owner;
+    private User owner;
     @Column(name = "expiry_date")
     private YearMonth expiryDate;
 

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record CardResponse(
         Long id,
         String pan,
-        AccountResponse owner,
+        UserResponse owner,
         CardStatusResponse status,
         BigDecimal balance
 ) {
