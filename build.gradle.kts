@@ -7,11 +7,25 @@ plugins {
     id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
+group = "com.example"
+version = "2.0.0"
+description = "restbank"
+java.sourceCompatibility = JavaVersion.VERSION_21
+
 repositories {
     mavenLocal()
     mavenCentral()
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.liquibase.core)
     }
 }
 
@@ -23,7 +37,6 @@ dependencies {
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.swagger.annotations)
 
-    implementation(libs.liquibase.core)
     implementation(libs.postgresql)
     implementation(libs.h2database)
 
@@ -45,12 +58,9 @@ dependencies {
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.security.test)
-}
 
-group = "com.example"
-version = "2.0.0"
-description = "restbank"
-java.sourceCompatibility = JavaVersion.VERSION_21
+    implementation(libs.liquibase.core)
+}
 
 publishing {
     publications.create<MavenPublication>("maven") {
@@ -67,6 +77,12 @@ tasks.withType<Javadoc>() {
     options.encoding = "UTF-8"
 }
 
+openApi {
+    apiDocsUrl.set("http://localhost:1024/v3/api-docs.yaml")
+    outputDir.set(layout.projectDirectory.dir("docs"))
+    outputFileName.set("openapi.yaml")
+}
+
 val agentJar: String by lazy {
     configurations.testRuntimeClasspath.get()
         .files
@@ -80,10 +96,4 @@ tasks.withType<Test>().configureEach {
     forkEvery = 0
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
-}
-
-openApi {
-    apiDocsUrl.set("http://localhost:1024/v3/api-docs.yaml")
-    outputDir.set(layout.projectDirectory.dir("docs"))
-    outputFileName.set("openapi.yaml")
 }

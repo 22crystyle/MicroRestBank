@@ -61,11 +61,15 @@ POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
 Authorization: Bearer {{auth_token}}
 
 ### Transfer money between users cards
-POST http://localhost:1024/api/v1/cards/transfer?
-    fromCard=2227529027274944&
-    toCard=5515251215481686&
-    amount=1
+POST http://localhost:1024/api/v1/cards/transfer
 Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "fromCardId": 1,
+  "toCardId": 2,
+  "amount": 200
+}
 
 ### Delete user by id
 DELETE http://localhost:1024/api/v1/users/{{userId}}
