@@ -12,7 +12,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -26,5 +25,5 @@ replay_pid*
 
 **/target/
 **/build/
-.idea
+.idea/
 .gradle/
