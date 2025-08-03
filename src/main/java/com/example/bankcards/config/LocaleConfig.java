@@ -16,7 +16,7 @@ public class LocaleConfig {
         resolver.setDefaultLocale(Locale.ENGLISH);
         resolver.setSupportedLocales(List.of(
                 Locale.ENGLISH,
-                new Locale("ru")
+                Locale.getDefault()
         ));
         return resolver;
     }

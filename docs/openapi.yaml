@@ -9,45 +9,45 @@ info:
     email: shimorowm@gmail.com
   version: 1.0.0
 servers:
-  - url: http://localhost:1024
+- url: http://localhost:1024
 security:
-  - BearerAuth: [ ]
+- BearerAuth: []
 tags:
-  - name: Cards
-    description: Access and management of user cards
-  - name: Users
-    description: User access and management. requires ADMIN role
-  - name: Authentication
-    description: Login endpoint
+- name: Cards
+  description: Access and management of user cards
+- name: Users
+  description: User access and management. requires ADMIN role
+- name: Authentication
+  description: Login endpoint
 paths:
   /api/v1/users:
     get:
       tags:
-        - Users
+      - Users
       summary: Get paginated list of users
       description: "Returns a paginated list of user resources, requires ADMIN role."
       operationId: getPageOfUsers
       parameters:
-        - name: page
-          in: query
-          description: Page index (0-based)
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-            minimum: 0
-          example: 0
-        - name: size
-          in: query
-          description: Page size
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 10
-            minimum: 1
-          example: 10
+      - name: page
+        in: query
+        description: Page index (0-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+        example: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+          minimum: 1
+        example: 10
       responses:
         "200":
           description: A page of users
@@ -57,7 +57,7 @@ paths:
                 $ref: "#/components/schemas/PageOfUserResponse"
     post:
       tags:
-        - Users
+      - Users
       summary: Create new user
       description: "Receives user data for a new user, saves it to the database, and\
         \ returns the created object with status code 201 and a location header."
@@ -78,32 +78,32 @@ paths:
   /api/v1/cards:
     get:
       tags:
-        - Cards
+      - Cards
       summary: Get paginated list of cards
       description: ADMIN sees all cards; USER sees only own cards. Supports status
         pagination
       operationId: getCards
       parameters:
-        - name: page
-          in: query
-          description: Page index (0-based)
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-            minimum: 0
-          example: 0
-        - name: size
-          in: query
-          description: Page size
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 10
-            minimum: 1
-          example: 10
+      - name: page
+        in: query
+        description: Page index (0-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+        example: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+          minimum: 1
+        example: 10
       responses:
         "200":
           description: A page of cards
@@ -112,21 +112,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/PageCardResponse"
       security:
-        - BearerAuth: [ ]
+      - BearerAuth: []
     post:
       tags:
-        - Cards
+      - Cards
       summary: Create a new card
       description: Creates a new card for user. Requires ADMIN role.
       operationId: createCard
       parameters:
-        - name: userId
-          in: query
-          description: ID of the user for whom the card is created
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: userId
+        in: query
+        description: ID of the user for whom the card is created
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "201":
           description: Card successfully created
@@ -137,37 +137,37 @@ paths:
   /api/v1/cards/{id}/block-request:
     post:
       tags:
-        - Cards
+      - Cards
       summary: Request card block
       description: Submits a request to block the specified card. Requires USER role.
       operationId: requestCardBlock
       parameters:
-        - name: id
-          in: path
-          description: ID of the card to block
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the card to block
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: Block request submitted
   /api/v1/cards/{id}/block-reject:
     post:
       tags:
-        - Cards
+      - Cards
       summary: Reject card block request
       description: Rejects a block request for the specified card. Requires ADMIN
         role.
       operationId: refuseCardBlock
       parameters:
-        - name: id
-          in: path
-          description: ID of the card to reject block for
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the card to reject block for
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: Block request rejected
@@ -178,19 +178,19 @@ paths:
   /api/v1/cards/{id}/block-approve:
     post:
       tags:
-        - Cards
+      - Cards
       summary: Approve card block request
       description: Approves a block request for the specified card. Requires ADMIN
         role.
       operationId: approveCardBlock
       parameters:
-        - name: id
-          in: path
-          description: ID of the card to approve block for
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the card to approve block for
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: Block request approved
@@ -201,7 +201,7 @@ paths:
   /api/v1/cards/transfer:
     post:
       tags:
-        - Cards
+      - Cards
       summary: Transfer money between cards
       description: Transfers the specified amount from one card to another. Both cards
         must belong to the authenticated user. Requires USER role.
@@ -218,7 +218,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Authentication
+      - Authentication
       operationId: login
       requestBody:
         content:
@@ -236,18 +236,18 @@ paths:
   /api/v1/users/{id}:
     get:
       tags:
-        - Users
+      - Users
       summary: Get user by ID
       description: Returns user details for the specified user ID
       operationId: getUserById
       parameters:
-        - name: id
-          in: path
-          description: ID of the user to retrieve
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the user to retrieve
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: User found
@@ -257,37 +257,37 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
     delete:
       tags:
-        - Users
+      - Users
       summary: Delete user by id
       description: Deletes the user with the specified ID. Requires ADMIN role.
       operationId: deleteUser
       parameters:
-        - name: id
-          in: path
-          description: ID of the user to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the user to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "204":
           description: User successfully deleted
   /api/v1/users/{id}/cards:
     get:
       tags:
-        - Users
+      - Users
       summary: Get all cards by user ID
       description: Returns a list of cards associated with the specified user ID.
         Requires ADMIN role.
       operationId: getUserCardsByUserId
       parameters:
-        - name: id
-          in: path
-          description: ID of the user
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the user
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: List of cards
@@ -300,18 +300,18 @@ paths:
   /api/v1/cards/{id}:
     get:
       tags:
-        - Cards
+      - Cards
       summary: Get card by ID
       description: "USER sees full if owner, else masked."
       operationId: getCard
       parameters:
-        - name: id
-          in: path
-          description: ID of the card to retrieve
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        description: ID of the card to retrieve
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: Card found
@@ -430,9 +430,9 @@ components:
         status:
           type: string
           enum:
-            - PENDING
-            - APPROVED
-            - REJECTED
+          - PENDING
+          - APPROVED
+          - REJECTED
     CardStatus:
       type: object
       properties:
@@ -446,9 +446,9 @@ components:
         cardStatusType:
           type: string
           enum:
-            - ACTIVE
-            - BLOCKED
-            - EXPIRED
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
     User:
       type: object
       properties:
