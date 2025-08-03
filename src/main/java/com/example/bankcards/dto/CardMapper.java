@@ -10,8 +10,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", imports = MaskingUtils.class)
 public interface CardMapper {
-    Card toEntity(CardRequest cardRequest);
-
     @Mapping(target = "pan", expression = "java(MaskingUtils.maskCardNumber(card.getPan()))")
     CardResponse toMaskedResponse(Card card);
 
