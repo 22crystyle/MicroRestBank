@@ -1,11 +1,13 @@
-import gradle.kotlin.dsl.accessors._e054d9723d982fdb55b1e388b8ab0cbf.implementation
 import org.gradle.accessors.dm.LibrariesForLibs
 
 val libs = extensions.getByType<LibrariesForLibs>()
 
 plugins {
     `java-library`
-
+    id("io.freefair.lombok") apply false
+    id("org.springframework.boot") apply false
+    id("io.spring.dependency-management") apply false
+    id("org.springdoc.openapi-gradle-plugin") apply false
 }
 
 java {

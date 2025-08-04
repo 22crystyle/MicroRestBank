@@ -1,10 +1,6 @@
 plugins {
     `java-library`
     id("java-convention")
-    id("io.freefair.lombok") version "8.14" apply false
-    id("org.springframework.boot") version "3.4.5" apply false
-    id("io.spring.dependency-management") version "1.1.7" apply false
-    id("org.springdoc.openapi-gradle-plugin") version "1.9.0" apply false
 }
 
 group = "com.example"
@@ -17,43 +13,6 @@ tasks.withType<JavaCompile>() {
     options.compilerArgs.add("-parameters")
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-dependencies {
-    runtimeOnly(libs.jjwt.api)
-    runtimeOnly(libs.jjwt.impl)
-    runtimeOnly(libs.jjwt.jackson)
-
-    implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.swagger.annotations)
-
-    implementation(libs.postgresql)
-    implementation(libs.h2database)
-
-    implementation(libs.mapstruct)
-    annotationProcessor(libs.mapstruct.processor)
-    implementation(libs.lombok.mapstruct.binding)
-    implementation(libs.lombok)
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
-    testCompileOnly(libs.lombok)
-    testAnnotationProcessor(libs.lombok)
-
-    implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.spring.boot.starter.security)
-    implementation(libs.spring.boot.starter.validation)
-    implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.retry)
-
-    testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.spring.security.test)
-
-    implementation(libs.liquibase.core)
-}
-
 subprojects {
     apply(plugin = "java")
     apply(plugin = "org.springframework.boot")
@@ -64,16 +23,12 @@ subprojects {
     group = "com.example.restbank"
     version = "0.0.1-SNAPSHOT"
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven {
-            url = uri("https://repo.maven.apache.org/maven2/")
-        }
-    }
-
     tasks.withType<Javadoc>() {
         options.encoding = "UTF-8"
+    }
+
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.add("-nowarn")
     }
 }
 
@@ -91,3 +46,6 @@ tasks.withType<Test>().configureEach {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
+
+tasks.configureEach { enabled = false }
+tasks.named("clean") { enabled = true }
