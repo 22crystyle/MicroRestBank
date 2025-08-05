@@ -3,7 +3,7 @@ jackson = "2.19.0"
 h2 = "2.3.232"
 jjwt = "0.12.6"
 swagger-annotations = "2.2.30"
-liquibase= "4.31.1"
+liquibase = "4.31.1"
 mapstruct = "1.6.3"
 postgresql = "42.7.5"
 springdoc = "2.8.6"
@@ -31,5 +31,5 @@ spring-boot-starter-validation = { module = "org.springframework.boot:spring-boo
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "spring-retry" }
 spring-security-test = { module = "org.springframework.security:spring-security-test", version.ref = "spring-security-test" }
-mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct"}
-lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version = "0.2.0"}
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version = "0.2.0" }
