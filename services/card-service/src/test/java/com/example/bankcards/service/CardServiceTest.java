@@ -1,12 +1,12 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.exception.*;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.pan.CardPanGenerator;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
+import com.example.shared.dto.request.TransferRequest;
 import com.example.shared.entity.Card;
 import com.example.shared.entity.CardStatus;
 import com.example.shared.entity.User;

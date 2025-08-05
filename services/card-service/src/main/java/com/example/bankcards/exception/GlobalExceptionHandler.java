@@ -1,7 +1,7 @@
 package com.example.bankcards.exception;
 
-import com.example.bankcards.dto.response.RestErrorResponse;
-import com.example.bankcards.dto.response.ValidationErrorResponse;
+import com.example.shared.dto.response.RestErrorResponse;
+import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;

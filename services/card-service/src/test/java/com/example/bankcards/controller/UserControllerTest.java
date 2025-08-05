@@ -1,11 +1,5 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.UserMapper;
-import com.example.bankcards.dto.request.UserRequest;
-import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.dto.response.CardStatusResponse;
-import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardService;
@@ -14,6 +8,12 @@ import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.data.user.role.RoleData;
+import com.example.shared.dto.CardMapper;
+import com.example.shared.dto.UserMapper;
+import com.example.shared.dto.request.UserRequest;
+import com.example.shared.dto.response.CardResponse;
+import com.example.shared.dto.response.CardStatusResponse;
+import com.example.shared.dto.response.UserResponse;
 import com.example.shared.entity.Card;
 import com.example.shared.entity.Role;
 import com.example.shared.entity.User;

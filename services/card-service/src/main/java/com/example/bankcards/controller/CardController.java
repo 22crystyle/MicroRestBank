@@ -1,12 +1,12 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.CardMapper;
-import com.example.bankcards.dto.pagination.PageCardResponse;
-import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
+import com.example.shared.dto.CardMapper;
+import com.example.shared.dto.pagination.PageCardResponse;
+import com.example.shared.dto.request.TransferRequest;
+import com.example.shared.dto.response.CardResponse;
 import com.example.shared.entity.Card;
 import com.example.shared.entity.CardBlockRequest;
 import io.swagger.v3.oas.annotations.Operation;

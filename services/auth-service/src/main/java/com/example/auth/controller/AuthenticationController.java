@@ -1,8 +1,8 @@
-package com.example.bankcards.controller;
+package com.example.auth.controller;
 
-import com.example.bankcards.security.JwtUtil;
-import com.example.shared.dto.request.AuthenticationRequest;
-import com.example.shared.dto.response.AuthenticationResponse;
+import com.example.auth.security.JwtUtil;
+import com.example.auth.dto.request.AuthenticationRequest;
+import com.example.auth.dto.response.AuthenticationResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

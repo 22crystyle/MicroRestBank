@@ -1,10 +1,10 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.UserMapper;
-import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.data.user.role.RoleData;
+import com.example.shared.dto.UserMapper;
+import com.example.shared.dto.request.UserRequest;
 import com.example.shared.entity.Role;
 import com.example.shared.entity.User;
 import com.example.shared.repository.RoleRepository;

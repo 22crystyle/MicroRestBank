@@ -1,6 +1,6 @@
 package com.example.bankcards.util.data.card.status;
 
-import com.example.bankcards.dto.response.CardStatusResponse;
+import com.example.shared.dto.response.CardStatusResponse;
 import com.example.shared.entity.Card;
 import com.example.shared.entity.CardStatus;
 
