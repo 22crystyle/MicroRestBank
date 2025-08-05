@@ -1,6 +1,5 @@
-package com.example.bankcards.entity;
+package com.example.entity;
 
-import com.example.bankcards.util.CardStatusType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,9 +21,9 @@ public class CardStatus {
             fetch = FetchType.EAGER
     )
     @JsonIgnore
-    private List<Card> cards;
+    private List<com.example.entity.Card> cards;
 
-    public CardStatusType getCardStatusType() {
-        return CardStatusType.valueOf(name);
+    public com.example.entity.CardStatusType getCardStatusType() {
+        return com.example.entity.CardStatusType.valueOf(name);
     }
 }

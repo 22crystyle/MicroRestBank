@@ -2,13 +2,13 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.UserMapper;
 import com.example.bankcards.dto.request.UserRequest;
-import com.example.bankcards.entity.Role;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UserNotFoundException;
-import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.data.user.role.RoleData;
+import com.example.entity.Role;
+import com.example.entity.User;
+import com.example.repository.RoleRepository;
+import com.example.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -2,7 +2,7 @@ package com.example.bankcards.util.data.user;
 
 import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.dto.response.UserResponse;
-import com.example.bankcards.entity.User;
+import com.example.entity.User;
 
 import java.util.ArrayList;
 

@@ -1,18 +1,18 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.Main;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.entity.Role;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.CardStatusRepository;
-import com.example.bankcards.repository.RoleRepository;
-import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
 import com.example.bankcards.util.data.user.role.RoleData;
+import com.example.entity.Card;
+import com.example.entity.CardStatus;
+import com.example.entity.Role;
+import com.example.entity.User;
+import com.example.repository.CardRepository;
+import com.example.repository.CardStatusRepository;
+import com.example.repository.RoleRepository;
+import com.example.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

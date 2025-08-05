@@ -1,14 +1,14 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.*;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.CardStatusRepository;
-import com.example.bankcards.repository.UserRepository;
-import com.example.bankcards.util.CardStatusType;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
+import com.example.entity.Card;
+import com.example.entity.CardStatusType;
+import com.example.entity.User;
+import com.example.repository.CardRepository;
+import com.example.repository.CardStatusRepository;
+import com.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;

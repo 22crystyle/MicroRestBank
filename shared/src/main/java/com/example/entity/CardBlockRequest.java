@@ -1,4 +1,4 @@
-package com.example.bankcards.entity;
+package com.example.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class CardBlockRequest {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Card card;
+    private com.example.entity.Card card;
 
     @Column(name = "created_at")
     private Instant createdAt;

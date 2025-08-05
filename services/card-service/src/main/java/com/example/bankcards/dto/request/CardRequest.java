@@ -1,6 +1,6 @@
 package com.example.bankcards.dto.request;
 
-import com.example.bankcards.entity.CardStatus;
+import com.example.entity.CardStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 

@@ -25,3 +25,4 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
+include("shared")

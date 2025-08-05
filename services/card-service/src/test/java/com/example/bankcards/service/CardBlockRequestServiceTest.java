@@ -1,14 +1,14 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardBlockRequest;
-import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.exception.CardNotFoundException;
-import com.example.bankcards.repository.CardBlockRequestRepository;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
+import com.example.entity.Card;
+import com.example.entity.CardBlockRequest;
+import com.example.entity.CardStatus;
+import com.example.repository.CardBlockRequestRepository;
+import com.example.repository.CardRepository;
+import com.example.repository.CardStatusRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

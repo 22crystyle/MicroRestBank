@@ -1,11 +1,11 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.exception.CardNotFoundException;
-import com.example.bankcards.repository.CardBlockRequestRepository;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.CardStatusRepository;
+import com.example.entity.Card;
+import com.example.entity.CardBlockRequest;
+import com.example.repository.CardBlockRequestRepository;
+import com.example.repository.CardRepository;
+import com.example.repository.CardStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

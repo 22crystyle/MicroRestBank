@@ -1,4 +1,4 @@
-package com.example.bankcards.entity;
+package com.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -23,5 +23,5 @@ public class Role {
             fetch = FetchType.LAZY
     )
     @JsonIgnore
-    private List<User> users;
+    private List<com.example.entity.User> users;
 }

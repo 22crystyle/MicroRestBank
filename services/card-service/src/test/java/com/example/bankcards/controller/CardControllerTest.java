@@ -2,13 +2,13 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.security.CustomUserDetails;
 import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.card.CardData;
+import com.example.entity.Card;
+import com.example.entity.CardBlockRequest;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;

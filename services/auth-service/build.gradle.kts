@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("java-convention")
 }
 
 group = "com.example"
@@ -10,9 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.springdoc.openapi.starter.webmvc.ui)
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation(project(":shared"))
 }
 
 tasks.test {

@@ -1,6 +1,6 @@
-package com.example.bankcards.repository;
+package com.example.repository;
 
-import com.example.bankcards.entity.CardBlockRequest;
+import com.example.entity.CardBlockRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

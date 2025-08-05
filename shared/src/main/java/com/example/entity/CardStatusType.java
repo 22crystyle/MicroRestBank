@@ -1,4 +1,4 @@
-package com.example.bankcards.entity;
+package com.example.entity;
 
 public enum CardStatusType {
     ACTIVE,

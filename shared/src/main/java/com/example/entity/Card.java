@@ -1,4 +1,4 @@
-package com.example.bankcards.entity;
+package com.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,12 +27,12 @@ public class Card {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     @JsonBackReference
-    private User owner;
+    private com.example.entity.User owner;
     @Column(name = "expiry_date")
     private YearMonth expiryDate;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "status_id")
-    private CardStatus status;
+    private com.example.entity.CardStatus status;
     private BigDecimal balance;
 }
