@@ -1,8 +1,8 @@
 package com.example.bankcards.util.data.card.status;
 
 import com.example.bankcards.dto.response.CardStatusResponse;
-import com.example.entity.Card;
-import com.example.entity.CardStatus;
+import com.example.shared.entity.Card;
+import com.example.shared.entity.CardStatus;
 
 import java.util.ArrayList;
 import java.util.List;

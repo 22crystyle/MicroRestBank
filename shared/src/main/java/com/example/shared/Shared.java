@@ -1,4 +1,4 @@
-package com.example;
+package com.example.shared;
 
 public class Shared {
     public static void main(String[] args) {

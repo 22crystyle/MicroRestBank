@@ -2,7 +2,7 @@ package com.example.bankcards.dto;
 
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.util.MaskingUtils;
-import com.example.entity.Card;
+import com.example.shared.entity.Card;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

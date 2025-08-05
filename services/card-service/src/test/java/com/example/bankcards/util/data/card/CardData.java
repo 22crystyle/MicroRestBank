@@ -5,9 +5,9 @@ import com.example.bankcards.dto.response.CardStatusResponse;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
-import com.example.entity.Card;
-import com.example.entity.CardStatus;
-import com.example.entity.User;
+import com.example.shared.entity.Card;
+import com.example.shared.entity.CardStatus;
+import com.example.shared.entity.User;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

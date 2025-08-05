@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.shared.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -23,5 +23,5 @@ public class Role {
             fetch = FetchType.LAZY
     )
     @JsonIgnore
-    private List<com.example.entity.User> users;
+    private List<User> users;
 }

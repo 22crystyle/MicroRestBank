@@ -11,3 +11,6 @@ spring:
       ddl-auto: create-drop
   liquibase:
     enabled: false
+logging:
+  level:
+    root: debug

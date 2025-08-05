@@ -1,6 +1,6 @@
-package com.example.repository;
+package com.example.shared.repository;
 
-import com.example.entity.CardStatus;
+import com.example.shared.entity.CardStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

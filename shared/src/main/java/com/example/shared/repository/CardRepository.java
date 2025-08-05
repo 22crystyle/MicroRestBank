@@ -1,7 +1,7 @@
-package com.example.repository;
+package com.example.shared.repository;
 
-import com.example.entity.Card;
-import com.example.entity.User;
+import com.example.shared.entity.Card;
+import com.example.shared.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

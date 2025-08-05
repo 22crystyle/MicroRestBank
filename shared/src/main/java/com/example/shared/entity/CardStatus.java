@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.shared.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -21,9 +21,9 @@ public class CardStatus {
             fetch = FetchType.EAGER
     )
     @JsonIgnore
-    private List<com.example.entity.Card> cards;
+    private List<Card> cards;
 
-    public com.example.entity.CardStatusType getCardStatusType() {
-        return com.example.entity.CardStatusType.valueOf(name);
+    public CardStatusType getCardStatusType() {
+        return CardStatusType.valueOf(name);
     }
 }

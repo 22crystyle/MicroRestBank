@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.shared.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -31,7 +31,7 @@ public class User {
             fetch = FetchType.LAZY
     )
     @JsonManagedReference
-    private List<com.example.entity.Card> bank_cards;
+    private List<Card> bank_cards;
     @ManyToOne(fetch = FetchType.EAGER)
-    private com.example.entity.Role role;
+    private Role role;
 }
