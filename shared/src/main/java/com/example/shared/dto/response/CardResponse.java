@@ -1,8 +1,5 @@
 package com.example.shared.dto.response;
 
-import com.example.shared.dto.response.CardStatusResponse;
-import com.example.shared.dto.response.UserResponse;
-
 import java.math.BigDecimal;
 
 public record CardResponse(

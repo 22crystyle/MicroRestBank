@@ -74,3 +74,15 @@ Content-Type: application/json
 ### Delete user by id
 DELETE http://localhost:1024/api/v1/users/{{userId}}
 Authorization: Bearer {{auth_token}}
+
+### Get access_token from keycloak
+POST http://localhost:7080/realms/bank-realm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type = password
+    &
+client_id = card-service
+    &
+username = user
+    &
+password = user

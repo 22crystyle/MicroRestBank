@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    `java-library`
     id("java-convention")
 }
 
@@ -32,3 +32,5 @@ tasks.withType<Test>().configureEach {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
+
+print("q")

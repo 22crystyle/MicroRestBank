@@ -42,9 +42,11 @@ dependencies {
 
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.security.oauth2.resource.server)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.retry)
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.security.test)

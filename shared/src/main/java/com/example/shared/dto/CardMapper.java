@@ -1,8 +1,8 @@
 package com.example.shared.dto;
 
 import com.example.shared.dto.response.CardResponse;
-import com.example.shared.util.MaskingUtils;
 import com.example.shared.entity.Card;
+import com.example.shared.util.MaskingUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
