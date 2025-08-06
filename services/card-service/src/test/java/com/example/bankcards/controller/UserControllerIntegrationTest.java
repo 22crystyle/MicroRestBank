@@ -98,7 +98,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void getPageOfAccounts_returnsOkAndPage() throws Exception {
         mockMvc.perform(get("/api/v1/users")
                         .param("page", "0")
@@ -111,7 +111,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void getUserById_returnsOk() throws Exception {
         User admin = userRepository.findByUsername("admin").orElseThrow();
 
@@ -123,7 +123,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void getAccountCard_returnsOkAndList() throws Exception {
         User admin = userRepository.findByUsername("admin").orElseThrow();
 
@@ -135,7 +135,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void createUser_returnsCreated() throws Exception {
         Role role = roleRepository.getRoleByName("USER").orElseThrow();
         String json = """
@@ -159,7 +159,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void deleteUser_returnsNoContent() throws Exception {
         User admin = userRepository.findByUsername("admin").orElseThrow();
 
@@ -170,7 +170,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void deleteUser_missing_returnsNotFound() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/{id}", 999)
                         .with(csrf()))

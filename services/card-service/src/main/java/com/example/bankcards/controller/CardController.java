@@ -9,6 +9,7 @@ import com.example.shared.dto.request.TransferRequest;
 import com.example.shared.dto.response.CardResponse;
 import com.example.shared.entity.Card;
 import com.example.shared.entity.CardBlockRequest;
+import com.example.shared.util.JwtPrincipalUsername;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,11 +20,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -34,6 +38,7 @@ import java.net.URI;
 @RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
 @Tag(name = "Cards", description = "Access and management of user cards")
+@Slf4j
 public class CardController {
 
     private final CardMapper mapper;
@@ -58,21 +63,22 @@ public class CardController {
             @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @AuthenticationPrincipal UserDetails userDetails
+            @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = JwtPrincipalUsername.getUsername(auth);
+
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(
+                a -> a.getAuthority().equals("ROLE_ADMIN")
+        );
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Card> entities;
-        Page<CardResponse> dtos;
-        if (isAdmin) {
-            entities = service.getAllCards(pageRequest);
-            dtos = entities.map(mapper::toMaskedResponse);
-        } else {
-            entities = service.getByOwner(userDetails.getUsername(), pageRequest);
-            dtos = entities.map(mapper::toFullResponse);
-        }
+        Page<Card> cards = isAdmin
+                ? service.getAllCards(pageRequest)
+                : service.getByOwner(username, pageRequest);
+        Page<CardResponse> dtos = cards.map(isAdmin
+                ? mapper::toMaskedResponse
+                : mapper::toFullResponse
+        );
         return ResponseEntity.ok(dtos);
     }
 

@@ -21,7 +21,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:7080/realms/bank-realm
+          issuer-uri: http://192.168.0.105:7080/realms/bank-realm
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -29,6 +29,3 @@ springdoc:
     path: /docs
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
-jwt:
-  secret: ${JWT_SECRET:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidXNlciIsInBhc3N3b3JkIjoidXNlciIsImlhdCI6MTc1MzM1OTg1NH0.b8NZsCt31u_8-EdWUTbZYJflKgwO1n6FixaRnwoO65I"}
-  expiration: ${JWT_EXPIRATION:360000}

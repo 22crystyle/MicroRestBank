@@ -1,7 +1,6 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.security.CustomUserDetails;
-import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.card.CardData;
@@ -47,14 +46,12 @@ public class CardControllerTest {
     private CardService cardService;
     @MockitoBean
     private CardBlockRequestService cardBlockRequestService;
-    @MockitoBean
-    private JwtUtil jwtUtil;
     @MockitoBean(name = "customUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Test
     @DisplayName("GET /api/v1/cards - возвращает страницу с картами всех пользователей")
-    @WithMockUser(authorities = {"ADMIN"})
+    @WithMockUser(roles = {"ADMIN"})
     void getCards_returnPage() throws Exception {
         Card card = CardData.DEFAULT_ENTITY;
         PageRequest pageRequest = PageRequest.of(0, 10);

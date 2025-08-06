@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.retry)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.spring.boot.starter.actuator)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.security.test)

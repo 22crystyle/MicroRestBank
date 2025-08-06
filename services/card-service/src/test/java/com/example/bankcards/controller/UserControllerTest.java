@@ -1,7 +1,6 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.exception.UserNotFoundException;
-import com.example.bankcards.security.JwtUtil;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.data.card.CardData;
@@ -60,8 +59,6 @@ public class UserControllerTest {
     private CardMapper cardMapper;
     @MockitoBean(name = "customUserDetailsService")
     private UserDetailsService userDetailsService;
-    @MockitoBean
-    private JwtUtil jwtUtil;
     @Autowired
     private MockMvc mockMvc;
 
@@ -102,15 +99,6 @@ public class UserControllerTest {
                 .withId(2L)
                 .withUsername("user")
                 .build();
-
-        String userToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
-        when(jwtUtil.validateToken(userToken, user.getUsername())).thenReturn(true);
-        when(jwtUtil.extractUsername(userToken)).thenReturn("user");
-
-
-        String adminToken = jwtUtil.generateToken(admin.getUsername(), admin.getRole().getName());
-        when(jwtUtil.validateToken(adminToken, admin.getUsername())).thenReturn(true);
-        when(jwtUtil.extractUsername(adminToken)).thenReturn("admin");
     }
 
     @Test

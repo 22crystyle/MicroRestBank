@@ -14,55 +14,55 @@ Content-Type: application/json
 GET http://localhost:1024/api/v1/users?
     page={{page}}&
     size={{size}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Get user by id
 GET http://localhost:1024/api/v1/users/{{userId}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Card pagination
 GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Creating an user by an administrator
 POST http://localhost:1024/api/v1/users
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 Content-Type: application/json
 
 {
-  "username": "johndoee",
-  "password": "P@ssw0rd!",
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "johndoe@example.com",
-  "phone": "+1-800-555-1234",
+  "username": "johndуoee",
+  "password": "P@ssуw0rd!",
+  "firstName": "Johуn",
+  "lastName": "Doуe",
+  "email": "johndуoe@example.com",
+  "phone": "+1-80у0-555-1234",
   "roleId": 2
 }
 
 ### Creating a card for a user by the admin
 POST http://localhost:1024/api/v1/cards?userId={{userId}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 Content-Type: application/json
 
 ### Get a card by ID
 GET http://localhost:1024/api/v1/cards/{{cardId}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Request to block the card by the user
 POST http://localhost:1024/api/v1/cards/1/block-request
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Approve the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-approve
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Reject the request to block the card by the administrator
 POST http://localhost:1024/api/v1/cards/{{cardId}}/block-reject
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 
 ### Transfer money between users cards
 POST http://localhost:1024/api/v1/cards/transfer
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{user_token}}
 Content-Type: application/json
 
 {
@@ -73,16 +73,16 @@ Content-Type: application/json
 
 ### Delete user by id
 DELETE http://localhost:1024/api/v1/users/{{userId}}
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{admin_token}}
 
 ### Get access_token from keycloak
-POST http://localhost:7080/realms/bank-realm/protocol/openid-connect/token
+POST http://192.168.0.105:7080/realms/bank-realm/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type = password
     &
 client_id = card-service
     &
-username = user
+username = admin
     &
-password = user
+password = admin
