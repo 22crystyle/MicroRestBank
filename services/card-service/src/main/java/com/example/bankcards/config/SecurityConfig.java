@@ -35,8 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/docs", "/v3/**", "/swagger-ui/**", "/api/v1/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -66,7 +65,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter scopeConverter = new JwtGrantedAuthoritiesConverter(); // для scope, если нужно
+        JwtGrantedAuthoritiesConverter scopeConverter = new JwtGrantedAuthoritiesConverter();
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             Collection<GrantedAuthority> auths = new ArrayList<>();
@@ -76,6 +75,7 @@ public class SecurityConfig {
                 @SuppressWarnings("unchecked")
                 List<String> roles = (List<String>) realmAccess.get("roles");
                 for (String role : roles) {
+                    log.info(role);
                     auths.add(new SimpleGrantedAuthority("ROLE_" + role));
                 }
             }

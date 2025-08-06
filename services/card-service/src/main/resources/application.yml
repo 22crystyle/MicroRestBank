@@ -3,7 +3,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:./RestBank;AUTO_SERVER=TRUE}
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=CARD_SCHEMA}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:}
   liquibase:
