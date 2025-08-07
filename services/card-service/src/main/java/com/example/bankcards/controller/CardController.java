@@ -98,10 +98,10 @@ public class CardController {
     public ResponseEntity<CardResponse> getCard(
             @Parameter(description = "ID of the card to retrieve", required = true)
             @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal Authentication auth
     ) {
         Card card = service.getById(id);
-        CardResponse dto = service.isOwner(id, userDetails.getUsername()) ?
+        CardResponse dto = service.isOwner(id, auth.getName()) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
         return ResponseEntity.ok(dto);

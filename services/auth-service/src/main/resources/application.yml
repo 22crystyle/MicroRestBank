@@ -11,6 +11,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  liquibase:
+    enabled: false
 keycloak:
   server-url: http://192.168.0.105:7080
   realm: bank-realm

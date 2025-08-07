@@ -43,10 +43,10 @@ public class RegistrationService {
     public User register(UserRequest request) {
         Role role = roleRepository.findById(request.roleId())
                 .orElseThrow(() -> new RoleNotFoundException(request.roleId()));
-        String keycloakUserId = createUserInKeycloak(request);
+        createUserInKeycloak(request);
 
         User user = User.builder()
-                .id(Long.valueOf(keycloakUserId))
+                .id(null)
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .firstName(request.firstName())
