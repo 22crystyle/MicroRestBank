@@ -10,8 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableWebSecurity
 @EntityScan("com.example.shared.entity")
 @EnableJpaRepositories("com.example.shared.repository")
-public class Main {
+public class AuthService {
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(AuthService.class, args);
     }
 }

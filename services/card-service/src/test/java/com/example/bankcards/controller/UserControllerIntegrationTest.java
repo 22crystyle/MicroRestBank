@@ -1,6 +1,6 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.Main;
+import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.data.card.CardData;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(
-        classes = Main.class,
+        classes = CardService.class,
         properties = "spring.liquibase.enabled=false"
 )
 @AutoConfigureMockMvc

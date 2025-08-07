@@ -8,7 +8,7 @@ import com.example.shared.entity.User;
 import com.example.shared.repository.RoleRepository;
 import com.example.shared.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +23,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RegistrationService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final UserRepository userRepository;
@@ -65,8 +66,10 @@ public class RegistrationService {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "password");
         form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
         form.add("username", loginRequest.username());
         form.add("password", loginRequest.password());
+        log.info(form.toString());
 
         HttpEntity<MultiValueMap<String, String>> keycloakRequest = new HttpEntity<>(form, headers);
         Map<?, ?> response = restTemplate.postForObject(

@@ -9,6 +9,7 @@ spring:
   liquibase:
     change-log: classpath:db/migration/db.changelog-master.yaml
     enabled: true
+    default-schema: CARD_SCHEMA
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}

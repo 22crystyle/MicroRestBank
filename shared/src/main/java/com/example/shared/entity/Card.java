@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 
 @Entity
-@Data
 @Table(name = "bank_cards")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

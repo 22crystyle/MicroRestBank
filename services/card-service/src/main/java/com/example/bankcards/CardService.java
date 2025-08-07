@@ -10,8 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableScheduling
 @EnableRetry
 @SpringBootApplication(scanBasePackages = {"com.example.bankcards", "com.example.shared"})
-public class Main {
+public class CardService {
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(CardService.class, args);
     }
 }
