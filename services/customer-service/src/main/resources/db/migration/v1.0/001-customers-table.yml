@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 080825-02-create-customers-table
+      id: 080825-01-create-customers-table
       author: Crystal
       changes:
         - createTable:
@@ -51,11 +51,6 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: metadata
-                  type: varchar(255)
-                  constraints:
-                    nullable: true
-              - column:
                   name: created_at
                   type: timestamp with time zone
                   defaultValueComputed: now()
@@ -72,7 +67,7 @@ databaseChangeLog:
             tableName: customers
 
   - changeSet:
-      id: customer-003-create-indexes
+      id: customer-002-create-indexes
       author: liquibase
       changes:
         - createIndex:

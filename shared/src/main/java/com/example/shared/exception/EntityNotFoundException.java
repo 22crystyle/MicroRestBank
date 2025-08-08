@@ -1,4 +1,4 @@
-package com.example.bankcards.exception;
+package com.example.shared.exception;
 
 public abstract class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

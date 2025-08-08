@@ -1,5 +1,7 @@
 package com.example.bankcards.exception;
 
+import com.example.shared.exception.EntityNotFoundException;
+
 public class UserNotFoundException extends EntityNotFoundException {
     public UserNotFoundException(Long accountId) {
         super("User with id=" + accountId + " not found");
