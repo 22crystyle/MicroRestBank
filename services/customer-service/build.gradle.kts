@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("java-convention")
 }
 
 group = "com.example"

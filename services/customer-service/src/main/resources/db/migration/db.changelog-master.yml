@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      file: classpath:db/migration/v1.0/001-customers-table.yml

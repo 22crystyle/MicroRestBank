@@ -1,0 +1,17 @@
+server:
+  port: 1026
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=CUSTOMER_SCHEMA;
+    username: sa
+    password:
+  liquibase:
+    liquibase-schema: CUSTOMER_SCHEMA
+    default-schema: CUSTOMER_SCHEMA
+    change-log: classpath:db/migration/db.changelog-master.yml
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
