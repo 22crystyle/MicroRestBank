@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=USER_SCHEMA
+    url: jdbc:h2:./RestBank;AUTO_SERVER=TRUE;
     username: sa
     password:
   jpa:
@@ -13,6 +13,9 @@ spring:
     show-sql: true
   liquibase:
     enabled: false
+  data:
+    jdbc:
+      dialect: h2
 keycloak:
   server-url: http://192.168.0.105:7080
   realm: bank-realm

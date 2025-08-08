@@ -1,19 +1,13 @@
 package com.example.auth.service;
 
 import com.example.auth.dto.request.LoginRequest;
-import com.example.auth.exception.RoleNotFoundException;
-import com.example.shared.dto.request.UserRequest;
-import com.example.shared.entity.Role;
-import com.example.shared.entity.User;
-import com.example.shared.repository.RoleRepository;
-import com.example.shared.repository.UserRepository;
+import com.example.auth.dto.request.RegistrationRequest;
+import com.example.auth.dto.response.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -26,9 +20,6 @@ import java.util.Map;
 @Slf4j
 public class RegistrationService {
     private final RestTemplate restTemplate = new RestTemplate();
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${keycloak.server-url}")
     private String serverUrl;
@@ -38,26 +29,6 @@ public class RegistrationService {
     private String clientId;
     @Value("${keycloak.client-secret}")
     private String clientSecret;
-
-    @Transactional
-    public User register(UserRequest request) {
-        Role role = roleRepository.findById(request.roleId())
-                .orElseThrow(() -> new RoleNotFoundException(request.roleId()));
-        createUserInKeycloak(request);
-
-        User user = User.builder()
-                .id(null)
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .email(request.email())
-                .phone(request.phone())
-                .role(role)
-                .build();
-
-        return userRepository.save(user);
-    }
 
     public String login(LoginRequest loginRequest) {
         HttpHeaders headers = new HttpHeaders();
@@ -82,7 +53,7 @@ public class RegistrationService {
         return (String) response.get("access_token");
     }
 
-    public String createUserInKeycloak(UserRequest userRequest) {
+    public AuthenticationResponse createUserInKeycloak(RegistrationRequest userRequest) {
         String token = getAdminAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
@@ -117,7 +88,7 @@ public class RegistrationService {
         HttpEntity<Map<String, Object>> passEntity = new HttpEntity<>(credential, headers);
         restTemplate.put(serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password", passEntity);
 
-        return userId;
+        return new AuthenticationResponse(login(new LoginRequest(userRequest.username(), userRequest.password())));
     }
 
     private String getUserId(String token, String username) {
