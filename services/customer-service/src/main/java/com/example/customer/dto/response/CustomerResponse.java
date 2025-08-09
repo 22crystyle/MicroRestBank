@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public record CustomerResponse(
         UUID id,
-        String first_name,
-        String last_name,
+        String firstName,
+        String lastName,
         Instant created_at
 ) {
 }

@@ -23,10 +23,10 @@ public class Customer {
     UUID external_id;
 
     @Column(name = "first_name", nullable = false)
-    String first_name;
+    String firstName;
 
     @Column(name = "last_name", nullable = false)
-    String last_name;
+    String lastName;
 
     @Column(name = "email", nullable = false, unique = true)
     String email;
