@@ -7,7 +7,6 @@ import com.example.customer.entity.Customer;
 import com.example.customer.entity.CustomerStatus;
 import com.example.customer.exception.CustomerNotFound;
 import com.example.customer.repository.CustomerRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +24,11 @@ public class CustomerService {
     @Transactional
     public CustomerResponse createCustomer(CustomerRequest request) {
         Customer customer = customerMapper.toEntity(request);
+        if (request.getId() != null) {
+            customer.setId(request.getId());
+        } else {
+            customer.setId(UUID.randomUUID());
+        }
         customer.setStatus(CustomerStatus.ACTIVE);
         customer.setCreated_at(Instant.now());
         customer.setUpdated_at(Instant.now());

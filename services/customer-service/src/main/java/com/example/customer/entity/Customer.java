@@ -16,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
     @Column(name = "external_id")
