@@ -27,7 +27,7 @@ public class KeycloakCustomerEventListener {
         try {
             AdminEvent adminEvent = objectMapper.readValue(message, AdminEvent.class);
             if (adminEvent.getResourceType().equals(ResourceType.USER) && (
-                            adminEvent.getOperationType().equals(OperationType.CREATE) ||
+                    adminEvent.getOperationType().equals(OperationType.CREATE) ||
                             adminEvent.getOperationType().equals(OperationType.UPDATE))
             ) {
                 CustomerRequest json = objectMapper.readValue(adminEvent.getRepresentation(), CustomerRequest.class);

@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+    discovery:
+      enabled: false
+    loadbalancer:
+      retry:
+        enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: api-gateway
+            client-secret: ${GATEWAY_SECRET:c0oBw49xeFwGP91mhyvblXThNA0Cgtj4}
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://192.168.0.105:7080/realms/bank-realm}
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://192.168.0.105:7080/realms/bank-realm}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      defaults:
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s

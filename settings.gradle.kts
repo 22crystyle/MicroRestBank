@@ -4,7 +4,7 @@ rootProject.name = "RestBank"
 include(
     "services:auth-service",
     "services:customer-service",
-    "services:account-service",
+    "services:api-gateway",
     "services:card-service",
     "services:transaction-service",
     "services:notification-service",

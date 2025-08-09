@@ -11,6 +11,7 @@ spring:
     default-schema: CARD_SCHEMA
     change-log: classpath:db/migration/db.changelog-master.yml
     enabled: true
+
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}

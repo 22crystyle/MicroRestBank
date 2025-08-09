@@ -35,3 +35,4 @@ spring-security-test = { module = "org.springframework.security:spring-security-
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "spring-boot" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version = "0.2.0" }
+spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version = "4.3.0" }
