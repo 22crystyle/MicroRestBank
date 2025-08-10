@@ -20,4 +20,4 @@ keycloak:
   server-url: http://192.168.0.105:7080
   realm: bank-realm
   client-id: auth-service
-  client-secret: 3Qt7n88ynYwGJ4qDuXV6pPWuIJD3F76d
+  client-secret: dWRf1YosTApbPgaXinhMbFBvxJLlhd1R

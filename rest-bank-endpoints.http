@@ -1,5 +1,5 @@
 ### Login / Each request rewrite auth_token for intellij
-POST http://localhost:1024/api/v1/auth/login
+POST http://localhost:1025/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -7,26 +7,26 @@ Content-Type: application/json
   "password": "admin"
 }
 > {%
-    client.global.set("auth_token", response.body.jwt);
+    client.global.set("access_token", response.body.jwt);
 %}
 
 ### User pagination
 GET http://localhost:1024/api/v1/users?
     page={{page}}&
     size={{size}}
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{admin_token}}
 
 ### Get user by id
 GET http://localhost:1024/api/v1/users/{{userId}}
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{admin_token}}
 
 ### Card pagination
 GET http://localhost:1024/api/v1/cards?page={{page}}&size={{size}}
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{admin_token}}
 
 ### Creating an user by an administrator
 POST http://localhost:1024/api/v1/users
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{admin_token}}
 Content-Type: application/json
 
 {
@@ -86,3 +86,17 @@ client_id = card-service
 username = admin
     &
 password = admin
+
+###
+GET /cards/actuator/health
+Host: localhost:1027
+Authorization: Bearer {{admin_token}}
+
+###
+GET http://localhost:1024/api/v1/cards/actuator/health
+
+###
+GET http://localhost:1027/cards/1
+Host: localhost:1027
+Authorization: Bearer {{admin_token}}
+

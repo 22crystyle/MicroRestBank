@@ -1,6 +1,16 @@
 server:
   port: ${SERVER_PORT:1024}
 spring:
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            customer-service:
+              - uri: http://localhost:1026
+    loadbalancer:
+      retry:
+        enabled: true
   datasource:
     driver-class-name: org.h2.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=CARD_SCHEMA}
@@ -9,7 +19,7 @@ spring:
   liquibase:
     liquibase-schema: CARD_SCHEMA
     default-schema: CARD_SCHEMA
-    change-log: classpath:db/migration/db.changelog-master.yml
+    change-log: classpath:/db/migration/db.changelog-master.yaml
     enabled: true
 
   jpa:

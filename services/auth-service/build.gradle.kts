@@ -12,6 +12,9 @@ repositories {
 
 dependencies {
     implementation(project(":shared"))
+    implementation("org.keycloak:keycloak-admin-client:22.0.0")
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.security)
 }
 
 tasks.test {

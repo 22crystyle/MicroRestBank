@@ -16,10 +16,10 @@ public class SecurityConfig {
         http
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers("/cards/health").permitAll()
                         .anyExchange().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
-                .oauth2ResourceServer(Customizer.withDefaults())
+                .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefaults()))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
 
         return http.build();

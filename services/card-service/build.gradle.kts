@@ -12,6 +12,18 @@ repositories {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.retry)
+    implementation(libs.liquibase.core)
+    implementation(libs.spring.boot.starter.security)
+
+    implementation(libs.mapstruct)
+    annotationProcessor(libs.mapstruct.processor)
+    implementation(libs.lombok.mapstruct.binding)
+
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation("io.github.resilience4j:resilience4j-spring-boot2:2.2.0")
+    runtimeOnly("io.github.resilience4j:resilience4j-feign:2.2.0")
 }
 
 tasks.test {
@@ -32,5 +44,3 @@ tasks.withType<Test>().configureEach {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
-
-print("q")

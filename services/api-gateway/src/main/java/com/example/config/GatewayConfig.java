@@ -21,10 +21,14 @@ public class GatewayConfig {
                         .uri("lb://customer-service"))
 
                 .route("card-service", r -> r.path("/cards/**")
-                        .filters(f -> f.circuitBreaker(config -> config
-                                .setName("cardCircuitBreaker")
-                                .setFallbackUri("forward:/fallback")))
-                        .uri("lb://card-service"))
+                        .filters(f -> f
+                                .tokenRelay()
+                                .rewritePath("/cards/(?<segment>.*)", "/api/v1/cards/${segment}")
+                                .circuitBreaker(config -> config
+                                        .setName("cardCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback")
+                                ))
+                        .uri("http://localhost:1024"))
 
                 .route("transaction-service", r -> r.path("/transactions/**")
                         .uri("lb://transaction-service"))

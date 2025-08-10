@@ -1,3 +1,5 @@
+server:
+  port: 1027
 spring:
   application:
     name: api-gateway
@@ -29,6 +31,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://192.168.0.105:7080/realms/bank-realm}
+  liquibase:
+    enabled: false
 
 resilience4j:
   circuitbreaker:
