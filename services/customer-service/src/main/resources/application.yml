@@ -1,5 +1,5 @@
 server:
-  port: 1026
+  port: 0
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -22,3 +22,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  application:
+    name: customer-service
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true

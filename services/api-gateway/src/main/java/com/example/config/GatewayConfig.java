@@ -17,7 +17,8 @@ public class GatewayConfig {
 
                 .route("customer-service", r -> r.path("/customers/**")
                         .filters(f -> f.tokenRelay()
-                                .addRequestHeader("X-Service-Call", "gateway"))
+                                .addRequestHeader("X-Service-Call", "gateway")
+                                .rewritePath("/customers/(?<segment>.*)", "/api/v1/customers/${segment}"))
                         .uri("lb://customer-service"))
 
                 .route("card-service", r -> r.path("/cards/**")
@@ -28,7 +29,7 @@ public class GatewayConfig {
                                         .setName("cardCircuitBreaker")
                                         .setFallbackUri("forward:/fallback")
                                 ))
-                        .uri("http://localhost:1024"))
+                        .uri("lb://card-service"))
 
                 .route("transaction-service", r -> r.path("/transactions/**")
                         .uri("lb://transaction-service"))

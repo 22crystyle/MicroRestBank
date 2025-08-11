@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.security.oauth2.resource.server)
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.swagger.annotations)

@@ -93,10 +93,15 @@ Host: localhost:1027
 Authorization: Bearer {{admin_token}}
 
 ###
-GET http://localhost:1024/api/v1/cards/actuator/health
-
-###
 GET http://localhost:1027/cards/1
 Host: localhost:1027
 Authorization: Bearer {{admin_token}}
 
+###
+GET /customers/2ec66ff9-f4d0-4c7a-a311-d8ac621b4678
+Host: localhost:1027
+Authorization: Bearer {{admin_token}}
+
+###
+GET http://localhost:3333/api/v1/customers/2ec66ff9-f4d0-4c7a-a311-d8ac621b4678
+Authorization: Bearer {{admin_token}}

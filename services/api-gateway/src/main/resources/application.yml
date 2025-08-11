@@ -9,7 +9,7 @@ spring:
         connect-timeout: 1000
         response-timeout: 5s
     discovery:
-      enabled: false
+      enabled: true
     loadbalancer:
       retry:
         enabled: true
@@ -43,3 +43,7 @@ resilience4j:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 10
         wait-duration-in-open-state: 10s
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
