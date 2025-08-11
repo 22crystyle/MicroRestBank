@@ -12,7 +12,7 @@ public class GatewayConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("auth-service", r -> r.path("/auth/**")
-                        .filters(f -> f.rewritePath("/auth/(?<segment>.*)", "/${segment}"))
+                        .filters(f -> f.rewritePath("/auth/(?<segment>.*)", "/api/v1/auth/${segment}"))
                         .uri("lb://auth-service"))
 
                 .route("customer-service", r -> r.path("/customers/**")

@@ -2,15 +2,17 @@ package com.example.auth.service;
 
 import com.example.auth.dto.request.LoginRequest;
 import com.example.auth.dto.request.RegistrationRequest;
-import com.example.auth.dto.response.AuthenticationResponse;
+import com.example.auth.dto.response.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class RegistrationService {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final WebClient.Builder webClientBuilder;
 
     @Value("${keycloak.server-url}")
     private String serverUrl;
@@ -30,102 +32,107 @@ public class RegistrationService {
     @Value("${keycloak.client-secret}")
     private String clientSecret;
 
-    public String login(LoginRequest loginRequest) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "password");
-        form.add("client_id", clientId);
-        form.add("client_secret", clientSecret);
-        form.add("username", loginRequest.username());
-        form.add("password", loginRequest.password());
-        log.info(form.toString());
-
-        HttpEntity<MultiValueMap<String, String>> keycloakRequest = new HttpEntity<>(form, headers);
-        Map<?, ?> response = restTemplate.postForObject(
-                serverUrl + "/realms/" + realm + "/protocol/openid-connect/token",
-                keycloakRequest,
-                Map.class
-        );
-
-        assert response != null;
-        return (String) response.get("access_token");
+    private WebClient client() {
+        return webClientBuilder.baseUrl(serverUrl).build();
     }
 
-    public AuthenticationResponse createUserInKeycloak(RegistrationRequest userRequest) {
-        String token = getAdminAccessToken();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> user = Map.of(
-                "username", userRequest.username(),
-                "email", userRequest.email(),
-                "enabled", true,
-                "firstName", userRequest.firstName(),
-                "lastName", userRequest.lastName()
-        );
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(user, headers);
-        ResponseEntity<Void> resp = restTemplate.postForEntity(
-                serverUrl + "/admin/realms/" + realm + "/users/", entity, Void.class
-        );
-
-        if (!resp.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Failed to create user in Keycloak");
-        }
-
-        String userId = getUserId(token, userRequest.username());
-
-        Map<String, Object> credential = Map.of(
-                "type", "password",
-                "value", userRequest.password(),
-                "temporary", false
-        );
-
-        HttpEntity<Map<String, Object>> passEntity = new HttpEntity<>(credential, headers);
-        restTemplate.put(serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password", passEntity);
-
-        return new AuthenticationResponse(login(new LoginRequest(userRequest.username(), userRequest.password())));
+    public Mono<TokenResponse> login(LoginRequest loginRequest) {
+        return client()
+                .post()
+                .uri("/realms/{realm}/protocol/openid-connect/token", realm)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters
+                        .fromFormData("grant_type", "password")
+                        .with("client_id", clientId)
+                        .with("client_secret", clientSecret)
+                        .with("username", loginRequest.username())
+                        .with("password", loginRequest.password()))
+                .retrieve()
+                .onStatus(status -> !status.is2xxSuccessful(),
+                        resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")
+                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak token error: " + b))))
+                .bodyToMono(TokenResponse.class);
     }
 
-    private String getUserId(String token, String username) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+    public Mono<TokenResponse> createUserInKeycloak(RegistrationRequest userRequest) {
+        return getAdminAccessToken()
+                .flatMap(token -> {
+                    Map<String, Object> user = Map.of(
+                            "username", userRequest.username(),
+                            "email", userRequest.email(),
+                            "enabled", true,
+                            "firstName", userRequest.firstName(),
+                            "lastName", userRequest.lastName()
+                    );
 
-        ResponseEntity<List> response = restTemplate.exchange(
-                serverUrl + "/admin/realms/" + realm + "/users?username=" + username,
-                HttpMethod.GET,
-                entity,
-                List.class
-        );
-
-        if (response.getBody() != null && !response.getBody().isEmpty()) {
-            Map<?, ?> user = (Map<?, ?>) response.getBody().getFirst();
-            return (String) user.get("id");
-        }
-        throw new RuntimeException("User not found in keycloak");
+                    return client().
+                            post()
+                            .uri("/admin/realms/{realm}/users", realm)
+                            .headers(h -> h.setBearerAuth(token.accessToken()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(user)
+                            .exchangeToMono(resp -> {
+                                if (resp.statusCode().is2xxSuccessful() || resp.statusCode().equals(HttpStatus.CREATED)) {
+                                    return Mono.empty();
+                                }
+                                return resp.bodyToMono(String.class)
+                                        .defaultIfEmpty("")
+                                        .flatMap(body -> Mono.error(new RuntimeException("Failed to create user in Keycloak: " + body)));
+                            })
+                            .then(getUserId(token.accessToken(), userRequest.username()))
+                            .flatMap(userId -> {
+                                Map<String, Object> credential = Map.of(
+                                        "type", "password",
+                                        "value", userRequest.password(),
+                                        "temporary", false
+                                );
+                                return client()
+                                        .put()
+                                        .uri("/admin/realms/{realm}/users/{id}/reset-password", realm, userId)
+                                        .headers(h -> h.setBearerAuth(token.accessToken()))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(credential)
+                                        .retrieve()
+                                        .toBodilessEntity()
+                                        .flatMap(entity -> login(new LoginRequest(userRequest.username(), userRequest.password()))
+                                                .map(map -> new TokenResponse(map.accessToken())));
+                            });
+                });
     }
 
-    private String getAdminAccessToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    private Mono<String> getUserId(String token, String username) {
+        return client()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/realms/{realm}/users")
+                        .queryParam("username", username)
+                        .build(realm))
+                .headers(h -> h.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                })
+                .flatMap(list -> {
+                    if (list != null && !list.isEmpty()) {
+                        Map<String, Object> user = list.get(0);
+                        return Mono.just((String) user.get("id"));
+                    }
+                    return Mono.error(new RuntimeException("User not found in Keycloak"));
+                });
+    }
 
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "client_credentials");
-        form.add("client_id", clientId);
-        form.add("client_secret", clientSecret);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
-        Map<?, ?> response = restTemplate.postForObject(
-                serverUrl + "/realms/" + realm + "/protocol/openid-connect/token",
-                request,
-                Map.class
-        );
-        assert response != null;
-        return (String) response.get("access_token");
+    private Mono<TokenResponse> getAdminAccessToken() {
+        return client()
+                .post()
+                .uri("/realms/{realm}/protocol/openid-connect/token", realm)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters
+                        .fromFormData("grant_type", "client_credentials")
+                        .with("client_id", clientId)
+                        .with("client_secret", clientSecret))
+                .retrieve()
+                .onStatus(status -> !status.is2xxSuccessful(),
+                        resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")
+                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak admin token error: " + b))))
+                .bodyToMono(TokenResponse.class);
     }
 }
