@@ -8,7 +8,9 @@ include(
     "services:card-service",
     "services:transaction-service",
     "services:notification-service",
-    "services:statement-service"
+    "services:statement-service",
+    "services:eureka-server",
+    "shared"
 )
 
 includeBuild("build-src")
@@ -26,4 +28,3 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
-include("shared")
