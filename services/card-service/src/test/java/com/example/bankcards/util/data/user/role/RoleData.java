@@ -1,7 +1,5 @@
 package com.example.bankcards.util.data.user.role;
 
-import com.example.shared.entity.Role;
-
 public class RoleData {
     public static final Role DEFAULT_ROLE = role().build();
 

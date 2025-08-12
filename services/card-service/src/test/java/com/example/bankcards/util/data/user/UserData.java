@@ -1,8 +1,8 @@
 package com.example.bankcards.util.data.user;
 
-import com.example.shared.dto.request.UserRequest;
-import com.example.shared.dto.response.UserResponse;
-import com.example.shared.entity.User;
+import com.example.bankcards.dto.request.UserRequest;
+import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.entity.User;
 
 import java.util.ArrayList;
 

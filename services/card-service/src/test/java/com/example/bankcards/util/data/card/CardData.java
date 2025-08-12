@@ -1,13 +1,13 @@
 package com.example.bankcards.util.data.card;
 
+import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.CardStatusResponse;
+import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.util.data.card.status.CardStatusData;
 import com.example.bankcards.util.data.user.UserData;
-import com.example.shared.dto.response.CardResponse;
-import com.example.shared.dto.response.CardStatusResponse;
-import com.example.shared.dto.response.UserResponse;
-import com.example.shared.entity.Card;
-import com.example.shared.entity.CardStatus;
-import com.example.shared.entity.User;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

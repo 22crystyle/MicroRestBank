@@ -1,7 +1,6 @@
 package com.example.bankcards.util.data.user;
 
 import com.example.bankcards.util.data.user.role.RoleData;
-import com.example.shared.entity.Role;
 
 public abstract class BaseUserBuilder<T extends BaseUserBuilder<T>> {
     protected Long id;

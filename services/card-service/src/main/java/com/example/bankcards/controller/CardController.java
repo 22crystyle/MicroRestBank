@@ -1,14 +1,13 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.security.CustomUserDetails;
+import com.example.bankcards.dto.CardMapper;
+import com.example.bankcards.dto.pagination.PageCardResponse;
+import com.example.bankcards.dto.request.TransferRequest;
+import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
-import com.example.shared.dto.CardMapper;
-import com.example.shared.dto.pagination.PageCardResponse;
-import com.example.shared.dto.request.TransferRequest;
-import com.example.shared.dto.response.CardResponse;
-import com.example.shared.entity.Card;
-import com.example.shared.entity.CardBlockRequest;
 import com.example.shared.util.JwtPrincipalUsername;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,13 +25,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/cards")
@@ -122,7 +120,7 @@ public class CardController {
     )
     public ResponseEntity<CardResponse> createCard(
             @Parameter(description = "ID of the user for whom the card is created", required = true)
-            @RequestParam Long userId
+            @RequestParam UUID userId
     ) {
         Card card = service.createCardForAccount(userId);
         CardResponse response = mapper.toMaskedResponse(card);
@@ -170,11 +168,11 @@ public class CardController {
     )
     public ResponseEntity<CardBlockRequest> approveCardBlock(
             @Parameter(description = "ID of the card to approve block for", required = true)
-            @PathVariable Long id,
-            @Parameter(description = "Authenticated admin details", hidden = true)
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @PathVariable Long id
     ) {
-        CardBlockRequest blockRequest = cardBlockRequestService.approveBlockRequest(id, userDetails.getAccountId());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = JwtPrincipalUsername.getId(auth);
+        CardBlockRequest blockRequest = cardBlockRequestService.approveBlockRequest(id, UUID.fromString(userId));
         return ResponseEntity.ok(blockRequest);
     }
 
@@ -193,11 +191,11 @@ public class CardController {
     )
     public ResponseEntity<CardBlockRequest> refuseCardBlock(
             @Parameter(description = "ID of the card to reject block for", required = true)
-            @PathVariable Long id,
-            @Parameter(description = "Authenticated admin details", hidden = true)
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @PathVariable Long id
     ) {
-        CardBlockRequest blockRequest = cardBlockRequestService.rejectBlockRequest(id, userDetails.getAccountId());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = JwtPrincipalUsername.getId(auth);
+        CardBlockRequest blockRequest = cardBlockRequestService.rejectBlockRequest(id, UUID.fromString(userId));
         return ResponseEntity.ok(blockRequest);
     }
 
@@ -216,10 +214,11 @@ public class CardController {
     )
     public ResponseEntity<Void> transfer(
             @Parameter(description = "Card number to transfer from", required = true)
-            @RequestBody @Valid TransferRequest request,
-            @AuthenticationPrincipal UserDetails user
+            @RequestBody @Valid TransferRequest request
     ) {
-        service.transfer(request, user.getUsername());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = JwtPrincipalUsername.getUsername(auth);
+        service.transfer(request, username);
         return ResponseEntity.ok().build();
     }
 }

@@ -4,12 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@EnableWebSecurity
 @EnableScheduling
 @EnableRetry
-@SpringBootApplication(scanBasePackages = {"com.example.bankcards", "com.example.shared"})
+@SpringBootApplication(scanBasePackages = {"com.example.bankcards"})
 public class CardApplication {
     public static void main(String[] args) {
         SpringApplication.run(CardApplication.class, args);

@@ -1,16 +1,17 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.exception.CardNotFoundException;
-import com.example.shared.entity.Card;
-import com.example.shared.entity.CardBlockRequest;
-import com.example.shared.repository.CardBlockRequestRepository;
-import com.example.shared.repository.CardRepository;
-import com.example.shared.repository.CardStatusRepository;
+import com.example.bankcards.repository.CardBlockRequestRepository;
+import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.CardStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class CardBlockRequestService {
     }
 
     @Transactional
-    public CardBlockRequest approveBlockRequest(Long cardId, Long processedBy) {
+    public CardBlockRequest approveBlockRequest(Long cardId, UUID processedBy) {
         CardBlockRequest blockRequest = cardBlockRequestRepository.findByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 
@@ -58,7 +59,7 @@ public class CardBlockRequestService {
     }
 
     @Transactional
-    public CardBlockRequest rejectBlockRequest(Long cardId, Long processedBy) {
+    public CardBlockRequest rejectBlockRequest(Long cardId, UUID processedBy) {
         CardBlockRequest blockRequest = cardBlockRequestRepository.findByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 

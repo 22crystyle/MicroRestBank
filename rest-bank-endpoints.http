@@ -40,8 +40,8 @@ Content-Type: application/json
 }
 
 ### Creating a card for a user by the admin
-POST http://localhost:1024/api/v1/cards?userId={{userId}}
-Authorization: Bearer {{user_token}}
+POST http://localhost:1024/cards?userId={{userId}}
+Authorization: Bearer {{admin_token}}
 Content-Type: application/json
 
 ### Get a card by ID

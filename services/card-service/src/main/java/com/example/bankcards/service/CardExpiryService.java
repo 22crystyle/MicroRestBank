@@ -1,9 +1,9 @@
 package com.example.bankcards.service;
 
-import com.example.shared.entity.Card;
-import com.example.shared.entity.CardStatus;
-import com.example.shared.repository.CardRepository;
-import com.example.shared.repository.CardStatusRepository;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.CardStatusRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

@@ -22,7 +22,7 @@ spring:
     liquibase-schema: CARD_SCHEMA
     default-schema: CARD_SCHEMA
     change-log: classpath:/db/migration/db.changelog-master.yaml
-    enabled: true
+    enabled: false
 
   jpa:
     hibernate:

@@ -1,14 +1,14 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.request.TransferRequest;
+import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardStatusType;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.*;
+import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.CardStatusRepository;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
-import com.example.shared.dto.request.TransferRequest;
-import com.example.shared.entity.Card;
-import com.example.shared.entity.CardStatusType;
-import com.example.shared.entity.User;
-import com.example.shared.repository.CardRepository;
-import com.example.shared.repository.CardStatusRepository;
-import com.example.shared.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +39,13 @@ public class CardService {
             maxAttempts = 10,
             backoff = @Backoff(delay = 1000)
     )
-    public Card createCardForAccount(Long accountId) {
+    public Card createCardForAccount(UUID userId) {
         Card card = new Card();
         String number;
         number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
         card.setPan(number);
-        card.setOwner(userRepository.findById(accountId).orElseThrow(
-                () -> new UserNotFoundException(accountId)
+        card.setOwner(userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(String.valueOf(userId))
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
         card.setBalance(BigDecimal.ZERO);
@@ -55,15 +56,15 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public List<Card> getByOwner(Long userId) {
-        return cardRepository.getCardsByOwnerId(userId);
+    public List<Card> getByOwner(UUID userId) {
+        return cardRepository.getCardsByUserId(userId);
     }
 
     @Transactional(readOnly = true)
     public Page<Card> getByOwner(String username, PageRequest pageRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
-        return cardRepository.findAllByOwner(user, pageRequest);
+        return cardRepository.findAllByUser(user, pageRequest);
     }
 
     @Transactional(readOnly = true)
