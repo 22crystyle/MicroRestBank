@@ -98,7 +98,7 @@ public class CardController {
     public ResponseEntity<CardResponse> getCard(
             @Parameter(description = "ID of the card to retrieve", required = true)
             @PathVariable Long id,
-            @AuthenticationPrincipal Authentication auth
+            Authentication auth
     ) {
         Card card = service.getById(id);
         CardResponse dto = service.isOwner(id, auth.getName()) ?
