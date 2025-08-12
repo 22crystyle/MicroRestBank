@@ -12,19 +12,19 @@ public class GatewayConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("auth-service", r -> r.path("/auth/**")
-                        .filters(f -> f.rewritePath("/auth/(?<segment>.*)", "/api/v1/auth/${segment}"))
+                        .filters(f -> f.rewritePath("/auth", "/api/v1/auth"))
                         .uri("lb://auth-service"))
 
                 .route("customer-service", r -> r.path("/customers/**")
                         .filters(f -> f.tokenRelay()
                                 .addRequestHeader("X-Service-Call", "gateway")
-                                .rewritePath("/customers/(?<segment>.*)", "/api/v1/customers/${segment}"))
+                                .rewritePath("/customers", "/api/v1/customers"))
                         .uri("lb://customer-service"))
 
                 .route("card-service", r -> r.path("/cards/**")
                         .filters(f -> f
                                 .tokenRelay()
-                                .rewritePath("/cards/(?<segment>.*)", "/api/v1/cards/${segment}")
+                                .rewritePath("/cards", "/api/v1/cards")
                                 .circuitBreaker(config -> config
                                         .setName("cardCircuitBreaker")
                                         .setFallbackUri("forward:/fallback")
