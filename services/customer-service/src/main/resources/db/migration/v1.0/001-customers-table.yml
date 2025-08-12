@@ -13,11 +13,6 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: external_id
-                  type: varchar(255)
-                  constraints:
-                    nullable: true
-              - column:
                   name: first_name
                   type: varchar(200)
                   constraints:

@@ -21,9 +21,6 @@ public class Customer {
     @Id
     UUID id;
 
-    @Column(name = "external_id")
-    UUID external_id;
-
     @Column(name = "first_name", nullable = false)
     String firstName;
 
