@@ -1,5 +1,5 @@
 server:
-  port: 1024
+  port: ${API_GATEWAY_PORT}
 spring:
   application:
     name: api-gateway
@@ -19,7 +19,7 @@ spring:
         registration:
           keycloak:
             client-id: api-gateway
-            client-secret: ${GATEWAY_SECRET:c0oBw49xeFwGP91mhyvblXThNA0Cgtj4}
+            client-secret: ${API_GATEWAY_KEYCLOAK_SECRET}
             authorization-grant-type: authorization_code
             scope:
               - openid
@@ -27,10 +27,10 @@ spring:
               - email
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://192.168.0.105:7080/realms/bank-realm}
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://192.168.0.105:7080/realms/bank-realm}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
   liquibase:
     enabled: false
 
@@ -46,6 +46,6 @@ resilience4j:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_SERVICE_URL}
   instance:
     prefer-ip-address: true

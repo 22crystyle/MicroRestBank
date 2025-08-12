@@ -103,10 +103,6 @@ Host: localhost:1024
 Authorization: Bearer {{admin_token}}
 
 ###
-GET http://localhost:3333/api/v1/customers/2ec66ff9-f4d0-4c7a-a311-d8ac621b4678
-Authorization: Bearer {{admin_token}}
-
-###
 POST /auth/login
 Host: localhost:1024
 Content-Type: application/json

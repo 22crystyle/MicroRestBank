@@ -3,7 +3,7 @@ server:
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761/eureka
+      default-zone: ${EUREKA_SERVICE_URL}
   instance:
     prefer-ip-address: true
 spring:
@@ -11,9 +11,9 @@ spring:
     name: auth-service
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:./RestBank;AUTO_SERVER=TRUE;
-    username: sa
-    password:
+    url: ${DB_JDBC_URL};AUTO_SERVER=TRUE;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
@@ -24,7 +24,7 @@ spring:
     jdbc:
       dialect: h2
 keycloak:
-  server-url: http://192.168.0.105:7080
+  server-url: ${KEYCLOAK_SERVER_URL}
   realm: bank-realm
   client-id: auth-service
-  client-secret: dWRf1YosTApbPgaXinhMbFBvxJLlhd1R
+  client-secret: ${AUTH_SERVICE_KEYCLOAK_SECRET}

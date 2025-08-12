@@ -15,9 +15,9 @@ spring:
         enabled: true
   datasource:
     driver-class-name: org.h2.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=CARD_SCHEMA}
-    username: ${SPRING_DATASOURCE_USERNAME:sa}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${DB_JDBC_URL};SCHEMA=CARD_SCHEMA
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   liquibase:
     liquibase-schema: CARD_SCHEMA
     default-schema: CARD_SCHEMA
@@ -26,8 +26,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+      ddl-auto: update
+    show-sql: true
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -36,11 +36,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://192.168.0.105:7080/realms/bank-realm
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761/eureka
+      default-zone: ${EUREKA_SERVICE_URL}
   instance:
     prefer-ip-address: true
 springdoc:

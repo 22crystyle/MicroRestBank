@@ -3,9 +3,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:./RestBank;AUTO_SERVER=TRUE;SCHEMA=CUSTOMER_SCHEMA;
-    username: sa
-    password:
+    url: ${DB_JDBC_URL};SCHEMA=CUSTOMER_SCHEMA;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   liquibase:
     liquibase-schema: CUSTOMER_SCHEMA
     default-schema: CUSTOMER_SCHEMA
@@ -27,6 +27,6 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761/eureka
+      default-zone: ${EUREKA_SERVICE_URL}
   instance:
     prefer-ip-address: true
