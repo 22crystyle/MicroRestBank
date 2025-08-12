@@ -1,5 +1,7 @@
 package com.example.bankcards.config;
 
+import com.example.bankcards.security.JwtAuthConverter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,19 +30,23 @@ import java.util.Map;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 @Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtAuthConverter jwtAuthConverter;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/v1/cards/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                .jwtAuthenticationConverter(jwtAuthConverter)
                         )
                 );
         return http.build();
