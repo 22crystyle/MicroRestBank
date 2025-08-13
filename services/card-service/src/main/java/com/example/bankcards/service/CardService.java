@@ -44,7 +44,7 @@ public class CardService {
         String number;
         number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
         card.setPan(number);
-        card.setOwner(userRepository.findById(userId).orElseThrow(
+        card.setUser(userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(String.valueOf(userId))
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
@@ -75,13 +75,13 @@ public class CardService {
     public boolean isOwner(Long cardId, String username) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
-        return card.getOwner() != null && username != null && username.equals(card.getOwner().getUsername());
+        return card.getUser() != null && username != null && username.equals(card.getUser().getUsername());
     }
 
     public boolean isOwner(String cardNumber, String username) {
         Card card = cardRepository.findByPan(cardNumber)
                 .orElseThrow(() -> new CardNotFoundException("Card with number " + cardNumber + " not found"));
-        return card.getOwner() != null && username != null && username.equals(card.getOwner().getUsername());
+        return card.getUser() != null && username != null && username.equals(card.getUser().getUsername());
     }
 
     @Transactional(readOnly = true)
@@ -98,8 +98,8 @@ public class CardService {
                 () -> new CardNotFoundException(request.toCardId())
         );
 
-        if (!from.getOwner().getUsername().equals(username) ||
-                !to.getOwner().getUsername().equals(username)) {
+        if (!from.getUser().getUsername().equals(username) ||
+                !to.getUser().getUsername().equals(username)) {
             throw new IsNotOwnerException("You are not owner of these cards");
         }
 

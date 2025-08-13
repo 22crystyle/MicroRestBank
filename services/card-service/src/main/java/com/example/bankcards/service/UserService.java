@@ -3,7 +3,6 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.UserMapper;
 import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.exception.RoleNotFoundException;
 import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

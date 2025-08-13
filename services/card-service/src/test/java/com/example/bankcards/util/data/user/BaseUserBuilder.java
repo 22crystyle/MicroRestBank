@@ -1,19 +1,15 @@
 package com.example.bankcards.util.data.user;
 
-import com.example.bankcards.util.data.user.role.RoleData;
+import java.util.UUID;
 
 public abstract class BaseUserBuilder<T extends BaseUserBuilder<T>> {
-    protected Long id;
+    protected UUID id;
     protected String username = "user";
     protected String password = "pass";
     protected String firstName = "First";
     protected String lastName = "Last";
-    protected String email = "user@example.com";
-    protected String phone = "+70000000000";
-    protected Role role = RoleData.DEFAULT_ROLE;
-    protected Integer roleId = 1;
 
-    public T withId(Long id) {
+    public T withId(UUID id) {
         this.id = id;
         return self();
     }
@@ -35,26 +31,6 @@ public abstract class BaseUserBuilder<T extends BaseUserBuilder<T>> {
 
     public T withLastName(String lastName) {
         this.lastName = lastName;
-        return self();
-    }
-
-    public T withEmail(String email) {
-        this.email = email;
-        return self();
-    }
-
-    public T withPhone(String phone) {
-        this.phone = phone;
-        return self();
-    }
-
-    public T withRole(Role role) {
-        this.role = role;
-        return self();
-    }
-
-    public T withRoleId(Integer roleId) {
-        this.roleId = roleId;
         return self();
     }
 

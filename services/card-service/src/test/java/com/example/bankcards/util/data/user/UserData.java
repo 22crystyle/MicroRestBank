@@ -4,8 +4,6 @@ import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.User;
 
-import java.util.ArrayList;
-
 public class UserData {
     public static final User DEFAULT_ENTITY = entity().build();
     public static final UserRequest DEFAULT_REQUEST = request().build();
@@ -39,13 +37,8 @@ public class UserData {
             return User.builder()
                     .id(id)
                     .username(username)
-                    .password(password)
                     .firstName(firstName)
                     .lastName(lastName)
-                    .email(email)
-                    .phone(phone)
-                    .role(role)
-                    .bank_cards(new ArrayList<>())
                     .build();
         }
     }
@@ -60,7 +53,7 @@ public class UserData {
         }
 
         public UserRequest build() {
-            return new UserRequest(username, password, firstName, lastName, email, phone, roleId);
+            return new UserRequest(username, firstName, lastName);
         }
     }
 
@@ -74,7 +67,7 @@ public class UserData {
         }
 
         public UserResponse build() {
-            return new UserResponse(id, username, firstName, lastName, email, phone, role);
+            return new UserResponse(id, username, firstName, lastName);
         }
     }
 }

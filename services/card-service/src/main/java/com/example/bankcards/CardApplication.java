@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @EnableRetry
-@SpringBootApplication(scanBasePackages = {"com.example.bankcards"})
+@SpringBootApplication(scanBasePackages = {"com.example.bankcards", "com.example.shared"})
 public class CardApplication {
     public static void main(String[] args) {
         SpringApplication.run(CardApplication.class, args);

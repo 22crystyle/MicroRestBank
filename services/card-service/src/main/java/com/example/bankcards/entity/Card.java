@@ -25,9 +25,9 @@ public class Card {
     @Column(name = "pan", length = 16, nullable = false)
     private String pan;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "user_id")
     @JsonBackReference
-    private User owner;
+    private User user;
     @Column(name = "expiry_date")
     private YearMonth expiryDate;
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

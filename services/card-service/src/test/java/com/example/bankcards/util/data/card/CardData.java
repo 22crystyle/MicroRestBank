@@ -65,7 +65,7 @@ public class CardData {
             Card card = new Card();
             card.setId(id);
             card.setPan(cardNumber);
-            card.setOwner(owner);
+            card.setUser(owner);
             card.setExpiryDate(expiryDate);
             card.setStatus(cardStatus);
             card.setBalance(balance);
