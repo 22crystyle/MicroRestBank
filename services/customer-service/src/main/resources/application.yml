@@ -2,15 +2,15 @@ server:
   port: 0
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: ${DB_JDBC_URL};SCHEMA=CUSTOMER_SCHEMA;
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_JDBC_URL}?currentSchema=customer_schema
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   liquibase:
     liquibase-schema: CUSTOMER_SCHEMA
     default-schema: CUSTOMER_SCHEMA
     change-log: classpath:db/migration/db.changelog-master.yml
-    enabled: true
+    enabled: false
   kafka:
     consumer:
       bootstrap-servers: 192.168.0.105:9092
@@ -24,6 +24,9 @@ spring:
     show-sql: true
   application:
     name: customer-service
+  data:
+    jdbc:
+      dialect: postgresql
 eureka:
   client:
     service-url:

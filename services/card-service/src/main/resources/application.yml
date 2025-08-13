@@ -14,8 +14,8 @@ spring:
       retry:
         enabled: true
   datasource:
-    driver-class-name: org.h2.Driver
-    url: ${DB_JDBC_URL};SCHEMA=CARD_SCHEMA
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_JDBC_URL}?currentSchema=card_schema
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   liquibase:
@@ -23,7 +23,6 @@ spring:
     default-schema: CARD_SCHEMA
     change-log: classpath:/db/migration/db.changelog-master.yaml
     enabled: false
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -37,6 +36,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
+  data:
+    jdbc:
+      dialect: postgresql
 eureka:
   client:
     service-url:

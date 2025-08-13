@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -24,6 +26,7 @@ public class Card {
     private Long id;
     @Column(name = "pan", length = 16, nullable = false)
     private String pan;
+    @JdbcTypeCode(SqlTypes.BINARY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     @JsonBackReference
