@@ -5,6 +5,7 @@ import com.example.bankcards.dto.request.UserRequest;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.UserRepository;
+import com.example.shared.dto.event.CustomerCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ public class UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
     private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
 
     @Transactional
     public User createUser(UserRequest request) {
@@ -45,5 +47,18 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<User> getPage(PageRequest pageRequest) {
         return repository.findAll(pageRequest);
+    }
+
+    @Transactional
+    public void applyCustomerCreated(CustomerCreatedEvent event) {
+        User user = new User();
+        if (event.getId() != null) {
+            user.setId(event.getId());
+        } else {
+            user.setId(UUID.randomUUID());
+        }
+        user.setId(event.getId());
+        user.setStatus(event.getStatus());
+        userRepository.save(user);
     }
 }

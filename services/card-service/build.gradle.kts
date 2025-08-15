@@ -23,6 +23,7 @@ dependencies {
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("io.github.resilience4j:resilience4j-spring-boot2:2.2.0")
+    implementation("org.springframework.kafka:spring-kafka:3.3.8")
     runtimeOnly("io.github.resilience4j:resilience4j-feign:2.2.0")
 }
 

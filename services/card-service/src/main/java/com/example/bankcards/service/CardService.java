@@ -61,9 +61,9 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Card> getByOwner(String username, PageRequest pageRequest) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+    public Page<Card> getByOwner(UUID id, PageRequest pageRequest) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id.toString()));
         return cardRepository.findAllByUser(user, pageRequest);
     }
 
@@ -72,16 +72,20 @@ public class CardService {
         return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(id));
     }
 
-    public boolean isOwner(Long cardId, String username) {
+    public boolean isOwner(Long cardId, UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id.toString()));
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
-        return card.getUser() != null && username != null && username.equals(card.getUser().getUsername());
+        return card.getUser() != null && user.getId().equals(card.getUser().getId());
     }
 
-    public boolean isOwner(String cardNumber, String username) {
+    public boolean isOwner(String cardNumber, UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id.toString()));
         Card card = cardRepository.findByPan(cardNumber)
                 .orElseThrow(() -> new CardNotFoundException("Card with number " + cardNumber + " not found"));
-        return card.getUser() != null && username != null && username.equals(card.getUser().getUsername());
+        return card.getUser() != null && user.getId().equals(card.getUser().getId());
     }
 
     @Transactional(readOnly = true)
@@ -90,7 +94,7 @@ public class CardService {
     }
 
     @Transactional
-    public void transfer(TransferRequest request, String username) {
+    public void transfer(TransferRequest request, UUID id) {
         Card from = cardRepository.findById(request.fromCardId()).orElseThrow(
                 () -> new CardNotFoundException(request.fromCardId())
         );
@@ -98,8 +102,8 @@ public class CardService {
                 () -> new CardNotFoundException(request.toCardId())
         );
 
-        if (!from.getUser().getUsername().equals(username) ||
-                !to.getUser().getUsername().equals(username)) {
+        if (!from.getUser().getId().equals(id) ||
+                !to.getUser().getId().equals(id)) {
             throw new IsNotOwnerException("You are not owner of these cards");
         }
 

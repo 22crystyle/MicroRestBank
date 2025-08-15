@@ -1,9 +1,7 @@
 package com.example.customer.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.shared.dto.event.CustomerStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,15 +31,16 @@ public class Customer {
     @Column(name = "phone", nullable = true, unique = true)
     String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     CustomerStatus status;
 
     @Column(name = "date_of_birth")
-    Date date_of_birth;
+    Date dateOfBirth;
 
     @Column(name = "created_at")
-    Instant created_at;
+    Instant createdAt;
 
     @Column(name = "updated_at")
-    Instant updated_at;
+    Instant updatedAt;
 }

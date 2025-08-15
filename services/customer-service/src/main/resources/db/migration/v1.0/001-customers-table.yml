@@ -41,18 +41,18 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: date_of_birth
+                  name: dateOfBirth
                   type: date
                   constraints:
                     nullable: true
               - column:
-                  name: created_at
+                  name: createdAt
                   type: timestamp with time zone
                   defaultValueComputed: now()
                   constraints:
                     nullable: false
               - column:
-                  name: updated_at
+                  name: updatedAt
                   type: timestamp with time zone
                   defaultValueComputed: now()
                   constraints:

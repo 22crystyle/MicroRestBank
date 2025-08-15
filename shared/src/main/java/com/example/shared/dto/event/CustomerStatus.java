@@ -1,4 +1,4 @@
-package com.example.customer.entity;
+package com.example.shared.dto.event;
 
 public enum CustomerStatus {
     ACTIVE,

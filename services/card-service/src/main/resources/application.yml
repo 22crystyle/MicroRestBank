@@ -39,10 +39,20 @@ spring:
   data:
     jdbc:
       dialect: postgresql
+  kafka:
+    consumer:
+      group-id: user-sync-group
+      bootstrap-servers: 192.168.0.105:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+    admin:
+      auto-create: false
 eureka:
   client:
     service-url:
       default-zone: ${EUREKA_SERVICE_URL}
+    enabled: false
   instance:
     prefer-ip-address: true
 springdoc:

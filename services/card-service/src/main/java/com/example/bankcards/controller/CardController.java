@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -64,15 +65,19 @@ public class CardController {
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = JwtPrincipalUsername.getUsername(auth);
+        String username = JwtPrincipalUsername.getId(auth);
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(
                 a -> a.getAuthority().equals("ROLE_ADMIN")
         );
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Card> cards = isAdmin
-                ? service.getAllCards(pageRequest)
-                : service.getByOwner(username, pageRequest);
+        Page<Card> cards;
+        if (isAdmin) {
+            cards = service.getAllCards(pageRequest);
+        } else {
+            assert username != null;
+            cards = service.getByOwner(UUID.fromString(username), pageRequest);
+        }
         Page<CardResponse> dtos = cards.map(isAdmin
                 ? mapper::toMaskedResponse
                 : mapper::toFullResponse
@@ -99,7 +104,7 @@ public class CardController {
             Authentication auth
     ) {
         Card card = service.getById(id);
-        CardResponse dto = service.isOwner(id, auth.getName()) ?
+        CardResponse dto = service.isOwner(id, UUID.fromString(Objects.requireNonNull(JwtPrincipalUsername.getId(auth)))) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
         return ResponseEntity.ok(dto);
@@ -217,8 +222,9 @@ public class CardController {
             @RequestBody @Valid TransferRequest request
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = JwtPrincipalUsername.getUsername(auth);
-        service.transfer(request, username);
+        String id = JwtPrincipalUsername.getId(auth);
+        assert id != null;
+        service.transfer(request, UUID.fromString(id));
         return ResponseEntity.ok().build();
     }
 }

@@ -1,14 +1,8 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.time.YearMonth;
-import java.util.List;
 
 @Service
 public class CardExpiryService {
@@ -21,7 +15,7 @@ public class CardExpiryService {
         this.cardStatusRepository = cardStatusRepository;
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    /*@Scheduled(cron = "0 * * * * *")
     public void markExpiredCards() {
         YearMonth now = YearMonth.now();
         CardStatus expiredStatus = cardStatusRepository.findByName("EXPIRED")
@@ -29,5 +23,5 @@ public class CardExpiryService {
         List<Card> toExpire = cardRepository.findByExpiryDate(now);
         toExpire.forEach(card -> card.setStatus(expiredStatus));
         cardRepository.saveAll(toExpire);
-    }
+    }*/
 }

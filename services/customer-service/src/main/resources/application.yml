@@ -17,7 +17,7 @@ spring:
       group-id: user-sync-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: latest
+      auto-offset-reset: earliest
   jpa:
     hibernate:
       ddl-auto: update
@@ -31,5 +31,6 @@ eureka:
   client:
     service-url:
       default-zone: ${EUREKA_SERVICE_URL}
+    enabled: false
   instance:
     prefer-ip-address: true

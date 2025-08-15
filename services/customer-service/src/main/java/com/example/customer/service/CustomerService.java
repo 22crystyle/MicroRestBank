@@ -4,9 +4,16 @@ import com.example.customer.dto.CustomerMapper;
 import com.example.customer.dto.request.CustomerRequest;
 import com.example.customer.dto.response.CustomerResponse;
 import com.example.customer.entity.Customer;
-import com.example.customer.entity.CustomerStatus;
+import com.example.customer.entity.OutboxEvent;
 import com.example.customer.exception.CustomerNotFound;
 import com.example.customer.repository.CustomerRepository;
+import com.example.customer.repository.OutboxEventRepository;
+import com.example.shared.dto.event.CustomerCreatedEvent;
+import com.example.shared.dto.event.CustomerStatus;
+import com.example.shared.util.EventType;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +27,11 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper(JsonFactory.builder().build());
+    private final OutboxEventRepository outboxEventRepository;
 
     @Transactional
-    public CustomerResponse createCustomer(CustomerRequest request) {
+    public CustomerResponse createCustomer(CustomerRequest request) throws JsonProcessingException {
         Customer customer = customerMapper.toEntity(request);
         if (request.getId() != null) {
             customer.setId(request.getId());
@@ -30,9 +39,24 @@ public class CustomerService {
             customer.setId(UUID.randomUUID());
         }
         customer.setStatus(CustomerStatus.ACTIVE);
-        customer.setCreated_at(Instant.now());
-        customer.setUpdated_at(Instant.now());
+        customer.setCreatedAt(Instant.now());
+        customer.setUpdatedAt(Instant.now());
         customerRepository.save(customer);
+
+        CustomerCreatedEvent event = new CustomerCreatedEvent(
+                customer.getId(),
+                customer.getStatus()
+        );
+
+        OutboxEvent outbox = OutboxEvent.builder()
+                .aggregateType("Customer")
+                .aggregateId(customer.getId().toString())
+                .eventType(EventType.CUSTOMER_CREATED)
+                .payload(objectMapper.writeValueAsString(event))
+                .createdAt(Instant.now())
+                .build();
+        outboxEventRepository.save(outbox);
+        outboxEventRepository.flush();
         return customerMapper.toResponse(customer);
     }
 
