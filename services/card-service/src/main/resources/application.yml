@@ -51,10 +51,12 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: ${EUREKA_SERVICE_URL}
-    enabled: true
+      defaultZone: ${EUREKA_SERVICE_URL}
+    registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -62,3 +64,7 @@ springdoc:
     path: /docs
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+logging:
+  level:
+    com.netflix.discovery: warn
+    com.netflix.eureka: warn
