@@ -65,14 +65,6 @@ public class CardService {
         return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(id));
     }
 
-    public boolean isOwner(Long cardId, UUID id) {
-        boolean isOwner = cardRepository.existsByIdAndUser_Id(cardId, id);
-        if (!isOwner) {
-            throw new IsNotOwnerException("Card with id=" + cardId + " and owner with id=" + id + " not found.");
-        }
-        return cardRepository.existsByIdAndUser_Id(cardId, id);
-    }
-
     @Transactional(readOnly = true)
     public Page<Card> getAllCards(PageRequest pageRequest) {
         return cardRepository.findAll(pageRequest);
@@ -93,6 +85,14 @@ public class CardService {
 
         cardRepository.save(from);
         cardRepository.save(to);
+    }
+
+    public boolean checkOwnership(Long cardId, UUID id) {
+        boolean isOwner = cardRepository.existsByIdAndUser_Id(cardId, id);
+        if (!isOwner) {
+            throw new IsNotOwnerException("Card with id=" + cardId + " and owner with id=" + id + " not found.");
+        }
+        return cardRepository.existsByIdAndUser_Id(cardId, id);
     }
 
     private void checkOwnership(Card card, UUID userId) {

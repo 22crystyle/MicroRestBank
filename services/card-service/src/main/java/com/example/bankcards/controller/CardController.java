@@ -102,7 +102,7 @@ public class CardController {
             Authentication auth
     ) {
         Card card = service.getById(id);
-        CardResponse dto = service.isOwner(id, UUID.fromString(JwtPrincipal.getId(auth))) ?
+        CardResponse dto = service.checkOwnership(id, UUID.fromString(JwtPrincipal.getId(auth))) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
         return ResponseEntity.ok(dto);
