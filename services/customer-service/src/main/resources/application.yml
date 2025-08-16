@@ -13,7 +13,7 @@ spring:
     enabled: true
   kafka:
     consumer:
-      bootstrap-servers: 192.168.0.105:9092
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER}
       group-id: user-sync-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

@@ -18,7 +18,6 @@ import java.util.UUID;
 @Builder
 public class ProcessedEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_id", nullable = false, updatable = false)
     private UUID eventId;
 

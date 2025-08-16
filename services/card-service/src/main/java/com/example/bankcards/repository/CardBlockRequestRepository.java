@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface CardBlockRequestRepository extends JpaRepository<CardBlockRequest, Long> {
-    Optional<CardBlockRequest> findByCardIdAndStatus(Long cardId, CardBlockRequest.Status status);
+    Optional<CardBlockRequest> findByCard_IdAndStatus(Long cardId, CardBlockRequest.Status status);
 
-    boolean existsCardBlockRequestByCardIdAndStatus(Long cardId, CardBlockRequest.Status status);
+    boolean existsCardBlockRequestByCard_IdAndStatus(Long cardId, CardBlockRequest.Status status);
 }

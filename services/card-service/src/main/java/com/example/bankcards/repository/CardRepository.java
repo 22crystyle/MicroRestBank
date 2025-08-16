@@ -9,15 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
-
-    List<Card> getCardsByUserId(UUID userId);
-
-    Optional<Card> findByPan(String from);
 
     List<Card> findByExpiryDate(YearMonth now);
 

@@ -1,11 +1,11 @@
 package com.example.bankcards.dto.response;
 
+import com.example.shared.dto.event.CustomerStatus;
+
 import java.util.UUID;
 
 public record UserResponse(
         UUID id,
-        String username,
-        String firstName,
-        String lastName
+        CustomerStatus status
 ) {
 }

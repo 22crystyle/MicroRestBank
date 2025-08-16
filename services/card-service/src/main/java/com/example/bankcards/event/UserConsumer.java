@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ public class UserConsumer {
     private final ProcessedEventRepository processedEventRepository;
 
     @KafkaListener(topics = "restbank.customer_schema.outbox", groupId = "user-sync-group")
-    public void listen(String message, ConsumerRecord<?, ?> record) {
+    public void listen(String message) {
         log.info(message);
         try {
             JsonNode root = objectMapper.readTree(message);
@@ -62,7 +61,7 @@ public class UserConsumer {
 
             CustomerCreatedEvent event = objectMapper.treeToValue(payloadNode, CustomerCreatedEvent.class);
             userService.applyCustomerCreated(event);
-            processedEventRepository.save(new ProcessedEvent(null, outboxId, eventType, Instant.now()));
+            processedEventRepository.save(new ProcessedEvent(event.getId(), outboxId, eventType, Instant.now()));
 
         } catch (JsonProcessingException ex) {
             log.error("Failed to process outbox event", ex);

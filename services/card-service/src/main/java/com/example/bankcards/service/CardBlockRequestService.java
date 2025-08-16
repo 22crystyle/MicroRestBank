@@ -2,14 +2,11 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.IsNotOwnerException;
-import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
-import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,24 +23,20 @@ public class CardBlockRequestService {
     private final CardBlockRequestRepository cardBlockRequestRepository;
     private final CardRepository cardRepository;
     private final CardStatusRepository cardStatusRepository;
-    private final UserRepository userRepository;
-    private final CardService cardService;
 
     @Transactional
     public void createBlockRequest(Long cardId, UUID id) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException(id)
-        );
+        UUID ownerId = card.getUser().getId();
 
-        if (!cardRepository.existsByIdAndUser_Id(cardId, id)) {
+        if (!ownerId.equals(id)) {
             throw new IsNotOwnerException("You are not owner of card");
         }
 
         log.info("CreateBlockRequest found card: {}", card);
 
-        if (cardBlockRequestRepository.existsCardBlockRequestByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {
+        if (cardBlockRequestRepository.existsCardBlockRequestByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {
             throw new IllegalArgumentException("Card block request already exists");
         }
 
@@ -61,7 +54,7 @@ public class CardBlockRequestService {
 
     @Transactional
     public CardBlockRequest approveBlockRequest(Long cardId, UUID processedBy) {
-        CardBlockRequest blockRequest = cardBlockRequestRepository.findByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)
+        CardBlockRequest blockRequest = cardBlockRequestRepository.findByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 
         Card card = blockRequest.getCard();
@@ -78,7 +71,7 @@ public class CardBlockRequestService {
 
     @Transactional
     public CardBlockRequest rejectBlockRequest(Long cardId, UUID processedBy) {
-        CardBlockRequest blockRequest = cardBlockRequestRepository.findByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)
+        CardBlockRequest blockRequest = cardBlockRequestRepository.findByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 
         Card card = blockRequest.getCard();

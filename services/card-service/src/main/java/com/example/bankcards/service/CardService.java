@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,12 +55,7 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public List<Card> getByOwner(UUID userId) {
-        return cardRepository.getCardsByUserId(userId);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Card> getByOwner(UUID id, PageRequest pageRequest) {
+    public Page<Card> getCardsByOwner(UUID id, PageRequest pageRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id.toString()));
         return cardRepository.findAllByUser(user, pageRequest);
@@ -73,19 +67,11 @@ public class CardService {
     }
 
     public boolean isOwner(Long cardId, UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id.toString()));
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardNotFoundException(cardId));
-        return card.getUser() != null && user.getId().equals(card.getUser().getId());
-    }
-
-    public boolean isOwner(String cardNumber, UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id.toString()));
-        Card card = cardRepository.findByPan(cardNumber)
-                .orElseThrow(() -> new CardNotFoundException("Card with number " + cardNumber + " not found"));
-        return card.getUser() != null && user.getId().equals(card.getUser().getId());
+        boolean isOwner = cardRepository.existsByIdAndUser_Id(cardId, id);
+        if (!isOwner) {
+            throw new IsNotOwnerException("Card with id=" + cardId + " and owner with id=" + id + " not found.");
+        }
+        return cardRepository.existsByIdAndUser_Id(cardId, id);
     }
 
     @Transactional(readOnly = true)

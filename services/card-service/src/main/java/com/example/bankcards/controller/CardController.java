@@ -8,7 +8,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
-import com.example.shared.util.JwtPrincipalUsername;
+import com.example.shared.util.JwtPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -65,7 +64,7 @@ public class CardController {
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = JwtPrincipalUsername.getId(auth);
+        String userId = JwtPrincipal.getId(auth);
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(
                 a -> a.getAuthority().equals("ROLE_ADMIN")
@@ -75,8 +74,7 @@ public class CardController {
         if (isAdmin) {
             cards = service.getAllCards(pageRequest);
         } else {
-            assert username != null;
-            cards = service.getByOwner(UUID.fromString(username), pageRequest);
+            cards = service.getCardsByOwner(UUID.fromString(userId), pageRequest);
         }
         Page<CardResponse> dtos = cards.map(isAdmin
                 ? mapper::toMaskedResponse
@@ -104,7 +102,7 @@ public class CardController {
             Authentication auth
     ) {
         Card card = service.getById(id);
-        CardResponse dto = service.isOwner(id, UUID.fromString(Objects.requireNonNull(JwtPrincipalUsername.getId(auth)))) ?
+        CardResponse dto = service.isOwner(id, UUID.fromString(JwtPrincipal.getId(auth))) ?
                 mapper.toFullResponse(card) :
                 mapper.toMaskedResponse(card);
         return ResponseEntity.ok(dto);
@@ -156,7 +154,7 @@ public class CardController {
     ) {
         log.info("Trying to send request to block card with id: {}", id);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID userId = UUID.fromString(JwtPrincipalUsername.getId(auth));
+        UUID userId = UUID.fromString(JwtPrincipal.getId(auth));
         cardBlockRequestService.createBlockRequest(id, userId);
         return ResponseEntity.ok().build();
     }
@@ -179,7 +177,7 @@ public class CardController {
             @PathVariable Long id
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userId = JwtPrincipalUsername.getId(auth);
+        String userId = JwtPrincipal.getId(auth);
         CardBlockRequest blockRequest = cardBlockRequestService.approveBlockRequest(id, UUID.fromString(userId));
         return ResponseEntity.ok(blockRequest);
     }
@@ -202,7 +200,7 @@ public class CardController {
             @PathVariable Long id
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userId = JwtPrincipalUsername.getId(auth);
+        String userId = JwtPrincipal.getId(auth);
         CardBlockRequest blockRequest = cardBlockRequestService.rejectBlockRequest(id, UUID.fromString(userId));
         return ResponseEntity.ok(blockRequest);
     }
@@ -225,8 +223,7 @@ public class CardController {
             @RequestBody @Valid TransferRequest request
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String id = JwtPrincipalUsername.getId(auth);
-        assert id != null;
+        String id = JwtPrincipal.getId(auth);
         service.transfer(request, UUID.fromString(id));
         return ResponseEntity.ok().build();
     }
