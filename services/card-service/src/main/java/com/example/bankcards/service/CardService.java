@@ -88,9 +88,6 @@ public class CardService {
         checkOwnership(from, id);
         checkOwnership(to, id);
 
-        if (from.isBlocked()) throw new CardIsBlockedException(request.fromCardId());
-        if (to.isBlocked()) throw new CardIsBlockedException(request.toCardId());
-
         from.withdraw(request.amount());
         to.deposit(request.amount());
 

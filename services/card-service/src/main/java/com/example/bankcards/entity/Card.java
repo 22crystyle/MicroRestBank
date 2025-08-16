@@ -1,5 +1,6 @@
 package com.example.bankcards.entity;
 
+import com.example.bankcards.exception.CardIsBlockedException;
 import com.example.bankcards.exception.InvalidAmountException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,17 +40,21 @@ public class Card {
     private CardStatus status;
     private BigDecimal balance;
 
-    public boolean isBlocked() {
-        return status.is(CardStatusType.BLOCKED);
+    private void ensureNotBlocked() {
+        if (status.is(CardStatusType.BLOCKED)) {
+            throw new CardIsBlockedException(id);
+        }
     }
 
     public void withdraw(BigDecimal amount) {
+        ensureNotBlocked();
         if (amount.signum() <= 0) throw new InvalidAmountException("Amount must be positive.");
         if (balance.compareTo(amount) <= 0) throw new InvalidAmountException("Insufficient pounds.");
         balance = balance.subtract(amount);
     }
 
     public void deposit(BigDecimal amount) {
+        ensureNotBlocked();
         if (amount.signum() <= 0) throw new InvalidAmountException("Amount must be positive.");
         balance = balance.add(amount);
     }
