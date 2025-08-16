@@ -16,6 +16,6 @@ public class JwtPrincipalUsername {
         if (auth.getPrincipal() instanceof Jwt jwt) {
             return jwt.getSubject();
         }
-        return null;
+        return "";
     }
 }

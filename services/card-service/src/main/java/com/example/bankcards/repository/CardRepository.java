@@ -22,4 +22,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByExpiryDate(YearMonth now);
 
     Page<Card> findAllByUser(User user, Pageable pageable);
+
+    boolean existsByIdAndUser_Id(Long cardId, UUID userId);
 }

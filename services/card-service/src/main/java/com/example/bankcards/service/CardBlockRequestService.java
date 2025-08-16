@@ -2,10 +2,14 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
+import com.example.bankcards.exception.IsNotOwnerException;
+import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
+import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,11 +26,21 @@ public class CardBlockRequestService {
     private final CardBlockRequestRepository cardBlockRequestRepository;
     private final CardRepository cardRepository;
     private final CardStatusRepository cardStatusRepository;
+    private final UserRepository userRepository;
+    private final CardService cardService;
 
     @Transactional
-    public void createBlockRequest(Long cardId) {
+    public void createBlockRequest(Long cardId, UUID id) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(id)
+        );
+
+        if (!cardRepository.existsByIdAndUser_Id(cardId, id)) {
+            throw new IsNotOwnerException("You are not owner of card");
+        }
+
         log.info("CreateBlockRequest found card: {}", card);
 
         if (cardBlockRequestRepository.existsCardBlockRequestByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {

@@ -155,7 +155,9 @@ public class CardController {
             @PathVariable Long id
     ) {
         log.info("Trying to send request to block card with id: {}", id);
-        cardBlockRequestService.createBlockRequest(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UUID userId = UUID.fromString(JwtPrincipalUsername.getId(auth));
+        cardBlockRequestService.createBlockRequest(id, userId);
         return ResponseEntity.ok().build();
     }
 
