@@ -10,7 +10,7 @@ import com.example.customer.repository.CustomerRepository;
 import com.example.customer.repository.OutboxEventRepository;
 import com.example.shared.dto.event.CustomerCreatedEvent;
 import com.example.shared.dto.event.CustomerStatus;
-import com.example.shared.util.EventType;
+import com.example.shared.dto.event.EventType;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

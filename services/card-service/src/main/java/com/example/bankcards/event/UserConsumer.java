@@ -4,7 +4,7 @@ import com.example.bankcards.entity.ProcessedEvent;
 import com.example.bankcards.repository.ProcessedEventRepository;
 import com.example.bankcards.service.UserService;
 import com.example.shared.dto.event.CustomerCreatedEvent;
-import com.example.shared.util.EventType;
+import com.example.shared.dto.event.EventType;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

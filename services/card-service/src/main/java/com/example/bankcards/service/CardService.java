@@ -2,7 +2,6 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatusType;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.*;
 import com.example.bankcards.repository.CardRepository;
@@ -82,36 +81,26 @@ public class CardService {
     @Transactional
     public void transfer(TransferRequest request, UUID id) {
         Card from = cardRepository.findById(request.fromCardId()).orElseThrow(
-                () -> new CardNotFoundException(request.fromCardId())
-        );
+                () -> new CardNotFoundException(request.fromCardId()));
         Card to = cardRepository.findById(request.toCardId()).orElseThrow(
-                () -> new CardNotFoundException(request.toCardId())
-        );
+                () -> new CardNotFoundException(request.toCardId()));
 
-        if (!from.getUser().getId().equals(id) ||
-                !to.getUser().getId().equals(id)) {
-            throw new IsNotOwnerException("You are not owner of these cards");
-        }
+        checkOwnership(from, id);
+        checkOwnership(to, id);
 
-        if (from.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with id=" + request.fromCardId() + " is blocked");
-        }
+        if (from.isBlocked()) throw new CardIsBlockedException(request.fromCardId());
+        if (to.isBlocked()) throw new CardIsBlockedException(request.toCardId());
 
-        if (to.getStatus().getCardStatusType() == CardStatusType.BLOCKED) {
-            throw new CardIsBlockedException("Card with id=" + request.toCardId() + " is blocked");
-        }
+        from.withdraw(request.amount());
+        to.deposit(request.amount());
 
-        if (request.amount().signum() <= 0) {
-            throw new InvalidAmountException("You cannot transfer a negative value to a card");
-        }
-
-        if (from.getBalance().compareTo(request.amount()) < 0) {
-            throw new InvalidAmountException((from.getBalance().subtract(to.getBalance())));
-        }
-
-        from.setBalance(from.getBalance().subtract(request.amount()));
-        to.setBalance(to.getBalance().add(request.amount()));
         cardRepository.save(from);
         cardRepository.save(to);
+    }
+
+    private void checkOwnership(Card card, UUID userId) {
+        if (!card.getUser().getId().equals(userId)) {
+            throw new IsNotOwnerException("You are not owner of card " + card.getId());
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.shared.util;
+package com.example.shared.dto.event;
 
 public enum EventType {
     CUSTOMER_CREATED,

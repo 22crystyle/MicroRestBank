@@ -17,4 +17,8 @@ public class CardStatus {
     public CardStatusType getCardStatusType() {
         return CardStatusType.valueOf(name);
     }
+
+    public boolean is(CardStatusType type) {
+        return getCardStatusType().equals(type);
+    }
 }

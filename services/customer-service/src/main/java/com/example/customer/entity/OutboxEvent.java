@@ -1,6 +1,6 @@
 package com.example.customer.entity;
 
-import com.example.shared.util.EventType;
+import com.example.shared.dto.event.EventType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
