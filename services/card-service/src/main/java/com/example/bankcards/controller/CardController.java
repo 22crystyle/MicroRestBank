@@ -125,7 +125,7 @@ public class CardController {
     )
     public ResponseEntity<CardResponse> createCard(
             @Parameter(description = "ID of the user for whom the card is created", required = true)
-            @RequestParam UUID userId
+            @RequestParam("userId") UUID userId
     ) {
         Card card = service.createCardForAccount(userId);
         CardResponse response = mapper.toMaskedResponse(card);
@@ -154,6 +154,7 @@ public class CardController {
             @Parameter(description = "ID of the card to block", required = true)
             @PathVariable Long id
     ) {
+        log.info("Trying to send request to block card with id: {}", id);
         cardBlockRequestService.createBlockRequest(id);
         return ResponseEntity.ok().build();
     }

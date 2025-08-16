@@ -52,7 +52,7 @@ eureka:
   client:
     service-url:
       default-zone: ${EUREKA_SERVICE_URL}
-    enabled: false
+    enabled: true
   instance:
     prefer-ip-address: true
 springdoc:

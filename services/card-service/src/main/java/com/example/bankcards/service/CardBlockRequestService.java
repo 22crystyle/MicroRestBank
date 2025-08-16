@@ -7,12 +7,14 @@ import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardBlockRequestService {
@@ -25,6 +27,7 @@ public class CardBlockRequestService {
     public void createBlockRequest(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
+        log.info("CreateBlockRequest found card: {}", card);
 
         if (cardBlockRequestRepository.existsCardBlockRequestByCardIdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {
             throw new IllegalArgumentException("Card block request already exists");
@@ -37,6 +40,7 @@ public class CardBlockRequestService {
                 .processedBy(null)
                 .processedAt(null)
                 .build();
+        log.info("Created CardBlockRequest: {}", blockRequest);
 
         cardBlockRequestRepository.save(blockRequest);
     }

@@ -118,9 +118,9 @@ Host: localhost:1024
 Content-Type: application/json
 
 {
-  "username": "asd",
-  "password": "asd",
-  "firstName": "asd",
-  "lastName": "asd",
-  "email": "e@asd.ru"
+  "username": "admin",
+  "password": "admin",
+  "firstName": "max",
+  "lastName": "max",
+  "email": "a@a.a"
 }

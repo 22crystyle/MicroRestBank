@@ -10,8 +10,8 @@ spring:
   application:
     name: auth-service
   datasource:
-    driver-class-name: org.h2.Driver
-    url: ${DB_JDBC_URL};AUTO_SERVER=TRUE;
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_JDBC_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
@@ -22,7 +22,7 @@ spring:
     enabled: false
   data:
     jdbc:
-      dialect: h2
+      dialect: postgresql
 keycloak:
   server-url: ${KEYCLOAK_SERVER_URL}
   realm: bank-realm
