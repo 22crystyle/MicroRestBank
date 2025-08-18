@@ -45,22 +45,6 @@ dependencies {
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.security.test)
-
-    /*implementation(libs.jjwt.api)
-    runtimeOnly(libs.jjwt.impl)
-    runtimeOnly(libs.jjwt.jackson)*/
-
-    /*implementation(libs.mapstruct)
-    annotationProcessor(libs.mapstruct.processor)
-    implementation(libs.lombok.mapstruct.binding)
-
-    implementation(libs.spring.boot.starter.security)
-    implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.retry)
-    implementation(libs.spring.cloud.openfeign)
-
-
-    implementation(libs.liquibase.core)*/
 }
 
 dependencyManagement {

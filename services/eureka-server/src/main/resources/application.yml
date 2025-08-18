@@ -1,6 +1,8 @@
 spring:
   application:
     name: eureka-server
+  main:
+    allow-bean-definition-overriding: false
 server:
   port: ${EUREKA_SERVER_PORT}
 
