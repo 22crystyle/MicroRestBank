@@ -81,32 +81,6 @@ services:
       - kafka
     networks:
       - restbank-net
-  api-gateway:
-    container_name: api-gateway
-    build:
-      context: ../
-      dockerfile: services/api-gateway/Dockerfile
-    ports:
-      - "1024:1024"
-    env_file:
-      - ".env"
-    networks:
-      - restbank-net
-    depends_on:
-      keycloak:
-        condition: service_healthy
-
-  eureka-server:
-    container_name: eureka-server
-    build:
-      context: ../
-      dockerfile: services/eureka-server/Dockerfile
-    ports:
-      - "8761:8761"
-    env_file:
-      - ".env"
-    networks:
-      - restbank-net
 
 volumes:
   pgdata:
