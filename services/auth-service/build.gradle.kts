@@ -13,9 +13,8 @@ repositories {
 dependencies {
     implementation(project(":shared"))
     implementation("org.keycloak:keycloak-admin-client:22.0.0")
-    implementation(libs.spring.boot.starter.web)
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.5")
     implementation(libs.spring.boot.starter.security)
-    implementation("org.springframework:spring-webflux:6.2.9")
 }
 
 tasks.test {

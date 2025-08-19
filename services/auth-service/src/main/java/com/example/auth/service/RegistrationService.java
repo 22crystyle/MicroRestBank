@@ -3,6 +3,10 @@ package com.example.auth.service;
 import com.example.auth.dto.request.LoginRequest;
 import com.example.auth.dto.request.RegistrationRequest;
 import com.example.auth.dto.response.TokenResponse;
+import com.example.auth.exception.KeycloakTokenException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +18,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +27,7 @@ import java.util.Map;
 @Slf4j
 public class RegistrationService {
     private final WebClient.Builder webClientBuilder;
+    private final ObjectMapper MAPPER = new ObjectMapper();
 
     @Value("${keycloak.server-url}")
     private String serverUrl;
@@ -47,11 +53,29 @@ public class RegistrationService {
                         .with("client_secret", clientSecret)
                         .with("username", loginRequest.username())
                         .with("password", loginRequest.password()))
-                .retrieve()
-                .onStatus(status -> !status.is2xxSuccessful(),
-                        resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")
-                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak token error: " + b))))
-                .bodyToMono(TokenResponse.class);
+                .exchangeToMono(resp -> {
+                    if (resp.statusCode().is2xxSuccessful()) {
+                        return resp.bodyToMono(TokenResponse.class);
+                    } else {
+                        return resp.bodyToMono(String.class).defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        JsonNode node = MAPPER.readTree(body);
+                                        String err = node.has("error") ? node.get("error").asText() : null;
+                                        String desc = node.has("error_description") ? node.get("error_description").asText() : null;
+                                        Map<String, String> details = new HashMap<>();
+                                        if (err != null) details.put("error", err);
+                                        if (desc != null) details.put("error_description", desc);
+                                        if (details.isEmpty())
+                                            details.put("message", body.isEmpty() ? "no body" : body);
+                                        return Mono.error(new KeycloakTokenException(resp.statusCode(), details, body));
+                                    } catch (JsonProcessingException e) {
+                                        Map<String, String> details = Map.of("message", body.isEmpty() ? "no body" : body);
+                                        return Mono.error(new KeycloakTokenException(resp.statusCode(), details, body));
+                                    }
+                                });
+                    }
+                });
     }
 
     public Mono<TokenResponse> createUserInKeycloak(RegistrationRequest userRequest) {
@@ -113,7 +137,7 @@ public class RegistrationService {
                 })
                 .flatMap(list -> {
                     if (list != null && !list.isEmpty()) {
-                        Map<String, Object> user = list.get(0);
+                        Map<String, Object> user = list.getFirst();
                         return Mono.just((String) user.get("id"));
                     }
                     return Mono.error(new RuntimeException("User not found in Keycloak"));

@@ -3,6 +3,7 @@ package com.example.shared.exception;
 import com.example.shared.dto.response.RestErrorResponse;
 import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @RestControllerAdvice
 @Slf4j
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 404 Entity from database not found
     @ExceptionHandler(EntityNotFoundException.class)

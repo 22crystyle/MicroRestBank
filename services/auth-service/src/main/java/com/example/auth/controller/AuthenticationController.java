@@ -6,6 +6,7 @@ import com.example.auth.dto.response.TokenResponse;
 import com.example.auth.service.RegistrationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +28,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Mono<TokenResponse>> login(@RequestBody LoginRequest request) {
-        Mono<TokenResponse> token = registrationService.login(request);
-        return ResponseEntity.ok(token);
+    public Mono<ResponseEntity<TokenResponse>> login(@RequestBody LoginRequest request) {
+        return registrationService.login(request)
+                .map(token -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(token));
     }
+
 }
