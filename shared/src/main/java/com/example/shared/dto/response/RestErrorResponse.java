@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.response;
+package com.example.shared.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

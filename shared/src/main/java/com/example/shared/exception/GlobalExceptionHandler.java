@@ -1,8 +1,7 @@
-package com.example.bankcards.exception;
+package com.example.shared.exception;
 
-import com.example.bankcards.dto.response.RestErrorResponse;
-import com.example.bankcards.dto.response.ValidationErrorResponse;
-import com.example.shared.exception.EntityNotFoundException;
+import com.example.shared.dto.response.RestErrorResponse;
+import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
@@ -66,27 +65,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         RestErrorResponse error = new RestErrorResponse(HttpStatus.CONFLICT.toString(), message);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
-    // 423 Locked: Card is blocked and unavailable for changes
-    @ExceptionHandler(CardIsBlockedException.class)
-    public ResponseEntity<RestErrorResponse> handleCardIsBlockedException(CardIsBlockedException ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.LOCKED.toString(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.LOCKED);
-    }
-
-    // 403 Forbidden: User tries to use someone else's card
-    @ExceptionHandler(IsNotOwnerException.class)
-    public ResponseEntity<RestErrorResponse> handleIsNotOwnerException(IsNotOwnerException ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
-
-    // 422 Unprocessable Entity: User send correct request, but the business rules do not allow the operation to be performed
-    @ExceptionHandler(InvalidAmountException.class)
-    public ResponseEntity<RestErrorResponse> handleUnsupportedEntity(InvalidAmountException ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @Override
