@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 190825-01-create-processed-events-table
+      author: Crystal
+      changes:
+        - createTable:
+            schemaName: card_schema
+            tableName: processed_events
+            columns:
+              - column:
+                  name: event_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: processed_event_pkey
+                    nullable: false
+              - column:
+                  name: aggregate_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+

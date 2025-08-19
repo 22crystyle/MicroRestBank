@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 190825-01-create-card-schema
+      author: Crystal
+      changes:
+        - sql:
+            dbms: postgresql
+            endDelimiter: ";"
+            splitStatements: true
+            sql: CREATE SCHEMA IF NOT EXISTS card_schema

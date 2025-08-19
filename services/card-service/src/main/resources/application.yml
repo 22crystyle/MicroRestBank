@@ -19,10 +19,10 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   liquibase:
-    liquibase-schema: CARD_SCHEMA
-    default-schema: CARD_SCHEMA
+    liquibase-schema: card_schema
+    default-schema: card_schema
     change-log: classpath:/db/migration/db.changelog-master.yaml
-    enabled: false
+    enabled: true
   jpa:
     hibernate:
       ddl-auto: update

@@ -1,15 +1,15 @@
 databaseChangeLog:
   - include:
-      file: classpath:db/migration/v1.0/001-create-role.yaml
+      file: classpath:db/migration/v1.0/000-create-schema.yaml
   - include:
-      file: classpath:db/migration/v1.0/002-create-card_statuses.yaml
+      file: classpath:db/migration/v1.0/001-create-users-table.yaml
   - include:
-      file: classpath:db/migration/v1.0/003-create-users.yaml
+      file: classpath:db/migration/v1.0/002-create-card-statuses.yaml
   - include:
-      file: classpath:db/migration/v1.0/004-create-bankcard.yaml
+      file: classpath:db/migration/v1.0/003-create-card-table.yaml
   - include:
-      file: classpath:db/migration/v1.1/005-init-data.yaml
+      file: classpath:db/migration/v1.1/004-create-card-block-requests.yaml
   - include:
-      file: classpath:db/migration/v1.1/006-init-admin.yaml
+      file: classpath:db/migration/v1.1/005-create-processed-events.yaml
   - include:
-      file: classpath:db/migration/v1.2/007-create-card-block-requests.yaml
+      file: classpath:db/migration/v1.2/006-init-data.yaml

@@ -1,23 +1,24 @@
 databaseChangeLog:
   - changeSet:
-      id: 160525-01-create-card-status
+      id: 190825-01-create-card-status
       author: Crystal
       changes:
         - createTable:
+            schemaName: card_schema
+            tableName: card_statuses
             columns:
               - column:
                   name: id
                   type: INTEGER
+                  autoIncrement: true
                   constraints:
-                    nullable: false
                     primaryKey: true
                     primaryKeyName: card_status_pkey
-                  autoIncrement: true
+                    nullable: false
               - column:
                   name: name
-                  type: VARCHAR(255)
+                  type: VARCHAR(50)
                   constraints:
                     unique: true
                     uniqueConstraintName: uq_card_status_name
-              - column: { name: description, type: VARCHAR(255) }
-            tableName: card_statuses
+              - column: { name: description, type: TEXT }

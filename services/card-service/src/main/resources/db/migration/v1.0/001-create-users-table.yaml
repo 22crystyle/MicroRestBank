@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 190825-01-create-role
+      author: Crystal
+      changes:
+        - createTable:
+            schemaName: card_schema
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: user_pkey
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false

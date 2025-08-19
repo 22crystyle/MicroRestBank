@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS card_schema;
+CREATE SCHEMA IF NOT EXISTS customer_schema;
