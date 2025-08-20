@@ -16,6 +16,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    command: >
+      -c wal_level=logical
+      -c max_replication_slots=10
+      -c max_wal_senders=10
     networks:
       - restbank-net
 
@@ -43,6 +47,75 @@ services:
       CLUSTER_ID: ZDk2MTBhMjkwNzdiNDgwYz
     volumes:
       - ./kafka/kafka-logs:/kafka-logs
+    networks:
+      - restbank-net
+
+  debezium:
+    container_name: debezium
+    image: quay.io/debezium/connect:3.2.1
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/connectors" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "9095:8083"
+    environment:
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+      BOOTSTRAP_SERVERS: http://${KAFKA_BOOTSTRAP_SERVER}
+    volumes:
+      - ./register-postgres.json:/register-postgres.json
+    depends_on:
+      - kafka
+    networks:
+      - restbank-net
+
+  connector-setup:
+    container_name: connector-setup
+    image: curlimages/curl:latest
+    restart: no
+    depends_on:
+      debezium:
+        condition: service_healthy
+    volumes:
+      - ./connectors:/data/connectors
+      - ./register-all-connectors.sh:/register-all-connectors.sh
+    command:
+      - sh
+      - -c
+      - |
+        # Ждем готовности сервера Debezium
+        until curl -f -s http://debezium:8083/connectors > /dev/null; do
+          echo "Waiting for Debezium to start..."
+          sleep 5
+        done
+        
+        # Регистрируем все коннекторы из папки
+        for file in /data/connectors/*.json; do
+          if [ -f "$$file" ]; then
+            echo "Registering connector from $$file"
+            connector_name=$$(basename "$$file" .json)
+
+            # Проверяем, не зарегистрирован ли уже коннектор
+            if curl -f -s "http://debezium:8083/connectors/$$connector_name" > /dev/null; then
+              echo "Connector $$connector_name already exists, updating..."
+              curl -X PUT -H "Content-Type: application/json" \
+                --data @"$$file" \
+                "http://debezium:8083/connectors/$$connector_name/config"
+            else
+              echo "Creating new connector $$connector_name..."
+              curl -X POST -H "Content-Type: application/json" \
+                --data @"$$file" \
+                "http://debezium:8083/connectors"
+            fi
+            echo ""
+          fi
+        done
+
+        echo "All connectors processed"
     networks:
       - restbank-net
 

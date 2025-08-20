@@ -2,10 +2,10 @@
   "name": "customer-connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-    "database.hostname": "192.168.0.105",
+    "database.hostname": "db",
     "database.port": "5432",
     "database.user": "postgres",
-    "database.password": "admin",
+    "database.password": "postgres",
     "database.dbname": "restbank",
     "plugin.name": "pgoutput",
     "topic.prefix": "restbank",
