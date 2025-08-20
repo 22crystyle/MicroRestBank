@@ -30,8 +30,8 @@ databaseChangeLog:
                     references: card_schema.users(id)
                     foreignKeyName: fk_cards_user_id
               - column:
-                 name: expiry_date
-                 type: DATE
+                  name: expiry_date
+                  type: DATE
               - column:
                   name: status_id
                   type: INTEGER
