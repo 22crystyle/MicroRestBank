@@ -6,10 +6,6 @@ import java.util.UUID;
 
 public class UserNotFoundException extends EntityNotFoundException {
     public UserNotFoundException(UUID userId) {
-        super("User with id=" + userId.toString() + " not found");
-    }
-
-    public UserNotFoundException(String username) {
-        super("User with username=" + username + " not found");
+        super("Cards for user with id=" + userId + " not found");
     }
 }

@@ -6,9 +6,6 @@ include(
     "services:customer-service",
     "services:api-gateway",
     "services:card-service",
-    "services:transaction-service",
-    "services:notification-service",
-    "services:statement-service",
     "services:eureka-server",
     "shared"
 )

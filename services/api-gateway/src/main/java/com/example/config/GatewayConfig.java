@@ -31,9 +31,6 @@ public class GatewayConfig {
                                 ))
                         .uri("lb://card-service"))
 
-                .route("transaction-service", r -> r.path("/transactions/**")
-                        .uri("lb://transaction-service"))
-
                 .build();
     }
 }

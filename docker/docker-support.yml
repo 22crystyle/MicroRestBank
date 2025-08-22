@@ -1,6 +1,6 @@
 services:
-  db:
-    container_name: db
+  postgres:
+    container_name: postgres
     image: postgres:17.5-alpine3.21
     environment:
       POSTGRES_DB: restbank
@@ -128,7 +128,7 @@ services:
       - ./keycloak/import:/opt/keycloak/data/import
       - ./keycloak/providers:/opt/keycloak/providers
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
       kafka:
         condition: service_started

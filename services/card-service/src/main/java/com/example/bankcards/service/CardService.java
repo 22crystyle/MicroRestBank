@@ -46,7 +46,7 @@ public class CardService {
         number = cardPanGeneratorFactory.getGenerator("mastercard").generateCardPan();
         card.setPan(number);
         card.setUser(userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(String.valueOf(userId))
+                () -> new UserNotFoundException(userId)
         ));
         card.setExpiryDate(YearMonth.now().plusYears(4));
         card.setBalance(BigDecimal.ZERO);
@@ -59,7 +59,7 @@ public class CardService {
     @Transactional(readOnly = true)
     public Page<Card> getCardsByOwner(UUID id, PageRequest pageRequest) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id.toString()));
+                .orElseThrow(() -> new UserNotFoundException(id));
         return cardRepository.findAllByUser(user, pageRequest);
     }
 
