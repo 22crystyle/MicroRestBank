@@ -71,23 +71,6 @@ services:
     networks:
       - restbank-net
 
-  connector-setup:
-    container_name: connector-setup
-    image: curlimages/curl:latest
-    restart: no
-    depends_on:
-      debezium:
-        condition: service_healthy
-    volumes:
-      - ./connectors:/data/connectors
-      - ./connectors/register-all-connectors.sh:/register-all-connectors.sh
-    command:
-      - sh
-      - -c
-      - /register-all-connectors.sh
-    networks:
-      - restbank-net
-
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:26.3

@@ -2,11 +2,10 @@ package com.example.customer.controller;
 
 import com.example.customer.dto.response.CustomerResponse;
 import com.example.customer.service.CustomerService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -20,13 +19,22 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-   /* @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(CustomerRequest request) {
-
-    }*/
-
     @GetMapping("/{uuid}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CustomerResponse> getCustomerByUUID(@PathVariable UUID uuid) {
         return ResponseEntity.ok(customerService.getCustomerByUUID(uuid));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CustomerResponse> getCurrentCustomer() {
+        return null; // TODO: getCurrentCustomer()
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CustomerResponse>> pagination(
+            @RequestParam int size,
+            @RequestParam int page
+    ) {
+        return null; // TODO: pagination
     }
 }

@@ -93,7 +93,7 @@ public class RegistrationService {
                             post()
                             .uri("/admin/realms/{realm}/users", realm)
                             .headers(h -> h.setBearerAuth(token.accessToken()))
-                            .contentType(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON) // TODO: urlencoded
                             .bodyValue(user)
                             .exchangeToMono(resp -> {
                                 if (resp.statusCode().is2xxSuccessful() || resp.statusCode().equals(HttpStatus.CREATED)) {
@@ -101,7 +101,7 @@ public class RegistrationService {
                                 }
                                 return resp.bodyToMono(String.class)
                                         .defaultIfEmpty("")
-                                        .flatMap(body -> Mono.error(new RuntimeException("Failed to create user in Keycloak: " + body)));
+                                        .flatMap(body -> Mono.error(new RuntimeException("Failed to create user in Keycloak: " + body))); // TODO: custom exception
                             })
                             .then(getUserId(token.accessToken(), userRequest.username()))
                             .flatMap(userId -> {
@@ -140,7 +140,7 @@ public class RegistrationService {
                         Map<String, Object> user = list.getFirst();
                         return Mono.just((String) user.get("id"));
                     }
-                    return Mono.error(new RuntimeException("User not found in Keycloak"));
+                    return Mono.error(new RuntimeException("User not found in Keycloak")); // TODO: custom exception
                 });
     }
 
@@ -156,7 +156,7 @@ public class RegistrationService {
                 .retrieve()
                 .onStatus(status -> !status.is2xxSuccessful(),
                         resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")
-                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak admin token error: " + b))))
+                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak admin token error: " + b)))) // TODO: custom exception
                 .bodyToMono(TokenResponse.class);
     }
 }

@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
-      file: classpath:db/migration/v1.0/001-customers-table.yml
+      file: classpath:db/migration/v1.0/001-create-customers-table.yml
+  - include:
+      file: classpath:db/migration/v1.1/002-create-outbox-table.yml

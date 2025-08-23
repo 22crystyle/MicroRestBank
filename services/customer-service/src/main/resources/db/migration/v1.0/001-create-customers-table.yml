@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: 080825-01-create-customers-table
+      author: Crystal
+      changes:
+        - createTable:
+            tableName: customers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: phone
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: status
+                  type: varchar(50)
+                  defaultValue: 'ACTIVE'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateOfBirth
+                  type: date
+                  constraints:
+                    nullable: true
+              - column:
+                  name: createdAt
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updatedAt
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: customers
+
+  - changeSet:
+      id: customer-002-create-indexes
+      author: liquibase
+      changes:
+        - createIndex:
+            tableName: customers
+            indexName: idx_customers_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: customers
+            indexName: idx_customers_phone
+            columns:
+              - column:
+                  name: phone
+      rollback:
+        - dropIndex:
+            indexName: idx_customers_email
+            tableName: customers
+        - dropIndex:
+            indexName: idx_customers_phone
+            tableName: customers

@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 230825-01-outbox-table
+      author: Crystal
+      changes:
+        - createTable:
+            schemaName: customer_schema
+            tableName: outbox
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: outbox_pkey
+                    nullable: false
+              - column:
+                  name: aggregate_type
+                  type: varchar(255)
+              - column:
+                  name: aggregate_id
+                  type: varchar(255)
+              - column:
+                  name: event_type
+                  type: varchar(100)
+                  remarks: "EventType enum stored as STRING"
+              - column:
+                  name: payload
+                  type: jsonb
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+        - createIndex:
+            tableName: outbox
+            indexName: idx_outbox_created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: outbox
+            indexName: idx_outbox_event_type
+            columns:
+              - column:
+                  name: event_type

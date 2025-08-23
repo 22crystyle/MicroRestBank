@@ -1,0 +1,22 @@
+include:
+  - docker-support.yml
+  - docker-services.yml
+services:
+  connector-setup:
+    container_name: connector-setup
+    image: curlimages/curl:latest
+    restart: no
+    depends_on:
+      debezium:
+        condition: service_healthy
+      customer-service:
+        condition: service_started
+    volumes:
+      - ./connectors:/data/connectors
+      - ./connectors/register-all-connectors.sh:/register-all-connectors.sh
+    command:
+      - sh
+      - -c
+      - /register-all-connectors.sh
+    networks:
+      - restbank-net

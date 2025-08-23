@@ -23,7 +23,11 @@ services:
     networks:
       - restbank-net
     depends_on:
-      - eureka-server
+      eureka-server:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+
 
   auth-service:
     container_name: auth-service
@@ -43,6 +47,18 @@ services:
     build:
       context: ../
       dockerfile: services/card-service/Dockerfile
+    env_file:
+      - ".env"
+    networks:
+      - restbank-net
+    depends_on:
+      - eureka-server
+      - api-gateway
+  customer-service:
+    container_name: customer-service
+    build:
+      context: ../
+      dockerfile: services/customer-service/Dockerfile
     env_file:
       - ".env"
     networks:
