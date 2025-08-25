@@ -10,7 +10,7 @@ services:
       debezium:
         condition: service_healthy
       customer-service:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./connectors:/data/connectors
       - ./connectors/register-all-connectors.sh:/register-all-connectors.sh

@@ -15,8 +15,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        request -> request.anyRequest().permitAll()
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/healthcheck", "/actuator/health").permitAll()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

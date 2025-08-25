@@ -36,3 +36,6 @@ keycloak:
   realm: bank-realm
   client-id: auth-service
   client-secret: ${AUTH_SERVICE_KEYCLOAK_SECRET}
+management:
+  server:
+    port: 8081

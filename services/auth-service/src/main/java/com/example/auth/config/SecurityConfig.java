@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/docs", "/v3/**", "/swagger-ui/**", "/api/v1/auth/**").permitAll()
+                        .pathMatchers("/docs", "/v3/**", "/swagger-ui/**", "/api/v1/auth/**", "/healthcheck", "/actuator/health").permitAll()
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(ex -> ex

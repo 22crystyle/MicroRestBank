@@ -68,3 +68,6 @@ logging:
   level:
     com.netflix.discovery: warn
     com.netflix.eureka: warn
+management:
+  server:
+    port: 8081

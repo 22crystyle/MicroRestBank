@@ -8,6 +8,12 @@ services:
       - "8761:8761"
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - restbank-net
 
@@ -20,6 +26,12 @@ services:
       - "1024:1024"
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - restbank-net
     depends_on:
@@ -28,7 +40,6 @@ services:
       keycloak:
         condition: service_healthy
 
-
   auth-service:
     container_name: auth-service
     build:
@@ -36,11 +47,19 @@ services:
       dockerfile: services/auth-service/Dockerfile
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - restbank-net
     depends_on:
-      - eureka-server
-      - api-gateway
+      eureka-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
 
   card-service:
     container_name: card-service
@@ -49,11 +68,20 @@ services:
       dockerfile: services/card-service/Dockerfile
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - restbank-net
     depends_on:
-      - eureka-server
-      - api-gateway
+      eureka-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+
   customer-service:
     container_name: customer-service
     build:
@@ -61,11 +89,19 @@ services:
       dockerfile: services/customer-service/Dockerfile
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - restbank-net
     depends_on:
-      - eureka-server
-      - api-gateway
+      eureka-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
 
 networks:
   restbank-net:
