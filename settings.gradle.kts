@@ -14,8 +14,9 @@ includeBuild("build-src")
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
+        mavenLocal()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 

@@ -8,9 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
     implementation(gradleApi())
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
     implementation("io.freefair.lombok:io.freefair.lombok.gradle.plugin:8.14")
     implementation("org.springframework.boot:org.springframework.boot.gradle.plugin:3.4.5")
     implementation("io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:1.1.7")

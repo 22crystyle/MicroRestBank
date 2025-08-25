@@ -28,5 +28,6 @@ replay_pid*
 
 **/build
 .idea
+*.iml
 .gradle
 /docker/kafka/

@@ -12,14 +12,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
-    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
-    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
-    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
-    testImplementation("io.projectreactor:reactor-test")
+    implementation(libs.spring.cloud.starter.gateway)
+    implementation(libs.spring.boot.starter.oauth2.client)
+    implementation(libs.spring.cloud.starter.circuitbreaker.reactor.resilience4j)
+    implementation(libs.spring.cloud.starter.loadbalancer)
+    testImplementation(libs.spring.cloud.starter.contract.stub.runner)
+    testImplementation(libs.reactor.test)
 }
 
 dependencyManagement {

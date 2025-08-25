@@ -1,7 +1,3 @@
-import org.gradle.accessors.dm.LibrariesForLibs
-
-val libs = extensions.getByType<LibrariesForLibs>()
-
 plugins {
     `java-library`
     id("io.freefair.lombok") apply false
@@ -22,29 +18,29 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation(libs.spring.boot.starter.actuator)
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    implementation(libs.postgresql)
-    implementation(libs.h2database)
+    implementation("org.postgresql:postgresql")
+    implementation("com.h2database:h2")
 
-    implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.spring.boot.starter.validation)
-    implementation(libs.spring.boot.starter.security.oauth2.resource.server)
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
-    implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.swagger.annotations)
-    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
 
-    implementation(libs.lombok)
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
-    testCompileOnly(libs.lombok)
-    testAnnotationProcessor(libs.lombok)
+    implementation("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
 
-    testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.spring.security.test)
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 dependencyManagement {

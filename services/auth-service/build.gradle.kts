@@ -12,8 +12,8 @@ repositories {
 
 dependencies {
     implementation(project(":shared"))
-    implementation("org.keycloak:keycloak-admin-client:22.0.0")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.5")
+    implementation(libs.keycloak.admin.client)
+    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.security)
 }
 
