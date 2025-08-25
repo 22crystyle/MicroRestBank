@@ -32,9 +32,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint((exchange1, denied) ->
                                 Mono.fromRunnable(() -> exchange1.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED))
                         )
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor()))
                 );
 
         return http.build();
