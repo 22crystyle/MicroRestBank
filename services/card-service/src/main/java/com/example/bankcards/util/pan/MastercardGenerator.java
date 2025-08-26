@@ -18,18 +18,15 @@ public class MastercardGenerator implements CardPanGenerator {
 
     private static int getLuhnCheckDigit(String number) {
         int sum = 0;
-        boolean alternate = true;
-
+        boolean shouldDouble = true;
         for (int i = number.length() - 1; i >= 0; i--) {
-            int n = Integer.parseInt(number.substring(i, i + 1));
-            if (alternate) {
+            int n = Character.getNumericValue(number.charAt(i));
+            if (shouldDouble) {
                 n *= 2;
-                if (n > 9) {
-                    n -= 9;
-                }
+                if (n > 9) n -= 9;
             }
             sum += n;
-            alternate = !alternate;
+            shouldDouble = !shouldDouble;
         }
         return (10 - (sum % 10)) % 10;
     }

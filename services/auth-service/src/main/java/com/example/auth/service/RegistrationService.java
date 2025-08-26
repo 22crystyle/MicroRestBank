@@ -137,7 +137,7 @@ public class RegistrationService {
                 })
                 .flatMap(list -> {
                     if (list != null && !list.isEmpty()) {
-                        Map<String, Object> user = list.getFirst();
+                        Map<String, Object> user = list.get(0);
                         return Mono.just((String) user.get("id"));
                     }
                     return Mono.error(new RuntimeException("User not found in Keycloak")); // TODO: custom exception

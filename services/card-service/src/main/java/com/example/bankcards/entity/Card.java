@@ -49,7 +49,7 @@ public class Card {
     public void withdraw(BigDecimal amount) {
         ensureNotBlocked();
         if (amount.signum() <= 0) throw new InvalidAmountException("Amount must be positive.");
-        if (balance.compareTo(amount) <= 0) throw new InvalidAmountException("Insufficient pounds.");
+        if (balance.compareTo(amount) < 0) throw new InvalidAmountException("Insufficient pounds.");
         balance = balance.subtract(amount);
     }
 
