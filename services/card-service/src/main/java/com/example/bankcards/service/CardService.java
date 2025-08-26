@@ -95,7 +95,7 @@ public class CardService {
         if (!isOwner) {
             throw new IsNotOwnerException("Card with id=" + cardId + " and owner with id=" + id + " not found.");
         }
-        return cardRepository.existsByIdAndUser_Id(cardId, id);
+        return true;
     }
 
     private void checkOwnership(Card card, UUID userId) {

@@ -1,11 +1,7 @@
 package com.example.bankcards.util.card.status;
 
 import com.example.bankcards.dto.response.CardStatusResponse;
-import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CardStatusData {
     public static final CardStatus DEFAULT_ENTITY = entity().build();
@@ -24,18 +20,12 @@ public class CardStatusData {
 
     public static class CardStatusBuilder extends BaseCardStatusBuilder<CardStatusBuilder> {
         private String description = "Card is active";
-        private List<Card> cards = new ArrayList<>();
 
         private CardStatusBuilder() {
         }
 
         public CardStatusBuilder withDescription(String description) {
             this.description = description;
-            return this;
-        }
-
-        public CardStatusBuilder withCards(List<Card> cards) {
-            this.cards = cards;
             return this;
         }
 

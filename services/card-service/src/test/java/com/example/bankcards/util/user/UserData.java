@@ -7,18 +7,20 @@ public class UserData {
     public static final User DEFAULT_ENTITY = entity().build();
     public static final UserResponse DEFAULT_RESPONSE = response().build();
 
-    private UserData() {}
+    private UserData() {
+    }
 
     public static UserBuilder entity() {
         return new UserBuilder();
     }
+
     public static UserResponseBuilder response() {
         return new UserResponseBuilder();
     }
 
     public static class UserBuilder extends BaseUserBuilder<UserBuilder> {
-
-        private UserBuilder() {}
+        private UserBuilder() {
+        }
 
         public User build() {
             return User.builder()
@@ -34,14 +36,11 @@ public class UserData {
     }
 
     public static class UserResponseBuilder extends BaseUserBuilder<UserResponseBuilder> {
-
-        private UserResponseBuilder() {}
+        private UserResponseBuilder() {
+        }
 
         public UserResponse build() {
-            return new UserResponse(
-                    id,
-                    status
-            );
+            return new UserResponse(id, status);
         }
 
         @Override
