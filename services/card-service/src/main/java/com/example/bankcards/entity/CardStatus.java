@@ -11,14 +11,11 @@ public class CardStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(unique = true, nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private CardStatusType status;
     private String description;
 
-    public CardStatusType getCardStatusType() {
-        return CardStatusType.valueOf(name);
-    }
-
     public boolean is(CardStatusType type) {
-        return getCardStatusType().equals(type);
+        return getStatus().equals(type);
     }
 }
