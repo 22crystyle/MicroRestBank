@@ -37,7 +37,7 @@ public class CardStatusData {
         public CardStatus build() {
             CardStatus cardStatus = new CardStatus();
             cardStatus.setId(id);
-            cardStatus.setName(name);
+            cardStatus.setName(status);
             cardStatus.setDescription(description);
             return cardStatus;
         }
@@ -53,7 +53,7 @@ public class CardStatusData {
         }
 
         public CardStatusResponse build() {
-            return new CardStatusResponse(id != null ? id : 1, null, name);
+            return new CardStatusResponse(id != null ? id : 1, null, status.name());
         }
     }
 }

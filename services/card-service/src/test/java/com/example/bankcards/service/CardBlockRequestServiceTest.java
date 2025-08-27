@@ -1,9 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardBlockRequest;
-import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.entity.User;
+import com.example.bankcards.entity.*;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.IsNotOwnerException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
@@ -99,11 +96,11 @@ public class CardBlockRequestServiceTest {
 
     @Test
     void approveBlockRequest_success() {
-        CardStatus blocked = CardStatusData.entity().withName("BLOCKED").build();
+        CardStatus blocked = CardStatusData.entity().withName(CardStatusType.BLOCKED).build();
 
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName("BLOCKED")).thenReturn(Optional.of(blocked));
+        when(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())).thenReturn(Optional.of(blocked));
         when(cardBlockRequestRepository.save(any(CardBlockRequest.class))).thenAnswer(inv -> inv.getArgument(0));
 
         CardBlockRequest result = service.approveBlockRequest(1L, ownerId);
@@ -126,7 +123,7 @@ public class CardBlockRequestServiceTest {
     void approveBlockRequest_noStatus_throws() {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName("BLOCKED")).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.approveBlockRequest(1L, ownerId));
@@ -134,11 +131,11 @@ public class CardBlockRequestServiceTest {
 
     @Test
     void rejectBlockRequest_success() {
-        CardStatus active = CardStatusData.entity().withName("ACTIVE").build();
+        CardStatus active = CardStatusData.entity().withName(CardStatusType.ACTIVE).build();
 
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName("ACTIVE")).thenReturn(Optional.of(active));
+        when(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())).thenReturn(Optional.of(active));
         when(cardBlockRequestRepository.save(any(CardBlockRequest.class))).thenAnswer(inv -> inv.getArgument(0));
 
         CardBlockRequest result = service.rejectBlockRequest(1L, ownerId);
@@ -161,7 +158,7 @@ public class CardBlockRequestServiceTest {
     void rejectBlockRequest_noStatus_throws() {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName("ACTIVE")).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.rejectBlockRequest(1L, ownerId));

@@ -12,10 +12,10 @@ public class CardStatus {
     private Integer id;
     @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
-    private CardStatusType status;
+    private CardStatusType name;
     private String description;
 
     public boolean is(CardStatusType type) {
-        return getStatus().equals(type);
+        return getName().equals(type);
     }
 }

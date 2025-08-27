@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.entity.CardStatusType;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.IsNotOwnerException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
@@ -25,18 +26,20 @@ public class CardBlockRequestService {
     private final CardStatusRepository cardStatusRepository;
 
     @Transactional
-    public void createBlockRequest(Long cardId, UUID id) {
+    public void createBlockRequest(Long cardId, UUID userId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
         UUID ownerId = card.getUser().getId();
 
-        if (!ownerId.equals(id)) {
+        if (!ownerId.equals(userId)) {
+            log.warn("User {} tried to block card {} but is not owner (ownerId={})", userId, cardId, ownerId);
             throw new IsNotOwnerException("You are not owner of card");
         }
 
         log.info("CreateBlockRequest found card: {}", card);
 
         if (cardBlockRequestRepository.existsCardBlockRequestByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)) {
+            log.warn("Duplicate block request attempt for cardId={} by userId={}", cardId, userId);
             throw new IllegalArgumentException("Card block request already exists");
         }
 
@@ -50,6 +53,7 @@ public class CardBlockRequestService {
         log.info("Created CardBlockRequest: {}", blockRequest);
 
         cardBlockRequestRepository.save(blockRequest);
+        log.info("Created block request for cardId={} by userId={}", cardId, userId);
     }
 
     @Transactional
@@ -59,7 +63,7 @@ public class CardBlockRequestService {
 
         Card card = blockRequest.getCard();
 
-        card.setStatus(cardStatusRepository.findByName(("BLOCKED"))
+        card.setStatus(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())
                 .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
 
         cardRepository.save(card);
@@ -76,7 +80,7 @@ public class CardBlockRequestService {
 
         Card card = blockRequest.getCard();
 
-        card.setStatus(cardStatusRepository.findByName(("ACTIVE"))
+        card.setStatus(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())
                 .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
 
         cardRepository.save(card);

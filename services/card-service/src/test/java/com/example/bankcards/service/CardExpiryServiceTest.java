@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.CardStatusType;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.util.card.CardData;
@@ -34,31 +35,31 @@ class CardExpiryServiceTest {
 
     @Test
     void markExpiredCards_shouldUpdateExpiredCards() {
-        CardStatus expiredStatus = CardStatusData.entity().withName("EXPIRED").build();
+        CardStatus expiredStatus = CardStatusData.entity().withName(CardStatusType.EXPIRED).build();
 
         Card card = CardData.entity().withExpiryDate(YearMonth.now()).build();
 
-        when(cardStatusRepository.findByName("EXPIRED")).thenReturn(Optional.of(expiredStatus));
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.of(expiredStatus));
         when(cardRepository.findByExpiryDate(YearMonth.now())).thenReturn(List.of(card));
 
         cardExpiryService.markExpiredCards();
 
-        assertEquals("EXPIRED", card.getStatus().getName());
+        assertEquals(CardStatusType.EXPIRED, card.getStatus().getName());
         verify(cardRepository).saveAll(List.of(card));
     }
 
     @Test
     void markExpiredCards_shouldThrowException_ifExpiredStatusNotFound() {
-        when(cardStatusRepository.findByName("EXPIRED")).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class, () -> cardExpiryService.markExpiredCards());
     }
 
     @Test
     void markExpiredCards_shouldNotSave_ifNoExpiredCards() {
-        CardStatus expiredStatus = CardStatusData.entity().withName("EXPIRED").build();
+        CardStatus expiredStatus = CardStatusData.entity().withName(CardStatusType.EXPIRED).build();
 
-        when(cardStatusRepository.findByName("EXPIRED")).thenReturn(Optional.of(expiredStatus));
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.of(expiredStatus));
         when(cardRepository.findByExpiryDate(YearMonth.now())).thenReturn(List.of());
 
         cardExpiryService.markExpiredCards();
