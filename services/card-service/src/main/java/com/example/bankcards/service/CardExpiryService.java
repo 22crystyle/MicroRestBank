@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.CardStatusType;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardStatusRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,10 +25,12 @@ public class CardExpiryService {
     @Scheduled(cron = "0 * * * * *")
     public void markExpiredCards() {
         YearMonth now = YearMonth.now();
-        CardStatus expiredStatus = cardStatusRepository.findByName("EXPIRED")
+        CardStatus expiredStatus = cardStatusRepository.findByName(CardStatusType.EXPIRED.name())
                 .orElseThrow(() -> new IllegalStateException("EXPIRED status not found"));
         List<Card> toExpire = cardRepository.findByExpiryDate(now);
         toExpire.forEach(card -> card.setStatus(expiredStatus));
-        cardRepository.saveAll(toExpire);
+        if (!toExpire.isEmpty()) {
+            cardRepository.saveAll(toExpire);
+        }
     }
 }
