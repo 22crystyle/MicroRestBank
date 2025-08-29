@@ -1,7 +1,6 @@
 package com.example.shared.config;
 
 import com.example.shared.util.RecursiveLocaleContextMessageInterpolator;
-import jakarta.validation.MessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -21,16 +20,11 @@ public class MessageConfig {
     }
 
     @Bean
-    public MessageInterpolator getMessageInterpolator(MessageSource messageSource) {
+    public LocalValidatorFactoryBean getValidator(MessageSource messageSource) {
+        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         MessageSourceResourceBundleLocator resourceBundleLocator = new MessageSourceResourceBundleLocator(messageSource);
         ResourceBundleMessageInterpolator messageInterpolator = new ResourceBundleMessageInterpolator(resourceBundleLocator);
-        return new RecursiveLocaleContextMessageInterpolator(messageInterpolator);
-    }
-
-    @Bean
-    public LocalValidatorFactoryBean getValidator(MessageInterpolator messageInterpolator) {
-        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-        bean.setMessageInterpolator(messageInterpolator);
+        bean.setMessageInterpolator(new RecursiveLocaleContextMessageInterpolator(messageInterpolator));
         return bean;
     }
 }

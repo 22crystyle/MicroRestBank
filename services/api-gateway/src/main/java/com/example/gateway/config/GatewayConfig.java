@@ -18,13 +18,17 @@ public class GatewayConfig {
                 .route("customer-service", r -> r.path("/customers/**")
                         .filters(f -> f.tokenRelay()
                                 .addRequestHeader("X-Service-Call", "gateway")
-                                .rewritePath("/customers", "/api/v1/customers"))
+                                .rewritePath("/customers/(?<path>.*)", "/api/v1/customers/${path}"))
                         .uri("lb://customer-service"))
+
+                .route("card-service-api-docs", r -> r.path("/cards/v3/api-docs")
+                        .filters(f -> f.rewritePath("/cards/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://card-service"))
 
                 .route("card-service", r -> r.path("/cards/**")
                         .filters(f -> f
                                 .tokenRelay()
-                                .rewritePath("/cards", "/api/v1/cards")
+                                .rewritePath("/cards/(?<path>.*)", "/api/v1/cards/${path}")
                                 .circuitBreaker(config -> config
                                         .setName("cardCircuitBreaker")
                                         .setFallbackUri("forward:/fallback")

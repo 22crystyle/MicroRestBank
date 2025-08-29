@@ -61,7 +61,7 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
-    path: /docs
+    path: /api-docs
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
 logging:

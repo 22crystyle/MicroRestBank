@@ -62,7 +62,7 @@ public class CardBlockRequestService {
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 
         Card card = blockRequest.getCard();
-        card.setStatus(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())
+        card.setStatus(cardStatusRepository.findByName(CardStatusType.BLOCKED)
                 .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
 
         cardRepository.save(card);
@@ -84,7 +84,7 @@ public class CardBlockRequestService {
                 .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
 
         Card card = blockRequest.getCard();
-        card.setStatus(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())
+        card.setStatus(cardStatusRepository.findByName(CardStatusType.ACTIVE)
                 .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
 
         cardRepository.save(card);

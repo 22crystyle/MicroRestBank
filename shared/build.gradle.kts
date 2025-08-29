@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.spring.doc.mvc)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
 

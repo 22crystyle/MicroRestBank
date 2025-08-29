@@ -23,6 +23,10 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 @Slf4j
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String[] AUTH_WHITELIST = {
+            "/actuator/health",
+            "/v3/api-docs/**"
+    };
     private final JwtAuthConverter jwtAuthConverter;
 
     @Bean
@@ -31,7 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/healthcheck", "/actuator/health").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))

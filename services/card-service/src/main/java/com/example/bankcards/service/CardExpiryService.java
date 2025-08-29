@@ -29,7 +29,7 @@ public class CardExpiryService {
         log.debug("Starting scheduled task: markExpiredCards");
 
         YearMonth now = YearMonth.now();
-        CardStatus expiredStatus = cardStatusRepository.findByName(CardStatusType.EXPIRED.name())
+        CardStatus expiredStatus = cardStatusRepository.findByName(CardStatusType.EXPIRED)
                 .orElseThrow(() -> {
                     log.error("Card status EXPIRED not found in DB");
                     return new IllegalStateException("EXPIRED status not found");

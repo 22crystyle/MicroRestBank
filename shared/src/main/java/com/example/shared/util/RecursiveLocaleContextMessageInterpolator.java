@@ -2,7 +2,6 @@ package com.example.shared.util;
 
 import jakarta.validation.MessageInterpolator;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
-import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -13,7 +12,7 @@ public class RecursiveLocaleContextMessageInterpolator extends AbstractMessageIn
 
     private final MessageInterpolator interpolator;
 
-    public RecursiveLocaleContextMessageInterpolator(ResourceBundleMessageInterpolator interpolator) {
+    public RecursiveLocaleContextMessageInterpolator(MessageInterpolator interpolator) {
         this.interpolator = interpolator;
     }
 

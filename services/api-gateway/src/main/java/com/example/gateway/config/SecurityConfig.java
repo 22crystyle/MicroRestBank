@@ -11,11 +11,21 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+    private static final String[] AUTH_WHITELIST = {
+            "/actuator/health",
+            "/auth/**",
+            "/docs/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/customers/v3/api-docs",
+            "/cards/v3/api-docs"
+    };
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/healthcheck", "/actuator/health", "/auth/**").permitAll()
+                        .pathMatchers(AUTH_WHITELIST).permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefaults()))

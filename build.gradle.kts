@@ -18,7 +18,6 @@ subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "io.freefair.lombok")
-    apply(plugin = "org.springdoc.openapi-gradle-plugin")
 
     group = "com.example.restbank"
     version = "0.0.1-SNAPSHOT"

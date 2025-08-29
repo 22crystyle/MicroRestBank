@@ -27,6 +27,11 @@ spring:
   data:
     jdbc:
       dialect: postgresql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 eureka:
   client:
     service-url:
@@ -43,3 +48,8 @@ logging:
 management:
   server:
     port: 8081
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /api-docs

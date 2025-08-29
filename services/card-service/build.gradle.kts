@@ -33,6 +33,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.named("forkedSpringBootRun") {
+    dependsOn(project(":shared").tasks.getByName("jar"))
+}
+
 val agentJar: String by lazy {
     configurations.testRuntimeClasspath.get()
         .files

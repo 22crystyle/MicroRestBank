@@ -30,8 +30,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
 
     implementation("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")

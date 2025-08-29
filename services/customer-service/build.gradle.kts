@@ -32,3 +32,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.named("forkedSpringBootRun") {
+    dependsOn(project(":shared").tasks.getByName("jar"))
+}
