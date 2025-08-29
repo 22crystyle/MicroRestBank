@@ -10,6 +10,7 @@ spring-boot = "3.4.5"
 spring-cloud = "4.3.0"
 spring-kafka = "3.3.8"
 spring-retry = "2.0.12"
+spring-doc = "2.8.11"
 
 [libraries]
 # --- Spring Boot (starters) ---
@@ -24,6 +25,7 @@ spring-cloud-starter-contract-stub-runner = { module = "org.springframework.clou
 spring-cloud-starter-circuitbreaker-reactor-resilience4j = { module = "org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j", version = "3.3.0" }
 spring-cloud-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux", version.ref = "spring-cloud" }
 spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer", version.ref = "spring-cloud" }
+spring-cloud-starter-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server", version.ref = "spring-cloud"}
 
 # --- Messaging / Kafka ---
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
@@ -51,3 +53,7 @@ liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liqui
 # --- Testing (JUnit) ---
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+# --- Docs ---
+spring-doc-mvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "spring-doc" }
+spring-doc-flux = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "spring-doc" }

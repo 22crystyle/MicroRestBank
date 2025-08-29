@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.resilience4j.spring.boot2)
     implementation(libs.spring.kafka)
     runtimeOnly(libs.resilience4j.feign)
+
+    implementation(libs.spring.doc.mvc)
 }
 
 tasks.test {

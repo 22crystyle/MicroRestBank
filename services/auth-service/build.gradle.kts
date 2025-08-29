@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.keycloak.admin.client)
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.security)
+
+    implementation(libs.spring.doc.flux)
 }
 
 tasks.test {

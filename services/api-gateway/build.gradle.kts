@@ -18,6 +18,8 @@ dependencies {
     implementation(libs.spring.cloud.starter.loadbalancer)
     testImplementation(libs.spring.cloud.starter.contract.stub.runner)
     testImplementation(libs.reactor.test)
+
+    implementation(libs.spring.doc.flux)
 }
 
 dependencyManagement {

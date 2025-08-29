@@ -19,8 +19,8 @@ repositories {
 extra["springCloudVersion"] = "2024.0.0"
 
 dependencies {
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+    implementation(libs.spring.cloud.starter.eureka.server)
+    implementation(libs.spring.doc.mvc)
 }
 
 dependencyManagement {
