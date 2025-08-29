@@ -1,16 +1,31 @@
 package com.example.customer.controller;
 
+import com.example.customer.dto.pagination.PageCustomerResponse;
 import com.example.customer.dto.response.CustomerResponse;
 import com.example.customer.service.CustomerService;
+import com.example.shared.util.JwtPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/customers")
+@Tag(name = "Customers", description = "Operations related to customer management.")
+@SecurityRequirement(name = "BearerAuth")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -21,20 +36,64 @@ public class CustomerController {
 
     @GetMapping("/{uuid}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CustomerResponse> getCustomerByUUID(@PathVariable UUID uuid) {
+    @Operation(
+            summary = "Get a customer by UUID",
+            description = "Retrieves the details of a specific customer by their UUID. Requires administrator privileges.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Customer found.",
+                            content = @Content(schema = @Schema(implementation = CustomerResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Customer not found.")
+            }
+    )
+    public ResponseEntity<CustomerResponse> getCustomerByUUID(
+            @Parameter(description = "UUID of the customer to retrieve.", required = true)
+            @PathVariable UUID uuid) {
         return ResponseEntity.ok(customerService.getCustomerByUUID(uuid));
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Get current customer details",
+            description = "Retrieves the details of the currently authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The current customer's details.",
+                            content = @Content(schema = @Schema(implementation = CustomerResponse.class))
+                    )
+            }
+    )
     public ResponseEntity<CustomerResponse> getCurrentCustomer() {
-        return null; // TODO: getCurrentCustomer()
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UUID userId = UUID.fromString(JwtPrincipal.getId(authentication));
+        return ResponseEntity.ok(customerService.getCustomerByUUID(userId));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Get a paginated list of customers",
+            description = "Retrieves a paginated list of all customers. Requires administrator privileges.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "A paginated list of customers.",
+                            content = @Content(schema = @Schema(implementation = PageCustomerResponse.class))
+                    )
+            }
+    )
     public ResponseEntity<Page<CustomerResponse>> pagination(
-            @RequestParam int size,
-            @RequestParam int page
+            @Parameter(description = "Page index (0-based)", example = "0")
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @Parameter(description = "Page size", example = "10")
+            @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
-        return null; // TODO: pagination
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<CustomerResponse> customers = customerService.getAllCustomers(pageRequest);
+        return ResponseEntity.ok(customers);
     }
 }

@@ -47,12 +47,12 @@ public class CardController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Operation(
-            summary = "Get paginated list of cards",
-            description = "ADMIN sees all cards; USER sees only own cards. Supports status pagination",
+            summary = "Get a paginated list of cards",
+            description = "Retrieves a list of cards. Admins can see all cards, while users can only see their own. The card details for admins are masked.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "A page of cards",
+                            description = "A paginated list of cards.",
                             content = @Content(schema = @Schema(implementation = PageCardResponse.class))
                     )
             }
@@ -86,14 +86,15 @@ public class CardController {
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(
-            summary = "Get card by ID",
-            description = "USER sees full if owner, else masked.",
+            summary = "Get a card by its ID",
+            description = "Retrieves a single card's details. A user sees the full card details if they are the owner, otherwise the details are masked.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Card found",
+                            description = "The card details.",
                             content = @Content(schema = @Schema(implementation = CardResponse.class))
-                    )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Card not found.")
             }
     )
     public ResponseEntity<CardResponse> getCard(
@@ -111,12 +112,12 @@ public class CardController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "Create a new card",
-            description = "Creates a new card for user. Requires ADMIN role.",
+            summary = "Create a new card for a user",
+            description = "Creates a new bank card for a specified user. This action requires administrator privileges.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Card successfully created",
+                            description = "Card created successfully. The response contains the details of the created card.",
                             content = @Content(schema = @Schema(implementation = CardResponse.class))
                     )
             }
@@ -138,17 +139,18 @@ public class CardController {
     @PostMapping("/{id}/block-request")
     @PreAuthorize("hasRole('USER')")
     @Operation(
-            summary = "Request card block",
-            description = "Submits a request to block the specified card. Requires USER role.",
+            summary = "Request to block a card",
+            description = "Allows a user to submit a request to block their own card.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Block request submitted",
-                            content = @Content
-                    )
+                            description = "Card block request submitted successfully."
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Card not found."),
+                    @ApiResponse(responseCode = "403", description = "User is not the owner of the card.")
             }
     )
-    public ResponseEntity<CardResponse> requestCardBlock(
+    public ResponseEntity<Void> requestCardBlock(
             @Parameter(description = "ID of the card to block", required = true)
             @PathVariable Long id
     ) {
@@ -162,14 +164,15 @@ public class CardController {
     @PostMapping("/{id}/block-approve")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "Approve card block request",
-            description = "Approves a block request for the specified card. Requires ADMIN role.",
+            summary = "Approve a card block request",
+            description = "Allows an administrator to approve a request to block a card.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Block request approved",
+                            description = "The card block request was approved successfully.",
                             content = @Content(schema = @Schema(implementation = CardBlockRequest.class))
-                    )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Block request not found or already processed.")
             }
     )
     public ResponseEntity<CardBlockRequest> approveCardBlock(
@@ -185,14 +188,15 @@ public class CardController {
     @PostMapping("/{id}/block-reject")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "Reject card block request",
-            description = "Rejects a block request for the specified card. Requires ADMIN role.",
+            summary = "Reject a card block request",
+            description = "Allows an administrator to reject a request to block a card.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Block request rejected",
+                            description = "The card block request was rejected successfully.",
                             content = @Content(schema = @Schema(implementation = CardBlockRequest.class))
-                    )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Block request not found or already processed.")
             }
     )
     public ResponseEntity<CardBlockRequest> refuseCardBlock(
@@ -208,18 +212,19 @@ public class CardController {
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER')")
     @Operation(
-            summary = "Transfer money between cards",
-            description = "Transfers the specified amount from one card to another. Both cards must belong to the authenticated user. Requires USER role.",
+            summary = "Transfer money between two cards",
+            description = "Allows a user to transfer a specified amount of money from one of their cards to another.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Transfer successful",
-                            content = @Content
-                    )
+                            description = "The transfer was completed successfully."
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Invalid transfer request (e.g., insufficient funds, invalid card numbers)."),
+                    @ApiResponse(responseCode = "403", description = "User does not own one or both of the cards.")
             }
     )
     public ResponseEntity<Void> transfer(
-            @Parameter(description = "Card number to transfer from", required = true)
+            @Parameter(description = "The details of the transfer, including source and destination card numbers and the amount.", required = true)
             @RequestBody @Valid TransferRequest request
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

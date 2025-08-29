@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.pagination;
+package com.example.shared.dto.pagination;
 
 public record PageableObject(
         int pageNumber,

@@ -1,13 +1,13 @@
-package com.example.bankcards.dto.pagination;
+package com.example.customer.dto.pagination;
 
-import com.example.bankcards.dto.response.CardResponse;
-import com.example.shared.dto.pagination.SortObject;
+import com.example.customer.dto.response.CustomerResponse;
 import com.example.shared.dto.pagination.PageableObject;
+import com.example.shared.dto.pagination.SortObject;
 
 import java.util.List;
 
-public record PageCardResponse(
-        List<CardResponse> content,
+public record PageCustomerResponse(
+        List<CustomerResponse> content,
         PageableObject pageable,
         boolean last,
         int totalElements,

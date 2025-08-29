@@ -15,6 +15,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,5 +67,11 @@ public class CustomerService {
         Customer customer = customerRepository.findById(uuid)
                 .orElseThrow(() -> new CustomerNotFound(uuid));
         return customerMapper.toResponse(customer);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(customerMapper::toResponse);
     }
 }
