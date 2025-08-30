@@ -1,6 +1,8 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.request.TransferRequest;
+import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
@@ -12,6 +14,7 @@ import com.example.bankcards.repository.CardStatusRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.MaskingUtils;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
+import com.example.shared.util.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,7 @@ public class CardService {
     private final UserRepository userRepository;
     private final CardStatusRepository cardStatusRepository;
     private final CardPanGeneratorFactory cardPanGeneratorFactory;
+    private final CardMapper cardMapper;
 
     @Transactional
     @Retryable(
@@ -130,21 +135,54 @@ public class CardService {
                 savedFrom.getId(), savedFrom.getBalance(), savedTo.getId(), savedTo.getBalance());
     }
 
-    public boolean checkOwnership(Long cardId, UUID id) {
-        boolean isOwner = cardRepository.existsByIdAndUser_Id(cardId, id);
-        if (!isOwner) {
-            log.warn("Ownership check failed for cardId={} userId={}", cardId, id);
-            throw new IsNotOwnerException("Card with id=" + cardId + " and owner with id=" + id + " not found.");
-        }
-        log.debug("Ownership check passed for cardId={} userId={}", cardId, id);
-        return true;
-    }
-
     private void checkOwnership(Card card, UUID userId) {
         if (!card.getUser().getId().equals(userId)) {
             log.warn("User {} is not owner of card {}", userId, card.getId());
             throw new IsNotOwnerException("You are not owner of card " + card.getId());
         }
         log.debug("Ownership validated for user {} and card {}", userId, card.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CardResponse> getCards(PageRequest pageRequest, Authentication auth) {
+        String userId = JwtPrincipal.getId(auth);
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(
+                a -> a.getAuthority().equals("ROLE_ADMIN")
+        );
+
+        Page<Card> cards;
+        if (isAdmin) {
+            cards = getAllCards(pageRequest);
+        } else {
+            cards = getCardsByOwner(UUID.fromString(userId), pageRequest);
+        }
+
+        return cards.map(isAdmin
+                ? cardMapper::toMaskedResponse
+                : cardMapper::toFullResponse
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public CardResponse getCard(Long cardId, Authentication auth) {
+        Card card = getById(cardId);
+        UUID userId = UUID.fromString(JwtPrincipal.getId(auth));
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isOwner = card.getUser().getId().equals(userId);
+
+        if (isOwner) {
+            return cardMapper.toFullResponse(card);
+        } else if (isAdmin) {
+            return cardMapper.toMaskedResponse(card);
+        } else {
+            throw new IsNotOwnerException("You are not authorized to view this card.");
+        }
+    }
+
+    @Transactional
+    public CardResponse createCardForAccountAndGetMaskedResponse(UUID userId) {
+        Card card = createCardForAccount(userId);
+        return cardMapper.toMaskedResponse(card);
     }
 }
