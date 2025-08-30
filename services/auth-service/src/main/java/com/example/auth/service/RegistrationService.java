@@ -1,15 +1,18 @@
 package com.example.auth.service;
 
+import com.example.auth.config.KeycloakProperties;
 import com.example.auth.dto.request.LoginRequest;
 import com.example.auth.dto.request.RegistrationRequest;
 import com.example.auth.dto.response.TokenResponse;
+import com.example.auth.exception.AdminTokenException;
 import com.example.auth.exception.KeycloakTokenException;
+import com.example.auth.exception.UserCreationException;
+import com.example.auth.exception.UserNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,111 +30,97 @@ import java.util.Map;
 @Slf4j
 public class RegistrationService {
     private final WebClient.Builder webClientBuilder;
+    private final KeycloakProperties keycloakProperties;
     private final ObjectMapper MAPPER = new ObjectMapper();
 
-    @Value("${keycloak.server-url}")
-    private String serverUrl;
-    @Value("${keycloak.realm}")
-    private String realm;
-    @Value("${keycloak.client-id}")
-    private String clientId;
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
-
     private WebClient client() {
-        return webClientBuilder.baseUrl(serverUrl).build();
+        return webClientBuilder.baseUrl(keycloakProperties.serverUrl()).build();
     }
 
     public Mono<TokenResponse> login(LoginRequest loginRequest) {
         return client()
                 .post()
-                .uri("/realms/{realm}/protocol/openid-connect/token", realm)
-                .contentType(MediaType.APPLICATION_JSON)
+                .uri("/realms/{realm}/protocol/openid-connect/token", keycloakProperties.realm())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("grant_type", "password")
-                        .with("client_id", clientId)
-                        .with("client_secret", clientSecret)
+                        .with("client_id", keycloakProperties.clientId())
+                        .with("client_secret", keycloakProperties.clientSecret())
                         .with("username", loginRequest.username())
                         .with("password", loginRequest.password()))
-                .exchangeToMono(resp -> {
-                    if (resp.statusCode().is2xxSuccessful()) {
-                        return resp.bodyToMono(TokenResponse.class);
-                    } else {
-                        return resp.bodyToMono(String.class).defaultIfEmpty("")
-                                .flatMap(body -> {
-                                    try {
-                                        JsonNode node = MAPPER.readTree(body);
-                                        String err = node.has("error") ? node.get("error").asText() : null;
-                                        String desc = node.has("error_description") ? node.get("error_description").asText() : null;
-                                        Map<String, String> details = new HashMap<>();
-                                        if (err != null) details.put("error", err);
-                                        if (desc != null) details.put("error_description", desc);
-                                        if (details.isEmpty())
-                                            details.put("message", body.isEmpty() ? "no body" : body);
-                                        return Mono.error(new KeycloakTokenException(resp.statusCode(), details, body));
-                                    } catch (JsonProcessingException e) {
-                                        Map<String, String> details = Map.of("message", body.isEmpty() ? "no body" : body);
-                                        return Mono.error(new KeycloakTokenException(resp.statusCode(), details, body));
-                                    }
-                                });
-                    }
-                });
+                .retrieve()
+                .onStatus(HttpStatus.UNAUTHORIZED::equals, response -> response.bodyToMono(String.class)
+                        .flatMap(body -> {
+                            try {
+                                JsonNode node = MAPPER.readTree(body);
+                                Map<String, String> details = new HashMap<>();
+                                if (node.has("error")) details.put("error", node.get("error").asText());
+                                if (node.has("error_description"))
+                                    details.put("error_description", node.get("error_description").asText());
+                                return Mono.error(new KeycloakTokenException(response.statusCode(), details, body));
+                            } catch (JsonProcessingException e) {
+                                return Mono.error(new KeycloakTokenException(response.statusCode(), Map.of("message", body), body));
+                            }
+                        }))
+                .bodyToMono(TokenResponse.class);
     }
 
     public Mono<TokenResponse> createUserInKeycloak(RegistrationRequest userRequest) {
         return getAdminAccessToken()
-                .flatMap(token -> {
-                    Map<String, Object> user = Map.of(
-                            "username", userRequest.username(),
-                            "email", userRequest.email(),
-                            "enabled", true,
-                            "firstName", userRequest.firstName(),
-                            "lastName", userRequest.lastName()
-                    );
-
-                    return client().
-                            post()
-                            .uri("/admin/realms/{realm}/users", realm)
-                            .headers(h -> h.setBearerAuth(token.accessToken()))
-                            .contentType(MediaType.APPLICATION_JSON) // TODO: urlencoded
-                            .bodyValue(user)
-                            .exchangeToMono(resp -> {
-                                if (resp.statusCode().is2xxSuccessful() || resp.statusCode().equals(HttpStatus.CREATED)) {
-                                    return Mono.empty();
-                                }
-                                return resp.bodyToMono(String.class)
-                                        .defaultIfEmpty("")
-                                        .flatMap(body -> Mono.error(new RuntimeException("Failed to create user in Keycloak: " + body))); // TODO: custom exception
-                            })
-                            .then(getUserId(token.accessToken(), userRequest.username()))
-                            .flatMap(userId -> {
-                                Map<String, Object> credential = Map.of(
-                                        "type", "password",
-                                        "value", userRequest.password(),
-                                        "temporary", false
-                                );
-                                return client()
-                                        .put()
-                                        .uri("/admin/realms/{realm}/users/{id}/reset-password", realm, userId)
-                                        .headers(h -> h.setBearerAuth(token.accessToken()))
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .bodyValue(credential)
-                                        .retrieve()
-                                        .toBodilessEntity()
-                                        .flatMap(entity -> login(new LoginRequest(userRequest.username(), userRequest.password()))
-                                                .map(map -> new TokenResponse(map.accessToken())));
-                            });
-                });
+                .flatMap(token -> createUser(token, userRequest)
+                        .then(getUserId(token, userRequest.username()))
+                        .flatMap(userId -> resetPassword(token, userId, userRequest.password()))
+                        .then(login(new LoginRequest(userRequest.username(), userRequest.password()))));
     }
 
-    private Mono<String> getUserId(String token, String username) {
+    private Mono<Void> createUser(TokenResponse token, RegistrationRequest userRequest) {
+        Map<String, Object> user = Map.of(
+                "username", userRequest.username(),
+                "email", userRequest.email(),
+                "enabled", true,
+                "firstName", userRequest.firstName(),
+                "lastName", userRequest.lastName()
+        );
+
+        return client().
+                post()
+                .uri("/admin/realms/{realm}/users", keycloakProperties.realm())
+                .headers(h -> h.setBearerAuth(token.accessToken()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(user)
+                .retrieve()
+                .onStatus(status -> !status.is2xxSuccessful() && status != HttpStatus.CREATED,
+                        resp -> resp.bodyToMono(String.class).defaultIfEmpty("")
+                                .flatMap(body -> Mono.error(new UserCreationException("Failed to create user in Keycloak: " + body))))
+                .toBodilessEntity()
+                .then();
+    }
+
+    private Mono<Void> resetPassword(TokenResponse token, String userId, String password) {
+        Map<String, Object> credential = Map.of(
+                "type", "password",
+                "value", password,
+                "temporary", false
+        );
+        return client()
+                .put()
+                .uri("/admin/realms/{realm}/users/{id}/reset-password", keycloakProperties.realm(), userId)
+                .headers(h -> h.setBearerAuth(token.accessToken()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(credential)
+                .retrieve()
+                .toBodilessEntity()
+                .then();
+    }
+
+    private Mono<String> getUserId(TokenResponse token, String username) {
         return client()
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/{realm}/users")
                         .queryParam("username", username)
-                        .build(realm))
-                .headers(h -> h.setBearerAuth(token))
+                        .build(keycloakProperties.realm()))
+                .headers(h -> h.setBearerAuth(token.accessToken()))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
                 })
@@ -140,23 +129,23 @@ public class RegistrationService {
                         Map<String, Object> user = list.get(0);
                         return Mono.just((String) user.get("id"));
                     }
-                    return Mono.error(new RuntimeException("User not found in Keycloak")); // TODO: custom exception
+                    return Mono.error(new UserNotFoundException(username));
                 });
     }
 
     private Mono<TokenResponse> getAdminAccessToken() {
         return client()
                 .post()
-                .uri("/realms/{realm}/protocol/openid-connect/token", realm)
-                .contentType(MediaType.APPLICATION_JSON)
+                .uri("/realms/{realm}/protocol/openid-connect/token", keycloakProperties.realm())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("grant_type", "client_credentials")
-                        .with("client_id", clientId)
-                        .with("client_secret", clientSecret))
+                        .with("client_id", keycloakProperties.clientId())
+                        .with("client_secret", keycloakProperties.clientSecret()))
                 .retrieve()
                 .onStatus(status -> !status.is2xxSuccessful(),
                         resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")
-                                .flatMap(b -> Mono.error(new RuntimeException("Keycloak admin token error: " + b)))) // TODO: custom exception
+                                .flatMap(b -> Mono.error(new AdminTokenException("Keycloak admin token error: " + b))))
                 .bodyToMono(TokenResponse.class);
     }
 }

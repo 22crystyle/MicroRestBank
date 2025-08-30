@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,15 +29,15 @@ public class AuthenticationController {
     @Operation(summary = "Register a new user",
             description = "Creates a new user in Keycloak and returns an access token.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User registered successfully",
+            @ApiResponse(responseCode = "201", description = "User registered successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid registration request", content = @Content),
             @ApiResponse(responseCode = "409", description = "User with the same username or email already exists", content = @Content)
     })
     @PostMapping("/register")
-    public ResponseEntity<Mono<TokenResponse>> register(@RequestBody RegistrationRequest request) {
-        Mono<TokenResponse> response = registrationService.createUserInKeycloak(request);
-        return ResponseEntity.ok(response);
+    public Mono<ResponseEntity<TokenResponse>> register(@RequestBody RegistrationRequest request) {
+        return registrationService.createUserInKeycloak(request)
+                .map(token -> ResponseEntity.status(HttpStatus.CREATED).body(token));
     }
 
     @Operation(summary = "User login",
@@ -50,9 +50,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public Mono<ResponseEntity<TokenResponse>> login(@RequestBody LoginRequest request) {
         return registrationService.login(request)
-                .map(token -> ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(token));
+                .map(ResponseEntity::ok);
     }
 
 }
