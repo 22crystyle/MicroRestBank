@@ -28,6 +28,27 @@ dependencyManagement {
     }
 }
 
+openApi {
+    apiDocsUrl.set("http://localhost:1024/v3/api-docs")
+    outputDir.set(project.file("docs"))
+    outputFileName.set("swagger.json")
+    groupedApiMappings.set(
+        mapOf(
+            "http://localhost:1024/auth/v3/api-docs" to "auth-service.json",
+            "http://localhost:1024/customers/v3/api-docs" to "customer-service.json",
+            "http://localhost:1024/cards/v3/api-docs" to "card-service.json"
+        )
+    )
+    customBootRun {
+        environment.put("API_GATEWAY_PORT", "7080")
+        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
+    }
+}
+
+tasks.named("forkedSpringBootRun") {
+    dependsOn(project(":shared").tasks.getByName("jar"))
+}
+
 tasks.test {
     useJUnitPlatform()
 }

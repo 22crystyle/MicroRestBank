@@ -23,8 +23,15 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.named("forkedSpringBootRun") {
+    dependsOn(project(":shared").tasks.getByName("jar"))
+}
+
 openApi {
-    apiDocsUrl.set("http://localhost:1024/v3/api-docs.yaml")
-    outputDir.set(layout.projectDirectory.dir("docs"))
-    outputFileName.set("openapi.yaml")
+    apiDocsUrl.set("http://localhost:1024/auth/v3/api-docs")
+    outputDir.set(file("$projectDir/docs"))
+    outputFileName.set("swagger.json")
+    customBootRun {
+        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
+    }
 }

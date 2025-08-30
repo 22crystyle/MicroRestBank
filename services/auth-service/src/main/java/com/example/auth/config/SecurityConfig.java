@@ -17,12 +17,18 @@ import reactor.core.publisher.Mono;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
+    public static final String[] AUTH_WHITELIST = {
+            "/actuator/health",
+            "/v3/api-docs",
+            "/api/v1/auth/**"
+    };
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/docs", "/v3/**", "/swagger-ui/**", "/api/v1/auth/**", "/healthcheck", "/actuator/health").permitAll()
+                        .pathMatchers(AUTH_WHITELIST).permitAll()
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(ex -> ex

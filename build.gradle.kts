@@ -13,6 +13,13 @@ tasks.withType<JavaCompile>() {
     options.compilerArgs.add("-parameters")
 }
 
+val apiServiceProjects = listOf(
+    "api-gateway",
+    "auth-service",
+    "card-service",
+    "customer-service"
+)
+
 subprojects {
     apply(plugin = "java")
     apply(plugin = "org.springframework.boot")
@@ -28,6 +35,12 @@ subprojects {
 
     tasks.withType<JavaCompile>().configureEach {
         options.compilerArgs.add("-nowarn")
+    }
+
+    afterEvaluate {
+        tasks.findByName("generateOpenApiDocs")?.let { task ->
+            task.enabled = project.name in apiServiceProjects
+        }
     }
 }
 
@@ -48,3 +61,23 @@ tasks.withType<Test>().configureEach {
 
 tasks.configureEach { enabled = false }
 tasks.named("clean") { enabled = true }
+
+tasks.register("generateAllApiDocs") {
+    group = "Documentation"
+    description = "Generates OpenAPI documentation for all applicable services."
+    dependsOn(apiServiceProjects.map { ":services:$it:generateOpenApiDocs" })
+}
+
+project(":services:api-gateway").afterEvaluate {
+    configurations.implementation {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+        exclude(group = "org.springframework", module = "spring-webmvc")
+    }
+}
+
+project(":services:auth-service").afterEvaluate {
+    configurations.implementation {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+        exclude(group = "org.springframework", module = "spring-webmvc")
+    }
+}

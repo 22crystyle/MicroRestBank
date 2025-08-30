@@ -20,7 +20,6 @@ extra["springCloudVersion"] = "2024.0.0"
 
 dependencies {
     implementation(libs.spring.cloud.starter.eureka.server)
-    implementation(libs.spring.doc.mvc)
 }
 
 dependencyManagement {

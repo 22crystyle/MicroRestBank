@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.spring.doc.mvc)
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.swagger.annotations.jakarta)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
 

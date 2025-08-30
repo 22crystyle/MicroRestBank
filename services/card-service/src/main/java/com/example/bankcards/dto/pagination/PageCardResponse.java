@@ -1,8 +1,8 @@
 package com.example.bankcards.dto.pagination;
 
 import com.example.bankcards.dto.response.CardResponse;
-import com.example.shared.dto.pagination.SortObject;
 import com.example.shared.dto.pagination.PageableObject;
+import com.example.shared.dto.pagination.SortObject;
 
 import java.util.List;
 

@@ -11,9 +11,9 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer cardOpenApiCustomizer() {
         return openApi -> openApi.addServersItem(
-            new Server()
-                .url("http://localhost:1024/cards")
-                .description("Card Service ENV")
+                new Server()
+                        .url("http://localhost:1024/cards")
+                        .description("Card Service ENV")
         );
     }
 }

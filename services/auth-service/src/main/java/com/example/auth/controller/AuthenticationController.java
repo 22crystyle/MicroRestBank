@@ -4,6 +4,11 @@ import com.example.auth.dto.request.LoginRequest;
 import com.example.auth.dto.request.RegistrationRequest;
 import com.example.auth.dto.response.TokenResponse;
 import com.example.auth.service.RegistrationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -17,16 +22,31 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Login endpoint")
+@Tag(name = "Authentication", description = "Endpoints for user registration and login")
 public class AuthenticationController {
     private final RegistrationService registrationService;
 
+    @Operation(summary = "Register a new user",
+            description = "Creates a new user in Keycloak and returns an access token.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid registration request", content = @Content),
+            @ApiResponse(responseCode = "409", description = "User with the same username or email already exists", content = @Content)
+    })
     @PostMapping("/register")
     public ResponseEntity<Mono<TokenResponse>> register(@RequestBody RegistrationRequest request) {
         Mono<TokenResponse> response = registrationService.createUserInKeycloak(request);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "User login",
+            description = "Authenticates a user and returns an access token.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Invalid username or password", content = @Content)
+    })
     @PostMapping("/login")
     public Mono<ResponseEntity<TokenResponse>> login(@RequestBody LoginRequest request) {
         return registrationService.login(request)

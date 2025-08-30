@@ -8,9 +8,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayConfig {
 
-        @Bean
+    @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
+                .route("auth-service-api-docs", r -> r.path("/auth/v3/api-docs")
+                        .filters(f -> f.rewritePath("/auth/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://auth-service"))
+
                 .route("auth-service", r -> r.path("/auth/**")
                         .filters(f -> f.rewritePath("/auth", "/api/v1/auth"))
                         .uri("lb://auth-service"))

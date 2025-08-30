@@ -11,29 +11,29 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(
-        contact = @Contact(
-            name = "Kryshtal Maxim",
-            email = "shimorowm@gmail.com",
-            url = "https://github.com/22crystyle"
-        ),
-        description = "OpenApi documentation for RestBank",
-        title = "OpenApi specification - RestBank",
-        version = "1.0",
-        license = @License(
-            name = "MIT",
-            url = "https//opensource.org/licenses/MIT"
-        ),
-        termsOfService = "Terms of service" 
-    )
+        info = @Info(
+                contact = @Contact(
+                        name = "Kryshtal Maxim",
+                        email = "shimorowm@gmail.com",
+                        url = "https://github.com/22crystyle"
+                ),
+                description = "OpenApi documentation for RestBank",
+                title = "OpenApi specification - RestBank",
+                version = "1.0",
+                license = @License(
+                        name = "MIT",
+                        url = "https//opensource.org/licenses/MIT"
+                ),
+                termsOfService = "Terms of service"
+        )
 )
 @SecurityScheme(
-    name = "BearerAuth",
-    description = "JWT auth description",
-    scheme = "bearer",
-    type = SecuritySchemeType.HTTP,
-    bearerFormat = "JWT",
-    in = SecuritySchemeIn.HEADER
+        name = "BearerAuth",
+        description = "JWT auth description",
+        scheme = "bearer",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        in = SecuritySchemeIn.HEADER
 )
 public class BaseOpenApiConfig {
 }
