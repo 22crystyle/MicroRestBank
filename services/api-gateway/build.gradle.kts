@@ -45,10 +45,6 @@ openApi {
     }
 }
 
-tasks.named("forkedSpringBootRun") {
-    dependsOn(project(":shared").tasks.getByName("jar"))
-}
-
 tasks.test {
     useJUnitPlatform()
 }

@@ -23,10 +23,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.named("forkedSpringBootRun") {
-    dependsOn(project(":shared").tasks.getByName("jar"))
-}
-
 openApi {
     apiDocsUrl.set("http://localhost:1024/auth/v3/api-docs")
     outputDir.set(file("$projectDir/docs"))
