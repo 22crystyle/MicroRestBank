@@ -10,6 +10,50 @@ spring:
       httpclient:
         connect-timeout: 1000
         response-timeout: 5s
+      routes:
+        - id: auth-service-api-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/v3/api-docs
+          filters:
+            - RewritePath=/auth/v3/api-docs, /v3/api-docs
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth, /api/v1/auth
+        - id: customer-service-api-docs
+          uri: lb://customer-service
+          predicates:
+            - Path=/customers/v3/api-docs
+          filters:
+            - RewritePath=/customers/v3/api-docs, /v3/api-docs
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/customers/**
+          filters:
+            - TokenRelay=
+            - AddRequestHeader=X-Service-Call, gateway
+            - RewritePath=/customers(?<path>/.*)?, /api/v1/customers${path}
+        - id: card-service-api-docs
+          uri: lb://card-service
+          predicates:
+            - Path=/cards/v3/api-docs
+          filters:
+            - RewritePath=/cards/v3/api-docs, /v3/api-docs
+        - id: card-service
+          uri: lb://card-service
+          predicates:
+            - Path=/cards/**
+          filters:
+            - TokenRelay=
+            - RewritePath=/cards(?<path>/.*)?, /api/v1/cards${path}
+            - name: CircuitBreaker
+              args:
+                name: cardCircuitBreaker
+                fallbackUri: forward:/fallback
     discovery:
       enabled: true
     loadbalancer:
