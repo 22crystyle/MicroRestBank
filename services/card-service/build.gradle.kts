@@ -1,18 +1,7 @@
-plugins {
-    `java-library`
-    id("java-convention")
-}
-
-group = "com.example"
-version = "1.0.0"
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(project(":shared"))
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.retry)
     implementation(libs.liquibase.core)
     implementation(libs.spring.boot.starter.security)
@@ -26,33 +15,12 @@ dependencies {
     implementation(libs.spring.kafka)
     runtimeOnly(libs.resilience4j.feign)
 
+    runtimeOnly(libs.postgresql)
+    runtimeOnly(libs.h2)
+
     implementation(libs.spring.doc.mvc)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-val agentJar: String by lazy {
-    configurations.testRuntimeClasspath.get()
-        .files
-        .find { it.name.startsWith("byte-buddy-agent") }
-        ?.absolutePath
-        ?: error("byte-buddy-agent.jar not found in testRuntimeClasspath")
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    forkEvery = 0
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
-    jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
 
 openApi {
     apiDocsUrl.set("http://localhost:1024/cards/v3/api-docs")
-    outputDir.set(file("$projectDir/docs"))
-    outputFileName.set("swagger.json")
-    customBootRun {
-        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
-    }
 }

@@ -1,9 +1,9 @@
 plugins {
     `java-library`
-    id("io.freefair.lombok") apply false
-    id("org.springframework.boot") apply false
-    id("io.spring.dependency-management") apply false
-    id("org.springdoc.openapi-gradle-plugin") apply false
+    id("io.freefair.lombok")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    id("org.springdoc.openapi-gradle-plugin")
 }
 
 java {
@@ -16,23 +16,23 @@ repositories {
     mavenLocal()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.2")
+    }
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-
-    implementation("org.postgresql:postgresql")
-    implementation("com.h2database:h2")
-
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
+    implementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.36")
 
-    implementation("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
@@ -40,10 +40,41 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("net.bytebuddy:byte-buddy-agent:1.17.7")
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.2")
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+    options.compilerArgs.add("-nowarn")
+}
+
+tasks.withType<Javadoc> {
+    options.encoding = "UTF-8"
+}
+
+val agentJar: String by lazy {
+    configurations.testRuntimeClasspath.get()
+        .files
+        .find { it.name.startsWith("byte-buddy-agent") }
+        ?.absolutePath
+        ?: error("byte-buddy-agent.jar not found in testRuntimeClasspath")
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+    forkEvery = 0
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    jvmArgs("-Xshare:off", "-javaagent:$agentJar")
+}
+
+// Common OpenAPI configuration
+openApi {
+    outputDir.set(file("$projectDir/docs"))
+    outputFileName.set("swagger.json")
+    customBootRun {
+        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
     }
 }

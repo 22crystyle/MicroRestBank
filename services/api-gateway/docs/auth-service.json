@@ -17,7 +17,7 @@
   },
   "servers": [
     {
-      "url": "http://172.18.0.10:33769",
+      "url": "http://172.18.0.8:37209",
       "description": "Generated server url"
     },
     {

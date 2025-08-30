@@ -1,6 +1,6 @@
 package com.example.auth.exception;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.shared.exception.EntityNotFoundException;
 
 public class RoleNotFoundException extends EntityNotFoundException {
     public RoleNotFoundException(String message) {

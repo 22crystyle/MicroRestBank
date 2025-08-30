@@ -1,33 +1,14 @@
-plugins {
-    java
-    id("java-convention")
+// The java-convention plugin is applied via the root build.gradle.kts.
+// We exclude dependencies that are not needed by the Eureka server.
+configurations.implementation {
+    exclude(group = "org.springframework.boot", module = "spring-boot-starter-validation")
+    exclude(group = "org.springframework.boot", module = "spring-boot-starter-oauth2-resource-server")
+    exclude(group = "io.swagger.core.v3", module = "swagger-annotations")
+    exclude(group = "org.springdoc", module = "springdoc-openapi-starter-webmvc-api")
+    exclude(group = "org.springframework.cloud", module = "spring-cloud-starter-netflix-eureka-client")
 }
-
-group = "com.example"
-version = "0.0.1-SNAPSHOT"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-extra["springCloudVersion"] = "2024.0.0"
 
 dependencies {
     implementation(libs.spring.cloud.starter.eureka.server)
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    implementation(libs.spring.boot.starter.security)
 }

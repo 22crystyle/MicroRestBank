@@ -4,7 +4,6 @@ import com.example.shared.dto.response.RestErrorResponse;
 import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
@@ -54,19 +53,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         });
         ValidationErrorResponse response = new ValidationErrorResponse(status.toString(), "Validation Error", errors);
         return new ResponseEntity<>(response, status);
-    }
-
-    // 409 Conflict for data integrity violations
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<RestErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        Throwable cause = ex.getCause();
-        String message = "Data integrity violation";
-        if (cause instanceof org.hibernate.exception.ConstraintViolationException hce) {
-            String constraint = hce.getConstraintName();
-            message = "Нарушено ограничение: " + constraint;
-        }
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.CONFLICT.toString(), message);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @Override

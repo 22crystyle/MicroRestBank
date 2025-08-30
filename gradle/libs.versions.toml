@@ -12,9 +12,13 @@ spring-kafka = "3.3.8"
 spring-retry = "2.0.12"
 spring-doc = "2.8.11"
 swagger-annotations = "2.2.36"
+byte-buddy-agent = "1.17.7"
+postgresql = "42.7.7"
+h2 = "2.3.232"
 
 [libraries]
 # --- Spring Boot (starters) ---
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
 spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client", version.ref = "spring-boot" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
@@ -50,10 +54,13 @@ keycloak-services = { module = "org.keycloak:keycloak-services", version.ref = "
 
 # --- Database / Migrations ---
 liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
 
 # --- Testing (JUnit) ---
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "byte-buddy-agent" }
 
 # --- Docs ---
 spring-doc-mvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "spring-doc" }
