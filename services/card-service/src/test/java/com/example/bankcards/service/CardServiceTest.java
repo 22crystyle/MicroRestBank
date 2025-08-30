@@ -1,6 +1,8 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.CardMapper;
 import com.example.bankcards.dto.request.TransferRequest;
+import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.User;
@@ -16,19 +18,24 @@ import com.example.bankcards.util.card.status.CardStatusData;
 import com.example.bankcards.util.pan.CardPanGenerator;
 import com.example.bankcards.util.pan.CardPanGeneratorFactory;
 import com.example.bankcards.util.user.UserData;
+import com.example.shared.util.JwtPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,6 +58,8 @@ public class CardServiceTest {
     private CardPanGeneratorFactory cardPanGeneratorFactory;
     @Mock
     private CardPanGenerator cardPanGenerator;
+    @Mock
+    private CardMapper cardMapper;
     @InjectMocks
     private CardService cardService;
 
@@ -204,6 +213,20 @@ public class CardServiceTest {
     }
 
     @Test
+    void transfer_toCardNotFound_throws() {
+        long fromId = 1L, toId = 2L;
+        Card from = CardData.entity().withId(fromId).build();
+        when(cardRepository.findById(fromId)).thenReturn(Optional.of(from));
+        when(cardRepository.findById(toId)).thenReturn(Optional.empty());
+
+        TransferRequest req = mock(TransferRequest.class);
+        when(req.fromCardId()).thenReturn(fromId);
+        when(req.toCardId()).thenReturn(toId);
+
+        assertThrows(CardNotFoundException.class, () -> cardService.transfer(req, ownerId));
+    }
+
+    @Test
     void transfer_notOwner_throws() {
         long fromId = 1L, toId = 2L;
 
@@ -223,5 +246,111 @@ public class CardServiceTest {
         assertThrows(IsNotOwnerException.class, () -> cardService.transfer(req, ownerId));
     }
 
-    
+    @Test
+    void getCards_asAdmin_returnsMaskedResponse() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Authentication auth = mock(Authentication.class);
+        doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))).when(auth).getAuthorities();
+
+        Page<Card> cardPage = new PageImpl<>(List.of(new Card()));
+        when(cardRepository.findAll(pageRequest)).thenReturn(cardPage);
+
+        cardService.getCards(pageRequest, auth);
+
+        verify(cardMapper).toMaskedResponse(any(Card.class));
+    }
+
+    @Test
+    void getCards_asUser_returnsFullResponse() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Authentication auth = mock(Authentication.class);
+
+        try (MockedStatic<JwtPrincipal> mocked = mockStatic(JwtPrincipal.class)) {
+            mocked.when(() -> JwtPrincipal.getId(auth)).thenReturn(ownerId.toString());
+            doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))).when(auth).getAuthorities();
+
+            User user = UserData.entity().withId(ownerId).build();
+            when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
+
+            Page<Card> cardPage = new PageImpl<>(List.of(new Card()));
+            when(cardRepository.findAllByUser(user, pageRequest)).thenReturn(cardPage);
+
+            cardService.getCards(pageRequest, auth);
+
+            verify(cardMapper).toFullResponse(any(Card.class));
+        }
+    }
+
+    @Test
+    void getCard_asOwner_returnsFullResponse() {
+        Authentication auth = mock(Authentication.class);
+        try (MockedStatic<JwtPrincipal> mocked = mockStatic(JwtPrincipal.class)) {
+            mocked.when(() -> JwtPrincipal.getId(auth)).thenReturn(ownerId.toString());
+
+            User owner = UserData.entity().withId(ownerId).build();
+            Card card = CardData.entity().withId(1L).withOwner(owner).build();
+            when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+
+            cardService.getCard(1L, auth);
+
+            verify(cardMapper).toFullResponse(card);
+        }
+    }
+
+    @Test
+    void getCard_asAdmin_notOwner_returnsMaskedResponse() {
+        Authentication auth = mock(Authentication.class);
+        UUID adminId = UUID.randomUUID();
+
+        try (MockedStatic<JwtPrincipal> mocked = mockStatic(JwtPrincipal.class)) {
+            mocked.when(() -> JwtPrincipal.getId(auth)).thenReturn(adminId.toString());
+            doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))).when(auth).getAuthorities();
+
+            User owner = UserData.entity().withId(ownerId).build();
+            Card card = CardData.entity().withId(1L).withOwner(owner).build();
+            when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+
+            cardService.getCard(1L, auth);
+
+            verify(cardMapper).toMaskedResponse(card);
+        }
+    }
+
+    @Test
+    void getCard_asUser_notOwner_throwsException() {
+        Authentication auth = mock(Authentication.class);
+        UUID otherUserId = UUID.randomUUID();
+
+        try (MockedStatic<JwtPrincipal> mocked = mockStatic(JwtPrincipal.class)) {
+            mocked.when(() -> JwtPrincipal.getId(auth)).thenReturn(otherUserId.toString());
+            doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))).when(auth).getAuthorities();
+
+            User owner = UserData.entity().withId(ownerId).build();
+            Card card = CardData.entity().withId(1L).withOwner(owner).build();
+            when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+
+            assertThrows(IsNotOwnerException.class, () -> cardService.getCard(1L, auth));
+        }
+    }
+
+    @Test
+    void createCardForAccountAndGetMaskedResponse_success() {
+        UUID userId = UUID.randomUUID();
+        User user = UserData.entity().withId(userId).build();
+        CardStatus status = CardStatusData.entity().withId(1).build();
+        String generatedPan = "5555666677778884";
+        Card savedCard = CardData.entity().withId(10L).build();
+        CardResponse maskedResponse = mock(CardResponse.class);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(cardStatusRepository.findById(1)).thenReturn(Optional.of(status));
+        when(cardPanGenerator.generateCardPan()).thenReturn(generatedPan);
+        when(cardRepository.save(any(Card.class))).thenReturn(savedCard);
+        when(cardMapper.toMaskedResponse(savedCard)).thenReturn(maskedResponse);
+
+        CardResponse result = cardService.createCardForAccountAndGetMaskedResponse(userId);
+
+        assertEquals(maskedResponse, result);
+        verify(cardMapper).toMaskedResponse(savedCard);
+    }
 }
