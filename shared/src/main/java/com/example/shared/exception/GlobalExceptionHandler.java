@@ -5,6 +5,7 @@ import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -41,9 +42,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
     ) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -57,7 +58,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     public ResponseEntity<Object> handleExceptionInternal(
-            Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request
+            @NonNull Exception ex,
+            @Nullable Object body,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode statusCode,
+            @NonNull WebRequest request
     ) {
         RestErrorResponse errorResponse;
 
