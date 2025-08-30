@@ -1,4 +1,4 @@
-package com.example.bankcards.config;
+package com.example.customer.config;
 
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.customizers.OpenApiCustomizer;
@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenApiCustomizer cardOpenApiCustomizer() {
+    public OpenApiCustomizer customerOpenApiCustomizer() {
         return openApi -> openApi.addServersItem(
             new Server()
-                .url("http://localhost:1024/cards")
-                .description("Card Service ENV")
+                .url("http://localhost:1024/customers")
+                .description("Customer Service ENV")
         );
     }
 }
