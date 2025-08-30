@@ -20,8 +20,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -100,13 +99,15 @@ public class CardBlockRequestServiceTest {
 
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())).thenReturn(Optional.of(blocked));
+        when(cardStatusRepository.findByName(CardStatusType.BLOCKED)).thenReturn(Optional.of(blocked));
         when(cardBlockRequestRepository.save(any(CardBlockRequest.class))).thenAnswer(inv -> inv.getArgument(0));
 
         CardBlockRequest result = service.approveBlockRequest(1L, ownerId);
 
-        assertEquals(CardBlockRequest.Status.APPROVED, result.getStatus());
-        assertEquals(ownerId, result.getProcessedBy());
+        assertAll("Approve block request",
+                () -> assertEquals(CardBlockRequest.Status.APPROVED, result.getStatus()),
+                () -> assertEquals(ownerId, result.getProcessedBy())
+        );
         verify(cardRepository).save(card);
     }
 
@@ -123,7 +124,7 @@ public class CardBlockRequestServiceTest {
     void approveBlockRequest_noStatus_throws() {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName(CardStatusType.BLOCKED.name())).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.BLOCKED)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.approveBlockRequest(1L, ownerId));
@@ -135,13 +136,15 @@ public class CardBlockRequestServiceTest {
 
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())).thenReturn(Optional.of(active));
+        when(cardStatusRepository.findByName(CardStatusType.ACTIVE)).thenReturn(Optional.of(active));
         when(cardBlockRequestRepository.save(any(CardBlockRequest.class))).thenAnswer(inv -> inv.getArgument(0));
 
         CardBlockRequest result = service.rejectBlockRequest(1L, ownerId);
 
-        assertEquals(CardBlockRequest.Status.REJECTED, result.getStatus());
-        assertEquals(ownerId, result.getProcessedBy());
+        assertAll("Reject block request",
+                () -> assertEquals(CardBlockRequest.Status.REJECTED, result.getStatus()),
+                () -> assertEquals(ownerId, result.getProcessedBy())
+        );
         verify(cardRepository).save(card);
     }
 
@@ -158,7 +161,7 @@ public class CardBlockRequestServiceTest {
     void rejectBlockRequest_noStatus_throws() {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
-        when(cardStatusRepository.findByName(CardStatusType.ACTIVE.name())).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.ACTIVE)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.rejectBlockRequest(1L, ownerId));

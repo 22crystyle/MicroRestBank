@@ -39,7 +39,7 @@ class CardExpiryServiceTest {
 
         Card card = CardData.entity().withExpiryDate(YearMonth.now()).build();
 
-        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.of(expiredStatus));
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED)).thenReturn(Optional.of(expiredStatus));
         when(cardRepository.findByExpiryDate(YearMonth.now())).thenReturn(List.of(card));
 
         cardExpiryService.markExpiredCards();
@@ -50,7 +50,7 @@ class CardExpiryServiceTest {
 
     @Test
     void markExpiredCards_shouldThrowException_ifExpiredStatusNotFound() {
-        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.empty());
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED)).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class, () -> cardExpiryService.markExpiredCards());
     }
@@ -59,7 +59,7 @@ class CardExpiryServiceTest {
     void markExpiredCards_shouldNotSave_ifNoExpiredCards() {
         CardStatus expiredStatus = CardStatusData.entity().withName(CardStatusType.EXPIRED).build();
 
-        when(cardStatusRepository.findByName(CardStatusType.EXPIRED.name())).thenReturn(Optional.of(expiredStatus));
+        when(cardStatusRepository.findByName(CardStatusType.EXPIRED)).thenReturn(Optional.of(expiredStatus));
         when(cardRepository.findByExpiryDate(YearMonth.now())).thenReturn(List.of());
 
         cardExpiryService.markExpiredCards();

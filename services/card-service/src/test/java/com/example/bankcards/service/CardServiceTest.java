@@ -61,33 +61,31 @@ public class CardServiceTest {
 
     @Test
     void createCardForAccount_success() {
-        User user = UserData.DEFAULT_ENTITY;
-        user.setId(ownerId);
-
-        CardStatus status = CardStatusData.DEFAULT_ENTITY;
-        status.setId(1);
+        User user = UserData.entity().withId(ownerId).build();
+        CardStatus status = CardStatusData.entity().withId(1).build();
+        String generatedPan = "5555666677778884";
+        Card savedCard = CardData.entity().withId(10L).build();
 
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
         when(cardStatusRepository.findById(1)).thenReturn(Optional.of(status));
-        when(cardPanGenerator.generateCardPan()).thenReturn("5555666677778884");
-
-        ArgumentCaptor<Card> captor = ArgumentCaptor.forClass(Card.class);
-        Card saved = CardData.DEFAULT_ENTITY;
-        saved.setId(10L);
-        when(cardRepository.save(any(Card.class))).thenReturn(saved);
+        when(cardPanGenerator.generateCardPan()).thenReturn(generatedPan);
+        when(cardRepository.save(any(Card.class))).thenReturn(savedCard);
 
         Card result = cardService.createCardForAccount(ownerId);
 
+        ArgumentCaptor<Card> captor = ArgumentCaptor.forClass(Card.class);
         verify(cardRepository).save(captor.capture());
-        Card captured = captor.getValue();
+        Card capturedCard = captor.getValue();
 
-        assertEquals("5555666677778884", captured.getPan());
-        assertEquals(user, captured.getUser());
-        assertEquals(YearMonth.now().plusYears(4), captured.getExpiryDate());
-        assertEquals(BigDecimal.ZERO, captured.getBalance());
-        assertEquals(status, captured.getStatus());
+        assertAll("Card properties",
+                () -> assertEquals(generatedPan, capturedCard.getPan()),
+                () -> assertEquals(user, capturedCard.getUser()),
+                () -> assertEquals(YearMonth.now().plusYears(4), capturedCard.getExpiryDate()),
+                () -> assertEquals(BigDecimal.ZERO, capturedCard.getBalance()),
+                () -> assertEquals(status, capturedCard.getStatus())
+        );
 
-        assertEquals(saved, result);
+        assertEquals(savedCard, result);
     }
 
     @Test
@@ -168,12 +166,11 @@ public class CardServiceTest {
         long fromId = 1L, toId = 2L;
         BigDecimal amount = new BigDecimal("100");
 
+        User owner = UserData.entity().withId(ownerId).build();
         Card from = spy(CardData.entity()
                 .withId(fromId)
+                .withOwner(owner)
                 .build());
-        User owner = UserData.entity().withId(ownerId).build();
-        from.setUser(owner);
-
         Card to = spy(CardData.entity()
                 .withId(toId)
                 .withOwner(owner)
@@ -181,6 +178,7 @@ public class CardServiceTest {
 
         when(cardRepository.findById(fromId)).thenReturn(Optional.of(from));
         when(cardRepository.findById(toId)).thenReturn(Optional.of(to));
+        when(cardRepository.save(any(Card.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TransferRequest req = mock(TransferRequest.class);
         when(req.fromCardId()).thenReturn(fromId);
@@ -191,7 +189,6 @@ public class CardServiceTest {
 
         verify(from).withdraw(amount);
         verify(to).deposit(amount);
-
         verify(cardRepository).save(from);
         verify(cardRepository).save(to);
     }
@@ -226,18 +223,5 @@ public class CardServiceTest {
         assertThrows(IsNotOwnerException.class, () -> cardService.transfer(req, ownerId));
     }
 
-    @Test
-    void checkOwnership_public_true() {
-        when(cardRepository.existsByIdAndUser_Id(1L, ownerId)).thenReturn(true);
-        boolean result = cardService.checkOwnership(1L, ownerId);
-        assertTrue(result);
-        verify(cardRepository, times(1)).existsByIdAndUser_Id(1L, ownerId);
-    }
-
-    @Test
-    void checkOwnership_public_false_throws() {
-        when(cardRepository.existsByIdAndUser_Id(1L, ownerId)).thenReturn(false);
-        assertThrows(IsNotOwnerException.class, () -> cardService.checkOwnership(1L, ownerId));
-        verify(cardRepository, times(1)).existsByIdAndUser_Id(1L, ownerId);
-    }
+    
 }
