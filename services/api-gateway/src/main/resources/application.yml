@@ -36,7 +36,7 @@ spring:
           filters:
             - TokenRelay=
             - AddRequestHeader=X-Service-Call, gateway
-            - RewritePath=/customers(?<path>/.*)?, /api/v1/customers${path}
+            - RewritePath=/customers(?<path>/.*)?, /api/v1/customers\${path}
         - id: card-service-api-docs
           uri: lb://card-service
           predicates:
@@ -49,7 +49,7 @@ spring:
             - Path=/cards/**
           filters:
             - TokenRelay=
-            - RewritePath=/cards(?<path>/.*)?, /api/v1/cards${path}
+            - RewritePath=/cards(?<path>/.*)?, /api/v1/cards\${path}
             - name: CircuitBreaker
               args:
                 name: cardCircuitBreaker
