@@ -34,7 +34,7 @@ public class KeycloakCustomerEventListener {
                 String uuidString = adminEvent.getResourcePath().replace("users/", "");
                 json.setId(UUID.fromString(uuidString));
                 log.info("Keycloak Admin Listener: Received json {}", json);
-                CustomerResponse response = customerService.createCustomer(json);
+                CustomerResponse response = customerService.saveCustomer(json);
                 log.info("Keycloak Admin Listener: Create User {}", response);
             }
         } catch (JsonProcessingException e) {

@@ -11,7 +11,6 @@ import com.example.customer.repository.OutboxEventRepository;
 import com.example.shared.dto.event.CustomerCreatedEvent;
 import com.example.shared.dto.event.CustomerStatus;
 import com.example.shared.dto.event.EventType;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +28,11 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-    private final ObjectMapper objectMapper = new ObjectMapper(JsonFactory.builder().build());
+    private final ObjectMapper objectMapper;
     private final OutboxEventRepository outboxEventRepository;
 
     @Transactional
-    public CustomerResponse createCustomer(CustomerRequest request) throws JsonProcessingException {
+    public CustomerResponse saveCustomer(CustomerRequest request) throws JsonProcessingException {
         Customer customer = customerMapper.toEntity(request);
         if (request.getId() != null) {
             customer.setId(request.getId());

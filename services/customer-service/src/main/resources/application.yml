@@ -20,7 +20,7 @@ spring:
       auto-offset-reset: earliest
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
   application:
     name: customer-service
