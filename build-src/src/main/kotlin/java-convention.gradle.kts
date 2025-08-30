@@ -70,7 +70,6 @@ tasks.withType<Test>().configureEach {
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
 
-// Common OpenAPI configuration
 openApi {
     outputDir.set(file("$projectDir/docs"))
     outputFileName.set("swagger.json")

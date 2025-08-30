@@ -1,5 +1,3 @@
-// The java-convention plugin is applied via the root build.gradle.kts.
-// We exclude dependencies that are not needed by the Eureka server.
 configurations.implementation {
     exclude(group = "org.springframework.boot", module = "spring-boot-starter-validation")
     exclude(group = "org.springframework.boot", module = "spring-boot-starter-oauth2-resource-server")
