@@ -31,12 +31,14 @@ databaseChangeLog:
                   name: created_at
                   type: timestamp with time zone
         - createIndex:
+            schemaName: customer_schema
             tableName: outbox
             indexName: idx_outbox_created_at
             columns:
               - column:
                   name: created_at
         - createIndex:
+            schemaName: customer_schema
             tableName: outbox
             indexName: idx_outbox_event_type
             columns:

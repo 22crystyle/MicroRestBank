@@ -7,6 +7,8 @@ dependencies {
     implementation(libs.keycloak.services)
     implementation(libs.spring.kafka)
 
+    implementation(libs.liquibase.core)
+
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.lombok.mapstruct.binding)

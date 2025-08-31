@@ -4,6 +4,7 @@ databaseChangeLog:
       author: Crystal
       changes:
         - createTable:
+            schemaName: customer_schema
             tableName: customers
             columns:
               - column:
@@ -41,24 +42,25 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: dateOfBirth
-                  type: date
+                  name: date_of_birth
+                  type: timestamp with time zone
                   constraints:
                     nullable: true
               - column:
-                  name: createdAt
+                  name: created_at
                   type: timestamp with time zone
                   defaultValueComputed: now()
                   constraints:
                     nullable: false
               - column:
-                  name: updatedAt
+                  name: updated_at
                   type: timestamp with time zone
                   defaultValueComputed: now()
                   constraints:
                     nullable: false
       rollback:
         - dropTable:
+            schemaName: customer_schema
             tableName: customers
 
   - changeSet:
@@ -66,12 +68,14 @@ databaseChangeLog:
       author: liquibase
       changes:
         - createIndex:
+            schemaName: customer_schema
             tableName: customers
             indexName: idx_customers_email
             columns:
               - column:
                   name: email
         - createIndex:
+            schemaName: customer_schema
             tableName: customers
             indexName: idx_customers_phone
             columns:
@@ -79,8 +83,10 @@ databaseChangeLog:
                   name: phone
       rollback:
         - dropIndex:
+            schemaName: customer_schema
             indexName: idx_customers_email
             tableName: customers
         - dropIndex:
+            schemaName: customer_schema
             indexName: idx_customers_phone
             tableName: customers

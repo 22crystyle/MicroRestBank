@@ -7,8 +7,8 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   liquibase:
-    liquibase-schema: CUSTOMER_SCHEMA
-    default-schema: CUSTOMER_SCHEMA
+    liquibase-schema: customer_schema
+    default-schema: customer_schema
     change-log: classpath:db/migration/db.changelog-master.yml
     enabled: true
   kafka:
