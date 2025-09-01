@@ -24,6 +24,7 @@ services:
       dockerfile: services/api-gateway/Dockerfile
     ports:
       - "1024:1024"
+      - "1042:8081"
     env_file:
       - ".env"
     healthcheck:
