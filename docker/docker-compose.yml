@@ -4,7 +4,7 @@ include:
 services:
   connector-setup:
     container_name: connector-setup
-    image: curlimages/curl:latest
+    image: alpine:latest
     restart: no
     depends_on:
       debezium:
@@ -13,10 +13,13 @@ services:
         condition: service_healthy
     volumes:
       - ./connectors:/data/connectors
-      - ./connectors/register-all-connectors.sh:/register-all-connectors.sh
+    env_file:
+      - ./.env
     command:
       - sh
       - -c
-      - /register-all-connectors.sh
+      - |
+        apk add --no-cache curl gettext
+        /data/connectors/register-all-connectors.sh
     networks:
       - restbank-net
