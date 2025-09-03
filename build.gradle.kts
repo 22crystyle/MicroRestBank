@@ -1,13 +1,22 @@
-import javax.inject.Inject
-import org.gradle.process.ExecOperations
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.process.JavaForkOptions
 import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.process.ExecOperations
+import org.gradle.process.JavaForkOptions
+import javax.inject.Inject
 
 plugins {
     base
     id("java-convention") apply false
+}
+
+tasks.named<Delete>("clean") {
+    delete(
+        ".gradle",
+        fileTree("build-src") {
+            include("**/build", "**/.gradle")
+        }
+    )
 }
 
 description = "restbank"
@@ -108,7 +117,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
 
         logger.lifecycle("Building JAR files...")
         execOperations.exec {
-            commandLine("./gradlew.bat", "bootJar")
+            commandLine("./gradlew", "bootJar")
         }
 
         logger.lifecycle("Starting docker-compose...")
@@ -130,7 +139,15 @@ abstract class FullCycleTimeTask : DefaultTask() {
         while (System.currentTimeMillis() < deadline) {
             val standardOutput = java.io.ByteArrayOutputStream()
             val result = execOperations.exec {
-                commandLine("curl", "--silent", "--write-out", "%{http_code}", "--output", "NUL", "http://localhost:1042/actuator/health")
+                commandLine(
+                    "curl",
+                    "--silent",
+                    "--write-out",
+                    "%{http_code}",
+                    "--output",
+                    "NUL",
+                    "http://localhost:1042/actuator/health"
+                )
                 isIgnoreExitValue = true
                 setStandardOutput(standardOutput)
             }
@@ -143,9 +160,9 @@ abstract class FullCycleTimeTask : DefaultTask() {
                 break
             } else {
                 if (result.exitValue != 0) {
-                     logger.warn("Waiting for api-gateway... curl command failed with exit code ${result.exitValue}. Is curl installed and in your PATH?")
+                    logger.warn("Waiting for api-gateway... curl command failed with exit code ${result.exitValue}. Is curl installed and in your PATH?")
                 } else {
-                     logger.warn("Waiting for api-gateway... Received HTTP status ${httpCode}")
+                    logger.warn("Waiting for api-gateway... Received HTTP status ${httpCode}")
                 }
             }
             Thread.sleep(waitInterval)
@@ -154,7 +171,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
         if (healthy) {
             logger.lifecycle("Services are up, generating API docs...")
             execOperations.exec {
-                commandLine("./gradlew.bat", "generateAllApiDocs", "--no-configuration-cache")
+                commandLine("./gradlew", "generateAllApiDocs", "--no-configuration-cache")
             }
         }
 
