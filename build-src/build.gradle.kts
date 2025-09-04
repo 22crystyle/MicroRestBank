@@ -2,6 +2,15 @@ plugins {
     `kotlin-dsl`
 }
 
+gradlePlugin {
+    plugins {
+        create("full-cycle-time") {
+            id = "full-cycle-time"
+            implementationClass = "com.example.restbank.build.FullCycleTimePlugin"
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     gradlePluginPortal()

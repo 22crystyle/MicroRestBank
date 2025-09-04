@@ -31,3 +31,5 @@ replay_pid*
 .gradle
 /docker/kafka/
 **/docs/
+
+!build-src/src/main/kotlin/com/example/restbank/build
