@@ -52,7 +52,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
 
         logger.lifecycle("Waiting for api-gateway to be healthy...")
         var healthy = false
-        val maxWaitTime = java.time.Duration.ofMinutes(5).toMillis()
+        val maxWaitTime = java.time.Duration.ofMinutes(10).toMillis()
         val waitInterval = java.time.Duration.ofSeconds(5).toMillis()
         val deadline = startTime + maxWaitTime
 
