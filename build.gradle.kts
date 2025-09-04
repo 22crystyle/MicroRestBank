@@ -8,13 +8,8 @@ plugins {
     id("full-cycle-time") apply true
 }
 
-tasks.named<Delete>("clean") {
-    delete(
-        ".gradle",
-        fileTree("build-src") {
-            include("**/build", "**/.gradle")
-        }
-    )
+tasks.named("clean") {
+    dependsOn(gradle.includedBuild("build-src").task(":clean"))
 }
 
 description = "restbank"
