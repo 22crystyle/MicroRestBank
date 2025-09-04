@@ -1,16 +1,23 @@
-
-package com.example.restbank.build
-
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.process.ExecOperations
-import org.gradle.process.JavaForkOptions
 import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+class FullCycleTimePlugin : Plugin<Project> {
+    override fun apply(project: Project) {
+        project.tasks.register("fullCycleTime", FullCycleTimeTask::class.java) {
+            group = "custom"
+            description = "Runs the full cycle: clean, build, docker-compose up, and waits for services to be healthy."
+            dockerDirectory.set(project.layout.projectDirectory.dir("docker"))
+            dependsOn(project.subprojects.mapNotNull { it.tasks.findByName("clean") })
+        }
+    }
+}
 
 abstract class FullCycleTimeTask : DefaultTask() {
 
@@ -23,20 +30,24 @@ abstract class FullCycleTimeTask : DefaultTask() {
     @TaskAction
     fun execute() {
         val startTime = System.currentTimeMillis()
+        val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+        val gradlew = if (isWindows) "gradlew.bat" else "./gradlew"
 
         logger.lifecycle("Building JAR files...")
         execOperations.exec {
-            commandLine("./gradlew", "bootJar")
+            commandLine(gradlew, "bootJar")
         }
 
+        logger.lifecycle("Tearing down docker-compose...")
+        execOperations.exec {
+            workingDir = dockerDirectory.get().asFile
+            commandLine("docker-compose", "-p", "restbank", "down", "-v", "--remove-orphans")
+        }
+        
         logger.lifecycle("Starting docker-compose...")
         execOperations.exec {
             workingDir = dockerDirectory.get().asFile
-            commandLine("docker-compose", "down")
-        }
-        execOperations.exec {
-            workingDir = dockerDirectory.get().asFile
-            commandLine("docker-compose", "up", "--build", "--force-recreate", "-d")
+            commandLine("docker-compose", "-p", "restbank", "up", "--build", "--force-recreate", "-d")
         }
 
         logger.lifecycle("Waiting for api-gateway to be healthy...")
@@ -47,7 +58,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
 
         while (System.currentTimeMillis() < deadline) {
             val standardOutput = java.io.ByteArrayOutputStream()
-            val nullDevice = if (System.getProperty("os.name").lowercase().contains("windows")) "NUL" else "/dev/null"
+            val nullDevice = if (isWindows) "NUL" else "/dev/null"
             val result = execOperations.exec {
                 commandLine(
                     "curl",
@@ -81,7 +92,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
         if (healthy) {
             logger.lifecycle("Services are up, generating API docs...")
             execOperations.exec {
-                commandLine("./gradlew", "generateAllApiDocs", "--no-configuration-cache")
+                commandLine(gradlew, "generateAllApiDocs", "--no-configuration-cache")
             }
         }
 

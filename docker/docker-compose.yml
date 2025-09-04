@@ -3,7 +3,6 @@ include:
   - docker-services.yml
 services:
   connector-setup:
-    container_name: connector-setup
     image: alpine:latest
     restart: no
     depends_on:
