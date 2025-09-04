@@ -52,11 +52,11 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVICE_URL}
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 1
   instance:
     prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 10
+    lease-renewal-interval-in-seconds: 2
+    lease-expiration-duration-in-seconds: 5
 springdoc:
   api-docs:
     path: /v3/api-docs
