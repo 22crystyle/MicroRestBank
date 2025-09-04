@@ -1,9 +1,6 @@
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.process.ExecOperations
+import org.gradle.api.tasks.JavaExec
 import org.gradle.process.JavaForkOptions
-import javax.inject.Inject
 
 plugins {
     base
@@ -40,12 +37,22 @@ val apiServiceProjects = listOf(
 
 val dockerEnvFile = file("docker/.env")
 val dockerEnv = if (dockerEnvFile.exists()) {
-    dockerEnvFile.readLines().mapNotNull {
-        val parts = it.split("=", limit = 2)
-        if (parts.size == 2 && parts[0].isNotBlank()) parts[0] to parts[1] else null
-    }.toMap()
+    dockerEnvFile.readLines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") }
+        .mapNotNull {
+            val parts = it.split("=", limit = 2)
+            if (parts.size == 2 && parts[0].isNotBlank()) parts[0] to parts[1] else null
+        }.toMap()
 } else {
-    emptyMap()
+    emptyMap<String, String>()
+}
+
+val localApiGenerationEnv = dockerEnv.toMutableMap().apply {
+    getOrPut("KEYCLOAK_ISSUER_URI") { "http://localhost:${this["KEYCLOAK_HTTP_PORT"]}/realms/bank-realm" }
+    getOrPut("DB_JDBC_URL") { "jdbc:postgresql://localhost:${this["POSTGRES_PORT"]}/${this["POSTGRES_DB"]}" }
+    getOrPut("KAFKA_BOOTSTRAP_SERVER") { "localhost:${this["KAFKA_PORT"]}" }
+    getOrPut("EUREKA_SERVICE_URL") { "http://localhost:${this["EUREKA_SERVER_PORT"]}/eureka" }
 }
 
 subprojects {
@@ -63,10 +70,8 @@ subprojects {
                 task.enabled = project.name in apiServiceProjects
             }
             if (project.name in apiServiceProjects) {
-                tasks.all {
-                    if (this is JavaForkOptions) {
-                        environment.putAll(dockerEnv)
-                    }
+                tasks.withType<JavaExec> {
+                    environment(localApiGenerationEnv)
                 }
             }
         }
@@ -103,4 +108,3 @@ listOf(
         tasks.findByName("forkedSpringBootRun")?.dependsOn(project(":shared").tasks.getByName("jar"))
     }
 }
-

@@ -1,6 +1,5 @@
 services:
   eureka-server:
-    container_name: eureka-server
     build:
       context: ../
       dockerfile: services/eureka-server/Dockerfile
@@ -18,7 +17,6 @@ services:
       - restbank-net
 
   api-gateway:
-    container_name: api-gateway
     build:
       context: ../
       dockerfile: services/api-gateway/Dockerfile
@@ -42,7 +40,6 @@ services:
         condition: service_healthy
 
   auth-service:
-    container_name: auth-service
     build:
       context: ../
       dockerfile: services/auth-service/Dockerfile
@@ -63,7 +60,6 @@ services:
         condition: service_healthy
 
   card-service:
-    container_name: card-service
     build:
       context: ../
       dockerfile: services/card-service/Dockerfile
@@ -84,7 +80,6 @@ services:
         condition: service_healthy
 
   customer-service:
-    container_name: customer-service
     build:
       context: ../
       dockerfile: services/customer-service/Dockerfile

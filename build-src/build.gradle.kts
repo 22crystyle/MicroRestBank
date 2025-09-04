@@ -6,7 +6,7 @@ gradlePlugin {
     plugins {
         create("full-cycle-time") {
             id = "full-cycle-time"
-            implementationClass = "com.example.restbank.build.FullCycleTimePlugin"
+            implementationClass = "FullCycleTimePlugin"
         }
     }
 }
