@@ -70,10 +70,24 @@ tasks.withType<Test>().configureEach {
     jvmArgs("-Xshare:off", "-javaagent:$agentJar")
 }
 
+val keycloakIssuerUri: String by lazy {
+    val dockerEnvFile = rootProject.file("docker/.env")
+    if (dockerEnvFile.exists()) {
+        dockerEnvFile.readLines()
+            .find { it.startsWith("KEYCLOAK_ISSUER_URI=") }
+            ?.substringAfter("=")
+            ?: System.getenv("KEYCLOAK_ISSUER_URI")
+            ?: "http://localhost:7080/realms/bank-realm"
+    } else {
+        System.getenv("KEYCLOAK_ISSUER_URI") ?: "http://localhost:7080/realms/bank-realm"
+    }
+}
+
 openApi {
     outputDir.set(file("$projectDir/docs"))
     outputFileName.set("swagger.json")
+    waitTimeInSeconds.set(10)
     customBootRun {
-        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
+        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=$keycloakIssuerUri"))
     }
 }

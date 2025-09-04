@@ -4,8 +4,8 @@ services:
     image: postgres:17.5-alpine3.21
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-restbank}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       KC_DB_USER: ${KC_DB_USER:-keycloak}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
     ports:
@@ -29,10 +29,10 @@ services:
     container_name: kafka
     image: apache/kafka:3.9.1
     ports:
-      - "9092:9092"
-      - "29092:29092"
-      - "9093:9093"
-      - "9094:9094"
+      - "${KAFKA_PORT:-9092}:9092"
+      - "${KAFKA_INTERNAL_PORT:-29092}:29092"
+      - "${KAFKA_CONTROLLER_PORT:-9093}:9093"
+      - "${KAFKA_EXTERNAL_PORT:-9094}:9094"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -62,7 +62,7 @@ services:
       retries: 10
       start_period: 30s
     ports:
-      - "9095:8083"
+      - "${DEBEZIUM_PORT:-9095}:8083"
     environment:
       CONFIG_STORAGE_TOPIC: connect_configs
       OFFSET_STORAGE_TOPIC: connect_offsets
@@ -77,9 +77,9 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME:-restbank}-keycloak
     image: quay.io/keycloak/keycloak:26.3
     ports:
-      - "7080:7080"
-      - "7443:7443"
-      - "9000:9000"
+      - "${KEYCLOAK_HTTP_PORT:-7080}:7080"
+      - "${KEYCLOAK_HTTPS_PORT:-7443}:7443"
+      - "${KEYCLOAK_MANAGEMENT_PORT:-9000}:9000"
     environment:
       KC_DB: postgres
       KC_DB_URL: ${KC_DB_JDBC_URL}
