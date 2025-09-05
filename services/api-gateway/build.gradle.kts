@@ -18,8 +18,4 @@ openApi {
             "http://localhost:1024/cards/v3/api-docs" to "card-service.json"
         )
     )
-    customBootRun {
-        environment.put("API_GATEWAY_PORT", "7080")
-        args.set(listOf("--spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:7080/realms/bank-realm"))
-    }
 }
