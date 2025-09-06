@@ -29,7 +29,6 @@ abstract class FullCycleTimeTask : DefaultTask() {
 
     @TaskAction
     fun execute() {
-        val startTime = System.currentTimeMillis()
         val isWindows = System.getProperty("os.name").lowercase().contains("windows")
         val gradlew = if (isWindows) "gradlew.bat" else "./gradlew"
 
@@ -41,7 +40,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
         logger.lifecycle("Tearing down docker-compose...")
         execOperations.exec {
             workingDir = dockerDirectory.get().asFile
-            commandLine("docker-compose", "-p", "restbank", "down", "-v", "--remove-orphans")
+            commandLine("docker-compose", "-p", "restbank", "down", "--remove-orphans")
         }
         
         logger.lifecycle("Starting docker-compose...")
@@ -52,9 +51,10 @@ abstract class FullCycleTimeTask : DefaultTask() {
 
         logger.lifecycle("Waiting for api-gateway to be healthy...")
         var healthy = false
-        val maxWaitTime = java.time.Duration.ofMinutes(10).toMillis()
+        val maxWaitTime = java.time.Duration.ofMinutes(2).toMillis()
         val waitInterval = java.time.Duration.ofSeconds(5).toMillis()
-        val deadline = startTime + maxWaitTime
+        val healthCheckStartTime = System.currentTimeMillis()
+        val deadline = healthCheckStartTime + maxWaitTime
 
         while (System.currentTimeMillis() < deadline) {
             val standardOutput = java.io.ByteArrayOutputStream()
@@ -96,18 +96,8 @@ abstract class FullCycleTimeTask : DefaultTask() {
             }
         }
 
-        val endTime = System.currentTimeMillis()
-        val totalTime = endTime - startTime
-        val duration = java.time.Duration.ofMillis(totalTime)
-        val minutes = duration.toMinutes()
-        val seconds = duration.seconds % 60
-        val millis = duration.toMillis() % 1000
-
         if (!healthy) {
-            logger.error("fullCycleTime failed after: ${minutes}m ${seconds}s ${millis}ms")
             throw GradleException("api-gateway did not become healthy within the timeout.")
         }
-
-        logger.lifecycle("fullCycleTime completed in: ${minutes}m ${seconds}s ${millis}ms")
     }
 }
