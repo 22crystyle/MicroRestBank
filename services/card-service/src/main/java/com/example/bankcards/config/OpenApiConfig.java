@@ -5,15 +5,17 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class OpenApiConfig {
 
     @Bean
     public OpenApiCustomizer cardOpenApiCustomizer() {
-        return openApi -> openApi.addServersItem(
+        return openApi -> openApi.setServers(List.of(
                 new Server()
                         .url("http://localhost:1024/cards")
-                        .description("Card Service ENV")
+                        .description("Card Service ENV"))
         );
     }
 }
