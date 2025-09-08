@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "409", description = "User with the same username or email already exists", content = @Content)
     })
     @PostMapping("/register")
-    public Mono<ResponseEntity<TokenResponse>> register(@RequestBody RegistrationRequest request) {
+    public Mono<ResponseEntity<TokenResponse>> register(@Valid @RequestBody RegistrationRequest request) {
         return registrationService.createUserInKeycloak(request)
                 .map(token -> ResponseEntity.status(HttpStatus.CREATED).body(token));
     }

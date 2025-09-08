@@ -5,8 +5,11 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class FieldNotEmptyValidator implements ConstraintValidator<FieldNotEmpty, Object> {
-    private String field;
-    private String message;
+
+    @Override
+    public void initialize(FieldNotEmpty constraintAnnotation) {
+        
+    }
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {

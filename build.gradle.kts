@@ -44,10 +44,10 @@ val dockerEnv = if (dockerEnvFile.exists()) {
 }
 
 val localApiGenerationEnv = dockerEnv.toMutableMap().apply {
-    getOrPut("KEYCLOAK_ISSUER_URI") { "http://localhost:${this["KEYCLOAK_HTTP_PORT"]}/realms/bank-realm" }
-    getOrPut("DB_JDBC_URL") { "jdbc:postgresql://localhost:${this["POSTGRES_PORT"]}/${this["POSTGRES_DB"]}" }
-    getOrPut("KAFKA_BOOTSTRAP_SERVER") { "localhost:${this["KAFKA_PORT"]}" }
-    getOrPut("EUREKA_SERVICE_URL") { "http://localhost:${this["EUREKA_SERVER_PORT"]}/eureka" }
+    this["KEYCLOAK_ISSUER_URI"] = "http://localhost:${this["KEYCLOAK_HTTP_PORT"]}/realms/bank-realm"
+    this["DB_JDBC_URL"] = "jdbc:postgresql://localhost:${this["POSTGRES_PORT"]}/${this["POSTGRES_DB"]}"
+    this["KAFKA_BOOTSTRAP_SERVER"] = "localhost:${this["KAFKA_PORT"]}"
+    this["EUREKA_SERVICE_URL"] = "http://localhost:${this["EUREKA_SERVER_PORT"]}/eureka"
 }
 
 subprojects {
