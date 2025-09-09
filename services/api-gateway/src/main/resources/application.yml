@@ -22,7 +22,7 @@ spring:
           predicates:
             - Path=/auth/**
           filters:
-            - RewritePath=/auth, /api/v1/auth
+            - RewritePath=/auth(?<path>.*), /api/v1/auth\${path}
         - id: customer-service-api-docs
           uri: lb://customer-service
           predicates:
