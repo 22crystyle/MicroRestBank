@@ -3,6 +3,7 @@ package com.example.shared.exception;
 import com.example.shared.dto.response.RestErrorResponse;
 import com.example.shared.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.*;
 import org.springframework.lang.NonNull;
@@ -24,17 +25,24 @@ import java.util.Optional;
 @Slf4j
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private final String applicationName;
+
+    public GlobalExceptionHandler(@Value("${spring.application.name:unknown}") String applicationName) {
+        this.applicationName = applicationName;
+    }
+
     // 404 Entity from database not found
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<RestErrorResponse> handleNotFoundException(EntityNotFoundException ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
+        RestErrorResponse error = new RestErrorResponse(applicationName, HttpStatus.NOT_FOUND.toString(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     // 403 Forbidden: User don't have enough privileges
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<RestErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.FORBIDDEN.toString(), ex.getMessage());
+        RestErrorResponse error = new RestErrorResponse(applicationName, HttpStatus.FORBIDDEN.toString(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -52,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
         });
-        ValidationErrorResponse response = new ValidationErrorResponse(status.toString(), "Validation Error", errors);
+        ValidationErrorResponse response = new ValidationErrorResponse(applicationName, status.toString(), "Validation Error", errors);
         return new ResponseEntity<>(response, status);
     }
 
@@ -74,6 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     ? fullMsg.substring(0, fullMsg.indexOf(":"))
                     : fullMsg;
             errorResponse = RestErrorResponse.builder()
+                    .source(applicationName)
                     .code(statusCode.toString())
                     .message(shortMsg)
                     .build();
@@ -83,6 +92,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     : Optional.ofNullable(ex.getMessage()).orElse(statusCode.toString());
 
             errorResponse = RestErrorResponse.builder()
+                    .source(applicationName)
                     .code(statusCode.toString())
                     .message(message)
                     .build();
@@ -95,7 +105,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 500 Internal Server Error for all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestErrorResponse> handleApiError(Exception ex) {
-        RestErrorResponse error = new RestErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
+        RestErrorResponse error = new RestErrorResponse(applicationName, HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
         log.error(Arrays.toString(ex.getStackTrace()));
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -89,9 +89,24 @@ public class RegistrationService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(user)
                 .retrieve()
-                .onStatus(status -> !status.is2xxSuccessful() && status != HttpStatus.CREATED,
-                        resp -> resp.bodyToMono(String.class).defaultIfEmpty("")
-                                .flatMap(body -> Mono.error(new UserCreationException("Failed to create user in Keycloak: " + body))))
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class)
+                                .flatMap(body -> {
+                                    try {
+                                        JsonNode node = MAPPER.readTree(body);
+                                        Map<String, String> details = new HashMap<>();
+                                        if (node.has("errorMessage")) {
+                                            details.put("error_message", node.get("errorMessage").asText());
+                                        } else if (node.has("error")) {
+                                            details.put("error", node.get("error").asText());
+                                        } else {
+                                            details.put("error", body);
+                                        }
+                                        return Mono.error(new KeycloakTokenException(response.statusCode(), details, body));
+                                    } catch (JsonProcessingException e) {
+                                        return Mono.error(new KeycloakTokenException(response.statusCode(), Map.of("message", body), body));
+                                    }
+                                }))
                 .toBodilessEntity()
                 .then();
     }

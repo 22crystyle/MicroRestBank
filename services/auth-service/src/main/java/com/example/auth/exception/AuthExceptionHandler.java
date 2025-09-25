@@ -1,5 +1,7 @@
 package com.example.auth.exception;
 
+import com.example.shared.dto.response.ValidationErrorResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,24 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class AuthExceptionHandler {
 
+    private final String applicationName;
+
+    public AuthExceptionHandler(@Value("${spring.application.name:unknown}") String applicationName) {
+        this.applicationName = applicationName;
+    }
+
     @ExceptionHandler(KeycloakTokenException.class)
     public Mono<ResponseEntity<Object>> handleKeycloakTokenException(KeycloakTokenException ex) {
+        if (ex.getStatus() == HttpStatus.BAD_REQUEST || ex.getStatus() == HttpStatus.CONFLICT || ex.getStatus() == HttpStatus.UNAUTHORIZED) {
+            ValidationErrorResponse errorResponse = new ValidationErrorResponse(
+                    applicationName,
+                    String.valueOf(ex.getStatus().value()),
+                    "Keycloak error",
+                    ex.getDetails()
+            );
+            return Mono.just(ResponseEntity.status(ex.getStatus()).body(errorResponse));
+        }
+
         Map<String, Object> body = new HashMap<>();
         body.put("source", "keycloak");
         body.put("status", ex.getStatus().value());
