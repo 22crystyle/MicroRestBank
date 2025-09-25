@@ -115,3 +115,4 @@ springdoc:
       - name: Auth Service
         url: /auth/v3/api-docs
     path: /docs
+    persist-authorization: true
