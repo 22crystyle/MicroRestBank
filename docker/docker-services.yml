@@ -1,5 +1,6 @@
 services:
   eureka-server:
+    image: restbank/eureka-server:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/eureka-server/Dockerfile
@@ -17,6 +18,7 @@ services:
       - restbank-net
 
   api-gateway:
+    image: restbank/api-gateway:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/api-gateway/Dockerfile
@@ -40,6 +42,7 @@ services:
         condition: service_healthy
 
   auth-service:
+    image: restbank/auth-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/auth-service/Dockerfile
@@ -60,6 +63,7 @@ services:
         condition: service_healthy
 
   card-service:
+    image: restbank/card-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/card-service/Dockerfile
@@ -80,6 +84,7 @@ services:
         condition: service_healthy
 
   customer-service:
+    image: restbank/customer-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/customer-service/Dockerfile
