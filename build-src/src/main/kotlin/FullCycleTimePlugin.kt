@@ -1,12 +1,12 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
 
 class FullCycleTimePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -42,7 +42,7 @@ abstract class FullCycleTimeTask : DefaultTask() {
             workingDir = dockerDirectory.get().asFile
             commandLine("docker-compose", "-p", "restbank", "down", "--remove-orphans")
         }
-        
+
         logger.lifecycle("Starting docker-compose...")
         execOperations.exec {
             workingDir = dockerDirectory.get().asFile

@@ -15,10 +15,9 @@ public class OpenApiConfig {
     public OpenApiCustomizer authOpenApiCustomizer() {
         return openApi -> {
             openApi.setServers(List.of(
-                    new Server()
-                            .url("http://localhost:1024/auth")
-                            .description("Auth Service ENV"))
-            );
+                    new Server().url("http://localhost:1024").description("API Gateway"),
+                    new Server().url("/api/v1").description("Generated Server")
+            ));
 
             Map<String, io.swagger.v3.oas.models.PathItem> paths = openApi.getPaths();
             if (paths != null) {
@@ -26,9 +25,9 @@ public class OpenApiConfig {
                 for (Map.Entry<String, io.swagger.v3.oas.models.PathItem> entry : paths.entrySet()) {
                     String oldPath = entry.getKey();
                     if (oldPath.startsWith("/api/v1/auth")) {
-                        String newPath = oldPath.substring("/api/v1/auth".length());
-                        if (newPath.isEmpty()) { // Handle case where path is exactly /api/v1/auth
-                            newPath = "/";
+                        String newPath = "/auth" + oldPath.substring("/api/v1/auth".length());
+                        if (newPath.equals("/auth")) {
+                            newPath = "/auth/";
                         }
                         newPathsMap.put(newPath, entry.getValue());
                     } else {

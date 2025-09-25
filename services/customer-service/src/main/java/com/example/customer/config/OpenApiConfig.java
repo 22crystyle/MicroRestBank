@@ -28,7 +28,7 @@ public class OpenApiConfig {
                     if (oldPath.startsWith("/api/v1/customers")) {
                         String newPath = oldPath.substring("/api/v1/customers".length());
                         if (newPath.isEmpty()) {
-                            newPath = "/";
+                            newPath = "";
                         }
                         newPathsMap.put(newPath, entry.getValue());
                     } else {

@@ -1,7 +1,3 @@
-import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.JavaExec
-import org.gradle.process.JavaForkOptions
-
 plugins {
     base
     id("java-convention") apply false

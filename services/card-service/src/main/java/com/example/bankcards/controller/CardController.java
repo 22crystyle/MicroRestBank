@@ -65,6 +65,7 @@ public class CardController {
         return ResponseEntity.ok(dtos);
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(
@@ -88,6 +89,7 @@ public class CardController {
         return ResponseEntity.ok(dto);
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -114,6 +116,7 @@ public class CardController {
         return ResponseEntity.created(uri).body(response);
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-request")
     @PreAuthorize("hasRole('USER')")
     @Operation(
@@ -139,6 +142,7 @@ public class CardController {
         return ResponseEntity.ok().build();
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-approve")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -163,6 +167,7 @@ public class CardController {
         return ResponseEntity.ok(blockRequest);
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-reject")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -187,6 +192,7 @@ public class CardController {
         return ResponseEntity.ok(blockRequest);
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER')")
     @Operation(

@@ -8,7 +8,7 @@ public class FieldNotEmptyValidator implements ConstraintValidator<FieldNotEmpty
 
     @Override
     public void initialize(FieldNotEmpty constraintAnnotation) {
-        
+
     }
 
     @Override
