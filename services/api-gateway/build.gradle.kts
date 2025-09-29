@@ -13,9 +13,9 @@ openApi {
     apiDocsUrl.set("http://localhost:1024/v3/api-docs")
     groupedApiMappings.set(
         mapOf(
-            "http://localhost:1024/auth/v3/api-docs" to "auth-service.json",
-            "http://localhost:1024/customers/v3/api-docs" to "customer-service.json",
-            "http://localhost:1024/cards/v3/api-docs" to "card-service.json"
+            "http://localhost:1024/api/v1/auth/v3/api-docs" to "auth-service.json",
+            "http://localhost:1024/api/v1/customers/v3/api-docs" to "customer-service.json",
+            "http://localhost:1024/api/v1/cards/v3/api-docs" to "card-service.json"
         )
     )
 }

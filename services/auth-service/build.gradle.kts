@@ -8,5 +8,5 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:1024/auth/v3/api-docs")
+    apiDocsUrl.set("http://localhost:1024/api/v1/auth/v3/api-docs")
 }

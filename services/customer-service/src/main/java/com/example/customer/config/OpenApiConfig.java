@@ -16,7 +16,7 @@ public class OpenApiConfig {
         return openApi -> {
             openApi.setServers(List.of(
                     new Server()
-                            .url("http://localhost:1024/customers")
+                            .url("http://localhost:1024/api/v1/customers")
                             .description("Customer Service ENV"))
             );
 

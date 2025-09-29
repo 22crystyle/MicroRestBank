@@ -22,5 +22,5 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:1024/cards/v3/api-docs")
+    apiDocsUrl.set("http://localhost:1024/api/v1/cards/v3/api-docs")
 }

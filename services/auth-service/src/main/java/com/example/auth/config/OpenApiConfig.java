@@ -15,7 +15,7 @@ public class OpenApiConfig {
     public OpenApiCustomizer authOpenApiCustomizer() {
         return openApi -> {
             openApi.setServers(List.of(
-                    new Server().url("http://localhost:1024/auth").description("Authentication Service ENV")
+                    new Server().url("http://localhost:1024/api/v1/auth").description("Authentication Service ENV")
             ));
 
             Map<String, io.swagger.v3.oas.models.PathItem> paths = openApi.getPaths();

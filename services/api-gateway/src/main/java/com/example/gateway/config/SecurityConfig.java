@@ -18,13 +18,13 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/actuator/health",
-            "/auth/**",
+            "/api/v1/auth/**",
             "/docs/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/customers/v3/api-docs",
-            "/cards/v3/api-docs",
-            "/auth/v3/api-docs"
+            "/api/v1/customers/v3/api-docs",
+            "/api/v1/cards/v3/api-docs",
+            "/api/v1/auth/v3/api-docs"
     };
 
     @Bean
