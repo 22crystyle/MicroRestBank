@@ -153,7 +153,7 @@ All endpoints are routed through the `api-gateway`.
 ### Cards (`/api/v1/cards`)
 
 - `GET /`: Get a paginated list of cards. Admins see all (masked), users see their own (unmasked).
-- `POST /`: Create a new card for a user (ADMIN).
+- `POST /{uuid}`: Create a new card for a user (ADMIN).
 - `GET /{id}`: Get a card by its ID.
 - `POST /{id}/block-request`: Request to block a card (USER).
 - `POST /{id}/block-approve`: Approve a card block request (ADMIN).
