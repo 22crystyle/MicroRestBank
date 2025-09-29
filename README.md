@@ -116,7 +116,7 @@ If you prefer to run the steps manually, follow this sequence:
 
 ## User Management
 
-While regular users can register via the `POST /auth/register` endpoint, administrative users must be created through
+While regular users can register via the `POST /api/v1/auth/register` endpoint, administrative users must be created through
 the Keycloak Admin Console.
 
 1. Navigate to the Keycloak Admin Console at [http://localhost:7080](http://localhost:7080).
@@ -139,18 +139,18 @@ The base URL for all API requests is `http://localhost:1024`.
 
 All endpoints are routed through the `api-gateway`.
 
-### Authentication (`/auth`)
+### Authentication (`/api/v1/auth`)
 
 - `POST /login`: Authenticate a user and receive a JWT.
 - `POST /register`: Register a new user.
 
-### Customers (`/customers`)
+### Customers (`/api/v1/customers`)
 
 - `GET /`: Get a paginated list of all customers (ADMIN).
 - `GET /me`: Get details for the currently authenticated user (USER).
 - `GET /{uuid}`: Get a specific customer by their UUID (ADMIN).
 
-### Cards (`/cards`)
+### Cards (`/api/v1/cards`)
 
 - `GET /`: Get a paginated list of cards. Admins see all (masked), users see their own (unmasked).
 - `POST /`: Create a new card for a user (ADMIN).
