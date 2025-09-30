@@ -72,8 +72,16 @@ databaseChangeLog:
             tableName: customers
 
   - changeSet:
-      id: customer-002-create-indexes
-      author: liquibase
+      id: customer-002-create-email-index
+      author: Crystal
+      runInTransaction: false
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+          - indexExists:
+              schemaName: customer_schema
+              tableName: customers
+              indexName: idx_customers_email
       changes:
         - createIndex:
             schemaName: customer_schema
@@ -82,6 +90,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
+      rollback:
+        - dropIndex:
+            schemaName: customer_schema
+            indexName: idx_customers_email
+            tableName: customers
+
+  - changeSet:
+      id: customer-003-create-phone-index
+      author: Crystal
+      runInTransaction: false
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+          - indexExists:
+              schemaName: customer_schema
+              tableName: customers
+              indexName: idx_customers_phone
+      changes:
         - createIndex:
             schemaName: customer_schema
             tableName: customers
@@ -90,10 +116,6 @@ databaseChangeLog:
               - column:
                   name: phone
       rollback:
-        - dropIndex:
-            schemaName: customer_schema
-            indexName: idx_customers_email
-            tableName: customers
         - dropIndex:
             schemaName: customer_schema
             indexName: idx_customers_phone

@@ -18,7 +18,7 @@ services:
       - sh
       - -c
       - |
-        apk add --no-cache curl gettext
+        apk update && apk add --no-cache curl gettext
         /data/connectors/register-all-connectors.sh
     networks:
       - restbank-net

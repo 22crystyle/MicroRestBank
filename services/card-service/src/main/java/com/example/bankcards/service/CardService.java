@@ -30,6 +30,9 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.UUID;
 
+/**
+ * Service for managing bank cards. Provides functionality for creating, retrieving, and transferring funds between cards.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -42,6 +45,14 @@ public class CardService {
     private final CardPanGeneratorFactory cardPanGeneratorFactory;
     private final CardMapper cardMapper;
 
+    /**
+     * Creates a new card for a given user account.
+     *
+     * @param userId The ID of the user for whom the card is to be created.
+     * @return The newly created Card entity.
+     * @throws UserNotFoundException if the user with the given ID is not found.
+     * @throws CardStatusNotFoundException if the default card status is not found.
+     */
     @Transactional
     @Retryable(
             retryFor = {DataIntegrityViolationException.class},
@@ -78,6 +89,14 @@ public class CardService {
         return saved;
     }
 
+    /**
+     * Retrieves a paginated list of cards owned by a specific user.
+     *
+     * @param id The ID of the user (owner) whose cards are to be retrieved.
+     * @param pageRequest The pagination information.
+     * @return A Page of Card entities.
+     * @throws UserNotFoundException if the user with the given ID is not found.
+     */
     @Transactional(readOnly = true)
     public Page<Card> getCardsByOwner(UUID id, PageRequest pageRequest) {
         log.debug("getCardsByOwner called for userId={} page={} size={}", id, pageRequest.getPageNumber(), pageRequest.getPageSize());
@@ -88,6 +107,13 @@ public class CardService {
         return page;
     }
 
+    /**
+     * Retrieves a card by its ID.
+     *
+     * @param id The ID of the card to retrieve.
+     * @return The Card entity.
+     * @throws CardNotFoundException if the card with the given ID is not found.
+     */
     @Transactional(readOnly = true)
     public Card getById(Long id) {
         log.debug("getById called for cardId={}", id);
@@ -97,6 +123,12 @@ public class CardService {
         });
     }
 
+    /**
+     * Retrieves a paginated list of all cards in the system.
+     *
+     * @param pageRequest The pagination information.
+     * @return A Page of Card entities.
+     */
     @Transactional(readOnly = true)
     public Page<Card> getAllCards(PageRequest pageRequest) {
         log.debug("getAllCards called page={} size={}", pageRequest.getPageNumber(), pageRequest.getPageSize());
@@ -105,6 +137,14 @@ public class CardService {
         return page;
     }
 
+    /**
+     * Transfers a specified amount from one card to another.
+     *
+     * @param request The transfer request containing source card ID, destination card ID, and amount.
+     * @param userId The ID of the user initiating the transfer.
+     * @throws CardNotFoundException if either the source or destination card is not found.
+     * @throws IsNotOwnerException if the user is not the owner of either the source or destination card.
+     */
     @Transactional
     public void transfer(TransferRequest request, UUID userId) {
         log.debug("transfer called fromCardId={} toCardId={} amount={} by userId={}",
@@ -135,6 +175,13 @@ public class CardService {
                 savedFrom.getId(), savedFrom.getBalance(), savedTo.getId(), savedTo.getBalance());
     }
 
+    /**
+     * Checks if the given user is the owner of the specified card.
+     *
+     * @param card The card to check ownership for.
+     * @param userId The ID of the user to verify ownership against.
+     * @throws IsNotOwnerException if the user is not the owner of the card.
+     */
     private void checkOwnership(Card card, UUID userId) {
         if (!card.getUser().getId().equals(userId)) {
             log.warn("User {} is not owner of card {}", userId, card.getId());
@@ -143,6 +190,13 @@ public class CardService {
         log.debug("Ownership validated for user {} and card {}", userId, card.getId());
     }
 
+    /**
+     * Retrieves a paginated list of card responses, either all cards (for admin) or cards owned by the authenticated user.
+     *
+     * @param pageRequest The pagination information.
+     * @param auth The authentication object containing user details and roles.
+     * @return A Page of CardResponse DTOs.
+     */
     @Transactional(readOnly = true)
     public Page<CardResponse> getCards(PageRequest pageRequest, Authentication auth) {
         String userId = JwtPrincipal.getId(auth);
@@ -163,6 +217,14 @@ public class CardService {
         );
     }
 
+    /**
+     * Retrieves a single card response by card ID, with masking based on user ownership and admin status.
+     *
+     * @param cardId The ID of the card to retrieve.
+     * @param auth The authentication object containing user details and roles.
+     * @return A CardResponse DTO.
+     * @throws IsNotOwnerException if the user is not authorized to view the card.
+     */
     @Transactional(readOnly = true)
     public CardResponse getCard(Long cardId, Authentication auth) {
         Card card = getById(cardId);
@@ -180,6 +242,12 @@ public class CardService {
         }
     }
 
+    /**
+     * Creates a new card for a given user account and returns a masked card response.
+     *
+     * @param userId The ID of the user for whom the card is to be created.
+     * @return A masked CardResponse DTO for the newly created card.
+     */
     @Transactional
     public CardResponse createCardForAccountAndGetMaskedResponse(UUID userId) {
         Card card = createCardForAccount(userId);

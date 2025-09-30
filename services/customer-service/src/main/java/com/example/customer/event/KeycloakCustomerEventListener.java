@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * Kafka listener for Keycloak admin events, specifically for customer creation and updates.
+ * This class processes events from Keycloak to synchronize customer data within the service.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,6 +26,11 @@ public class KeycloakCustomerEventListener {
     private final ObjectMapper objectMapper;
     private final CustomerService customerService;
 
+    /**
+     * Listens for Keycloak admin events on the "keycloak-admin-events" topic.
+     * Processes user creation and update events to save or update customer information.
+     * @param message The Kafka message containing the AdminEvent JSON.
+     */
     @KafkaListener(topics = "keycloak-admin-events", groupId = "user-sync-group")
     public void listenCustomerCreation(String message) {
         try {

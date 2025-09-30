@@ -37,4 +37,8 @@ databaseChangeLog:
                   type: TIMESTAMPTZ
                   constraints:
                     nullable: false
+      rollback:
+        - dropTable:
+            schemaName: card_schema
+            tableName: processed_events
 

@@ -53,25 +53,7 @@ databaseChangeLog:
                   defaultValue: 'PENDING'
                   constraints:
                     nullable: false
-#        - addForeignKeyConstraint:
-#            baseColumnNames: card_id
-#            baseTableName: card_block_requests
-#            constraintName: block_request_bank_card_id_fkey
-#            deferrable: false
-#            initiallyDeferrable: false
-#            onDelete: SET NULL
-#            onUpdate: NO ACTION
-#            referencedColumnNames: id
-#            referencedTableName: bank_cards
-#            validate: true
-#        - addForeignKeyConstraint:
-#            baseColumnNames: processed_by
-#            baseTableName: card_block_requests
-#            constraintName: block_request_processed_by_fkey
-#            deferrable: false
-#            initiallyDeferrable: false
-#            onDelete: SET NULL
-#            onUpdate: NO ACTION
-#            referencedColumnNames: id
-#            referencedTableName: users
-#            validate: true
+      rollback:
+        - dropTable:
+            schemaName: card_schema
+            tableName: card_block_requests

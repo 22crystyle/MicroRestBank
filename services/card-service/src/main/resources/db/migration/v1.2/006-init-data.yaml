@@ -29,3 +29,8 @@ databaseChangeLog:
               - column: { name: id, valueNumeric: 3 }
               - column: { name: name, value: "EXPIRED" }
               - column: { name: description, value: "Card has expired" }
+      rollback:
+        - delete:
+            schemaName: card_schema
+            tableName: card_statuses
+            where: "id IN (1, 2, 3)"

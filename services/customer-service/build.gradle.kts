@@ -21,5 +21,6 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:1024/api/v1/customers/v3/api-docs")
+    val customerServicePort = System.getenv("CUSTOMER_SERVICE_PORT") ?: "1027"
+    apiDocsUrl.set("http://localhost:$customerServicePort/v3/api-docs")
 }

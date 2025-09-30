@@ -46,6 +46,8 @@ services:
     build:
       context: ../
       dockerfile: services/auth-service/Dockerfile
+    ports:
+      - "${AUTH_SERVICE_PORT:-1025}:1025"
     env_file:
       - ".env"
     healthcheck:
@@ -67,6 +69,8 @@ services:
     build:
       context: ../
       dockerfile: services/card-service/Dockerfile
+    ports:
+      - "${CARD_SERVICE_PORT:-1026}:1026"
     env_file:
       - ".env"
     healthcheck:
@@ -88,6 +92,8 @@ services:
     build:
       context: ../
       dockerfile: services/customer-service/Dockerfile
+    ports:
+      - "${CUSTOMER_SERVICE_PORT:-1027}:1027"
     env_file:
       - ".env"
     healthcheck:

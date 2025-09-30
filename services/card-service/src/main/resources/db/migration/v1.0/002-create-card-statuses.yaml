@@ -30,3 +30,7 @@ databaseChangeLog:
                     unique: true
                     uniqueConstraintName: uq_card_status_name
               - column: { name: description, type: TEXT }
+      rollback:
+        - dropTable:
+            schemaName: card_schema
+            tableName: card_statuses

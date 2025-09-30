@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: ${CUSTOMER_SERVICE_PORT}
   forward-headers-strategy: framework
 spring:
   datasource:

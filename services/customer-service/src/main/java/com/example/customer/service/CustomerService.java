@@ -22,6 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Service class for managing customer-related business logic.
+ * Handles operations such as saving, retrieving, and listing customers.
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -31,6 +35,13 @@ public class CustomerService {
     private final ObjectMapper objectMapper;
     private final OutboxEventRepository outboxEventRepository;
 
+    /**
+     * Saves a new customer or updates an existing one.
+     * Publishes a CustomerCreatedEvent to the outbox for asynchronous processing.
+     * @param request The CustomerRequest containing customer data.
+     * @return The saved or updated CustomerResponse.
+     * @throws JsonProcessingException if there's an error processing JSON for the event.
+     */
     @Transactional
     public CustomerResponse saveCustomer(CustomerRequest request) throws JsonProcessingException {
         Customer customer = customerMapper.toEntity(request);
@@ -61,6 +72,12 @@ public class CustomerService {
         return customerMapper.toResponse(customer);
     }
 
+    /**
+     * Retrieves a customer by their unique identifier.
+     * @param uuid The UUID of the customer to retrieve.
+     * @return The CustomerResponse corresponding to the given UUID.
+     * @throws CustomerNotFound if no customer is found with the given UUID.
+     */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByUUID(UUID uuid) {
         Customer customer = customerRepository.findById(uuid)
@@ -68,6 +85,11 @@ public class CustomerService {
         return customerMapper.toResponse(customer);
     }
 
+    /**
+     * Retrieves a paginated list of all customers.
+     * @param pageable The pagination information.
+     * @return A Page of CustomerResponse objects.
+     */
     @Transactional(readOnly = true)
     public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll(pageable)

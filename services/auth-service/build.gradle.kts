@@ -8,5 +8,6 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:1024/api/v1/auth/v3/api-docs")
+    val authServicePort = System.getenv("AUTH_SERVICE_PORT") ?: "1025"
+    apiDocsUrl.set("http://localhost:$authServicePort/v3/api-docs")
 }

@@ -8,15 +8,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * Global exception handler for DataIntegrityViolationException.
+ * Converts database constraint violation exceptions into a user-friendly REST error response.
+ */
 @RestControllerAdvice
 public class DataIntegrityViolationExceptionHandler {
 
     private final String applicationName;
 
+    /**
+     * Constructs a new DataIntegrityViolationExceptionHandler.
+     * @param applicationName The name of the application, injected from Spring properties.
+     */
     public DataIntegrityViolationExceptionHandler(@Value("${spring.application.name:unknown}") String applicationName) {
         this.applicationName = applicationName;
     }
 
+    /**
+     * Handles DataIntegrityViolationException and returns a CONFLICT status with a custom error message.
+     * @param ex The DataIntegrityViolationException that was thrown.
+     * @return A ResponseEntity containing a RestErrorResponse with conflict details.
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<RestErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         Throwable cause = ex.getCause();

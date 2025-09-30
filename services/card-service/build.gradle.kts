@@ -23,5 +23,6 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:1024/api/v1/cards/v3/api-docs")
+    val cardServicePort = System.getenv("CARD_SERVICE_PORT") ?: "1026"
+    apiDocsUrl.set("http://localhost:$cardServicePort/v3/api-docs")
 }

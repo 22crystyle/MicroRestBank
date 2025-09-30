@@ -4,6 +4,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+/**
+ * Implements {@link CardPanGenerator} to generate valid Mastercard Payment Account Numbers (PANs).
+ * Uses Luhn algorithm for check digit calculation.
+ */
 @Component
 public class MastercardGenerator implements CardPanGenerator {
     private static final String[] MastercardPrefixes = {
@@ -16,6 +20,12 @@ public class MastercardGenerator implements CardPanGenerator {
 
     private static final Random random = new Random();
 
+    /**
+     * Calculates the Luhn check digit for a given card number string.
+     *
+     * @param number The card number string without the check digit.
+     * @return The calculated Luhn check digit.
+     */
     private static int getLuhnCheckDigit(String number) {
         int sum = 0;
         boolean shouldDouble = true;
@@ -31,6 +41,11 @@ public class MastercardGenerator implements CardPanGenerator {
         return (10 - (sum % 10)) % 10;
     }
 
+    /**
+     * Generates a 16-digit Mastercard PAN, including a valid Luhn check digit.
+     *
+     * @return A string representing the generated Mastercard PAN.
+     */
     @Override
     public String generateCardPan() {
         String prefix = MastercardPrefixes[random.nextInt(MastercardPrefixes.length)];

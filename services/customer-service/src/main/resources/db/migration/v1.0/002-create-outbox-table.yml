@@ -52,3 +52,15 @@ databaseChangeLog:
             columns:
               - column:
                   name: event_type
+      rollback:
+        - dropTable:
+            schemaName: customer_schema
+            tableName: outbox
+        - dropIndex:
+            schemaName: customer_schema
+            indexName: idx_outbox_created_at
+            tableName: outbox
+        - dropIndex:
+            schemaName: customer_schema
+            indexName: idx_outbox_event_type
+            tableName: outbox

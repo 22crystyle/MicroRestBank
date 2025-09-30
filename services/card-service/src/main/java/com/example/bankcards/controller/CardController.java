@@ -34,6 +34,14 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller for managing bank cards.
+ *
+ * <p>This controller provides endpoints for creating, retrieving, and managing bank cards.
+ * It includes operations for listing cards, viewing card details, creating new cards, requesting
+ * and processing card blocks, and transferring funds between cards. Access to these endpoints
+ * is protected by role-based security.</p>
+ */
 @RestController
 @RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
@@ -46,6 +54,18 @@ public class CardController {
     private final PagedResourcesAssembler<CardResponse> assembler;
     private final CardBlockRequestRepository cardBlockRequestRepository;
 
+    /**
+     * Retrieves a paginated list of cards.
+     *
+     * <p>This endpoint is accessible to both 'ADMIN' and 'USER' roles. Administrators receive a list
+     * of all cards with masked details, while users can only see their own cards with full details.
+     * The response includes HATEOAS links for navigation and related actions.</p>
+     *
+     * @param page The page number to retrieve (0-based).
+     * @param size The number of cards per page.
+     * @param auth The current authentication object, used to determine the user's roles and identity.
+     * @return A {@link ResponseEntity} containing a {@link PagedModel} of {@link CardResponse} objects.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -84,6 +104,17 @@ public class CardController {
         }));
     }
 
+    /**
+     * Retrieves the details of a specific card by its ID.
+     *
+     * <p>This endpoint is accessible to any authenticated user. If the user is the owner of the card,
+     * the full card details are returned. If the user is an administrator, the details are masked.
+     * Otherwise, an access denied error is thrown.</p>
+     *
+     * @param id The ID of the card to retrieve.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} containing an {@link EntityModel} of the {@link CardResponse}.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
@@ -120,6 +151,17 @@ public class CardController {
         return ResponseEntity.ok(model);
     }
 
+    /**
+     * Creates a new bank card for a specified user.
+     *
+     * <p>This endpoint is restricted to users with the 'ADMIN' role. It creates a new card
+     * for the user identified by the given UUID and returns the details of the created card
+     * with a masked PAN.</p>
+     *
+     * @param userId The UUID of the user for whom the card is being created.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} with status 201 (Created) and the created {@link CardResponse}.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -150,6 +192,16 @@ public class CardController {
                 .body(model);
     }
 
+    /**
+     * Submits a request to block a card.
+     *
+     * <p>This endpoint allows a user with the 'USER' role to request that their own card be blocked.
+     * The request is then processed by an administrator.</p>
+     *
+     * @param id The ID of the card to be blocked.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} with status 200 (OK) if the request is submitted successfully.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-request")
     @PreAuthorize("hasRole('USER')")
@@ -176,6 +228,16 @@ public class CardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Approves a pending card block request.
+     *
+     * <p>This endpoint is restricted to users with the 'ADMIN' role. It approves a block request
+     * for the specified card, changing the card's status to 'BLOCKED'.</p>
+     *
+     * @param id The ID of the card for which the block request is being approved.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} containing the updated {@link CardBlockRequest}.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-approve")
     @PreAuthorize("hasRole('ADMIN')")
@@ -201,6 +263,16 @@ public class CardController {
         return ResponseEntity.ok(blockRequest);
     }
 
+    /**
+     * Rejects a pending card block request.
+     *
+     * <p>This endpoint is restricted to users with the 'ADMIN' role. It rejects a block request
+     * for the specified card, and the card's status remains unchanged.</p>
+     *
+     * @param id The ID of the card for which the block request is being rejected.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} containing the updated {@link CardBlockRequest}.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/{id}/block-reject")
     @PreAuthorize("hasRole('ADMIN')")
@@ -226,6 +298,16 @@ public class CardController {
         return ResponseEntity.ok(blockRequest);
     }
 
+    /**
+     * Transfers funds between two cards.
+     *
+     * <p>This endpoint allows a user with the 'USER' role to transfer a specified amount of money
+     * from one of their cards to another. The user must be the owner of both cards.</p>
+     *
+     * @param request The {@link TransferRequest} containing the source and destination card IDs and the amount.
+     * @param auth The current authentication object.
+     * @return A {@link ResponseEntity} with status 200 (OK) if the transfer is successful.
+     */
     @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER')")

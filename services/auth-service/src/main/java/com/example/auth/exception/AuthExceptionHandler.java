@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Global exception handler for the Authentication Service.
+ *
+ * <p>This class captures and handles exceptions thrown by the controllers,
+ * providing a consistent and structured error response.
+ */
 @RestControllerAdvice
 public class AuthExceptionHandler {
 
@@ -24,6 +30,12 @@ public class AuthExceptionHandler {
         this.applicationName = applicationName;
     }
 
+    /**
+     * Handles {@link KeycloakTokenException} and returns an appropriate error response.
+     *
+     * @param ex The caught {@link KeycloakTokenException}.
+     * @return A {@link Mono} containing a {@link ResponseEntity} with the error details.
+     */
     @ExceptionHandler(KeycloakTokenException.class)
     public Mono<ResponseEntity<Object>> handleKeycloakTokenException(KeycloakTokenException ex) {
         if (ex.getStatus() == HttpStatus.BAD_REQUEST || ex.getStatus() == HttpStatus.CONFLICT || ex.getStatus() == HttpStatus.UNAUTHORIZED) {
@@ -46,6 +58,12 @@ public class AuthExceptionHandler {
                 .body(body));
     }
 
+    /**
+     * Handles {@link UserCreationException} and returns a 500 Internal Server Error response.
+     *
+     * @param ex The caught {@link UserCreationException}.
+     * @return A {@link Mono} containing a {@link ResponseEntity} with the error message.
+     */
     @ExceptionHandler(UserCreationException.class)
     public Mono<ResponseEntity<Object>> handleUserCreationException(UserCreationException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -53,6 +71,12 @@ public class AuthExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body));
     }
 
+    /**
+     * Handles {@link AdminTokenException} and returns a 500 Internal Server Error response.
+     *
+     * @param ex The caught {@link AdminTokenException}.
+     * @return A {@link Mono} containing a {@link ResponseEntity} with the error message.
+     */
     @ExceptionHandler(AdminTokenException.class)
     public Mono<ResponseEntity<Object>> handleAdminTokenException(AdminTokenException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -60,6 +84,12 @@ public class AuthExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body));
     }
 
+    /**
+     * Handles {@link WebExchangeBindException} for validation errors and returns a 400 Bad Request response.
+     *
+     * @param ex The caught {@link WebExchangeBindException}.
+     * @return A {@link Mono} containing a {@link ResponseEntity} with validation error details.
+     */
     @ExceptionHandler(WebExchangeBindException.class)
     public Mono<ResponseEntity<Object>> handleValidationExceptions(WebExchangeBindException ex) {
         Map<String, String> errors = ex.getBindingResult()

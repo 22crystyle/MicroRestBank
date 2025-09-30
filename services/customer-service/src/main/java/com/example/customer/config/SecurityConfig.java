@@ -11,12 +11,19 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration for the Customer Service.
+ * Configures JWT authentication and authorization rules.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    /**
+     * Whitelist of public endpoints that do not require authentication.
+     */
     private static final String[] AUTH_WHITELIST = {
             "/actuator/health",
             "/v3/api-docs/**",
@@ -24,6 +31,12 @@ public class SecurityConfig {
 
     private final JwtAuthConverter jwtAuthConverter;
 
+    /**
+     * Configures the security filter chain for the application.
+     * @param http The HttpSecurity object to configure.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception if an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

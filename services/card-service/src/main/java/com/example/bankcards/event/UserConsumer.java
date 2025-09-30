@@ -17,6 +17,13 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * A Kafka consumer responsible for listening to user-related events.
+ *
+ * <p>This service listens to the "restbank.customer_schema.outbox" topic for events
+ * originating from the customer service. It processes these events to keep the local
+ * user data synchronized, particularly handling the creation of new customers.</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,6 +32,17 @@ public class UserConsumer {
     private final UserService userService;
     private final ProcessedEventRepository processedEventRepository;
 
+    /**
+     * Listens for messages on the specified Kafka topic and processes them.
+     *
+     * <p>This method is triggered whenever a new message is available on the
+     * "restbank.customer_schema.outbox" topic. It parses the message to extract the event
+     * details, checks for duplicate events, and if the event is a {@link EventType#CUSTOMER_CREATED}
+     * event, it delegates the processing to the {@link UserService}.</p>
+     *
+     * @param message The raw message content from Kafka as a JSON string.
+     * @throws RuntimeException if the message cannot be parsed.
+     */
     @KafkaListener(topics = "restbank.customer_schema.outbox", groupId = "user-sync-group")
     public void listen(String message) {
         log.info(message);

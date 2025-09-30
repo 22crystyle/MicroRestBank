@@ -56,33 +56,7 @@ databaseChangeLog:
               - column:
                   name: balance
                   type: DECIMAL(19,2)
-#  - changeSet:
-#      id: 160525-02-bankcard_status_id_fkey
-#      author: Crystal
-#      changes:
-#        - addForeignKeyConstraint:
-#            baseColumnNames: status_id
-#            baseTableName: bank_cards
-#            constraintName: bankcard_status_id_fkey
-#            deferrable: false
-#            initiallyDeferred: false
-#            onDelete: NO ACTION
-#            onUpdate: NO ACTION
-#            referencedColumnNames: id
-#            referencedTableName: card_statuses
-#            validate: true
-#  - changeSet:
-#      id: 160525-007-bankcard_user_id_fkey
-#      author: Crystal
-#      changes:
-#        - addForeignKeyConstraint:
-#            baseColumnNames: user_id
-#            baseTableName: bank_cards
-#            constraintName: bank_card_user_id_fkey
-#            deferrable: false
-#            initiallyDeferred: false
-#            onDelete: SET NULL
-#            onUpdate: NO ACTION
-#            referencedColumnNames: id
-#            referencedTableName: users
-#            validate: true
+      rollback:
+        - dropTable:
+            schemaName: card_schema
+            tableName: cards

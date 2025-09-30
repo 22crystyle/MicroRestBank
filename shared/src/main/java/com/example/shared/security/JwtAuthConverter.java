@@ -14,15 +14,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Converts a {@link Jwt} into an {@link AbstractAuthenticationToken} by extracting
+ * authorities (roles) from the JWT claims.
+ * This converter is used to integrate Keycloak JWTs with Spring Security.
+ */
 @RequiredArgsConstructor
 @Component
 public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
+    /**
+     * Converts the provided JWT into an authentication token with extracted authorities.
+     *
+     * @param jwt The JWT to convert.
+     * @return An {@link AbstractAuthenticationToken} containing the JWT and extracted authorities.
+     */
     public AbstractAuthenticationToken convert(Jwt jwt) {
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
         return new JwtAuthenticationToken(jwt, authorities);
     }
 
+    /**
+     * Extracts granted authorities (roles) from the JWT's 'realm_access' claim.
+     *
+     * @param jwt The JWT from which to extract authorities.
+     * @return A collection of {@link GrantedAuthority} representing the user's roles.
+     */
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         Map<String, Object> realmAccess = jwt.getClaim("realm_access");
         if (realmAccess == null || !realmAccess.containsKey("roles")) {

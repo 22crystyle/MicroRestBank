@@ -16,6 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Service for managing card block requests.
+ * Handles creation, approval, and rejection of requests to block bank cards.
+ */
+/**
+ * Service for managing card block requests.
+ * Handles creation, approval, and rejection of requests to block bank cards.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,6 +33,24 @@ public class CardBlockRequestService {
     private final CardRepository cardRepository;
     private final CardStatusRepository cardStatusRepository;
 
+    /**
+     * Creates a new card block request for a given card and user.
+     *
+     * @param cardId The ID of the card to be blocked.
+     * @param userId The ID of the user initiating the block request.
+     * @throws CardNotFoundException if the card with the given ID is not found.
+     * @throws IsNotOwnerException if the user is not the owner of the card.
+     * @throws IllegalArgumentException if a pending block request already exists for the card.
+     */
+    /**
+     * Creates a new card block request for a given card and user.
+     *
+     * @param cardId The ID of the card to be blocked.
+     * @param userId The ID of the user initiating the block request.
+     * @throws CardNotFoundException if the card with the given ID is not found.
+     * @throws IsNotOwnerException if the user is not the owner of the card.
+     * @throws IllegalArgumentException if a pending block request already exists for the card.
+     */
     @Transactional
     public void createBlockRequest(Long cardId, UUID userId) {
         log.debug("createBlockRequest called with cardId={} by userId={}", cardId, userId); // TODO: вынести в aop
@@ -54,6 +80,15 @@ public class CardBlockRequestService {
         log.info("Created block request for cardId={} by userId={}", cardId, userId);
     }
 
+    /**
+     * Approves a pending card block request.
+     *
+     * @param cardId The ID of the card for which the block request is to be approved.
+     * @param processedBy The ID of the user who processed the approval.
+     * @return The updated CardBlockRequest entity.
+     * @throws IllegalArgumentException if a pending block request for the card is not found.
+     * @throws IllegalArgumentException if the card status 'BLOCKED' is not found.
+     */
     @Transactional
     public CardBlockRequest approveBlockRequest(Long cardId, UUID processedBy) {
         log.debug("approveBlockRequest called with cardId={} by processedBy={}", cardId, processedBy);
@@ -76,6 +111,15 @@ public class CardBlockRequestService {
         return saved;
     }
 
+    /**
+     * Rejects a pending card block request.
+     *
+     * @param cardId The ID of the card for which the block request is to be rejected.
+     * @param processedBy The ID of the user who processed the rejection.
+     * @return The updated CardBlockRequest entity.
+     * @throws IllegalArgumentException if a pending block request for the card is not found.
+     * @throws IllegalArgumentException if the card status 'ACTIVE' is not found.
+     */
     @Transactional
     public CardBlockRequest rejectBlockRequest(Long cardId, UUID processedBy) {
         log.debug("rejectBlockRequest called with cardId={} by processedBy={}", cardId, processedBy);

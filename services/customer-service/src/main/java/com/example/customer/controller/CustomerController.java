@@ -27,6 +27,10 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller for managing customer-related operations.
+ * Provides endpoints for retrieving customer details and paginated lists of customers.
+ */
 @RestController
 @RequestMapping("/api/v1/customers")
 @Tag(name = "Customers", description = "Operations related to customer management.")
@@ -35,10 +39,20 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    /**
+     * Constructs a new CustomerController with the given CustomerService.
+     * @param customerService The service for customer-related operations.
+     */
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
+    /**
+     * Retrieves the details of a specific customer by their UUID.
+     * Requires administrator privileges.
+     * @param uuid UUID of the customer to retrieve.
+     * @return ResponseEntity containing the CustomerResponse if found, or a 404 if not.
+     */
     @GetMapping("/{uuid}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -62,6 +76,11 @@ public class CustomerController {
         return ResponseEntity.ok(customer);
     }
 
+    /**
+     * Retrieves the details of the currently authenticated user.
+     * Requires user privileges.
+     * @return ResponseEntity containing the CustomerResponse of the current user.
+     */
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
     @Operation(
@@ -85,6 +104,14 @@ public class CustomerController {
         return ResponseEntity.ok(customer);
     }
 
+    /**
+     * Retrieves a paginated list of all customers.
+     * Requires administrator privileges.
+     * @param page The page index (0-based).
+     * @param size The number of customers per page.
+     * @param assembler PagedResourcesAssembler for creating HATEOAS links.
+     * @return ResponseEntity containing a PagedModel of CustomerResponse.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(

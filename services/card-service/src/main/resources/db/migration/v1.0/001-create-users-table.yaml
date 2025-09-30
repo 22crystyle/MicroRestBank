@@ -1,9 +1,9 @@
 databaseChangeLog:
   - changeSet:
-      id: 190825-01-create-role
+      id: 190825-01-create-users-table
       author: Crystal
       preConditions:
-        - onFail: HALT
+        - onFail: MARK_RAN
         - dbms:
             type: postgresql
         - not:
@@ -27,3 +27,7 @@ databaseChangeLog:
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
+      rollback:
+        - dropTable:
+            schemaName: card_schema
+            tableName: users

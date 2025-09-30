@@ -14,7 +14,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A converter that transforms a {@link Jwt} into a {@link Mono} containing a
+ * {@link JwtAuthenticationToken}.
+ *
+ * <p>This converter extracts roles from the "realm_access" claim and combines them
+ * with authorities from the "scope" claim to create a complete set of authorities
+ * for the authenticated user.
+ */
 public class JwtMonoConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
+
+    /**
+     * Converts a {@link Jwt} into a {@link Mono} of {@link AbstractAuthenticationToken}.
+     *
+     * @param jwt The source {@link Jwt} object.
+     * @return A {@link Mono} containing a {@link JwtAuthenticationToken} with the
+     *         extracted authorities.
+     */
     @Override
     public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
         Collection<GrantedAuthority> auths = new ArrayList<>();

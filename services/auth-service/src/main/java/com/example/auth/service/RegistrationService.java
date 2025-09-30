@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service for handling user registration and login with Keycloak.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,10 +35,21 @@ public class RegistrationService {
     private final KeycloakProperties keycloakProperties;
     private final ObjectMapper MAPPER = new ObjectMapper();
 
+    /**
+     * Creates a WebClient instance for communicating with Keycloak.
+     * @return A configured {@link WebClient} instance.
+     */
     private WebClient client() {
         return webClientBuilder.baseUrl(keycloakProperties.serverUrl()).build();
     }
 
+    /**
+     * Authenticates a user with Keycloak and returns an access token.
+     *
+     * @param loginRequest The user's login credentials.
+     * @return A {@link Mono} containing a {@link TokenResponse} with the access token.
+     * @throws KeycloakTokenException if authentication fails.
+     */
     public Mono<TokenResponse> login(LoginRequest loginRequest) {
         return client()
                 .post()
@@ -64,6 +78,21 @@ public class RegistrationService {
                 .bodyToMono(TokenResponse.class);
     }
 
+    /**
+     * Creates a new user in Keycloak and returns an access token.
+     *
+     * <p>This method orchestrates the user creation process by:
+     * <ol>
+     *     <li>Obtaining an admin access token.</li>
+     *     <li>Creating the user in Keycloak.</li>
+     *     <li>Retrieving the new user's ID.</li>
+     *     <li>Setting the user's password.</li>
+     *     <li>Logging in as the new user to get an access token.</li>
+     * </ol>
+     *
+     * @param userRequest The registration details for the new user.
+     * @return A {@link Mono} containing a {@link TokenResponse} with the access token.
+     */
     public Mono<TokenResponse> createUserInKeycloak(RegistrationRequest userRequest) {
         return getAdminAccessToken()
                 .flatMap(token -> createUser(token, userRequest)
@@ -72,6 +101,13 @@ public class RegistrationService {
                         .then(login(new LoginRequest(userRequest.username(), userRequest.password()))));
     }
 
+    /**
+     * Creates a user in Keycloak using an admin access token.
+     *
+     * @param token The admin access token.
+     * @param userRequest The registration details for the new user.
+     * @return A {@link Mono} that completes when the user is created.
+     */
     private Mono<Void> createUser(TokenResponse token, RegistrationRequest userRequest) {
         Map<String, Object> user = Map.of(
                 "username", userRequest.username(),
@@ -110,6 +146,14 @@ public class RegistrationService {
                 .then();
     }
 
+    /**
+     * Sets the password for a user in Keycloak.
+     *
+     * @param token The admin access token.
+     * @param userId The ID of the user.
+     * @param password The new password for the user.
+     * @return A {@link Mono} that completes when the password is set.
+     */
     private Mono<Void> resetPassword(TokenResponse token, String userId, String password) {
         Map<String, Object> credential = Map.of(
                 "type", "password",
@@ -127,6 +171,14 @@ public class RegistrationService {
                 .then();
     }
 
+    /**
+     * Retrieves the ID of a user from Keycloak by their username.
+     *
+     * @param token The admin access token.
+     * @param username The username of the user to find.
+     * @return A {@link Mono} containing the user's ID.
+     * @throws UserNotFoundException if the user is not found.
+     */
     private Mono<String> getUserId(TokenResponse token, String username) {
         return client()
                 .get()
@@ -147,6 +199,12 @@ public class RegistrationService {
                 });
     }
 
+    /**
+     * Obtains an admin access token from Keycloak using client credentials.
+     *
+     * @return A {@link Mono} containing a {@link TokenResponse} with the admin access token.
+     * @throws AdminTokenException if obtaining the token fails.
+     */
     private Mono<TokenResponse> getAdminAccessToken() {
         return client()
                 .post()
