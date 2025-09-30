@@ -1,4 +1,4 @@
-package com.example.customer.security;
+package com.example.shared.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;

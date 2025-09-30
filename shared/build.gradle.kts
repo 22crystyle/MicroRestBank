@@ -12,6 +12,8 @@ repositories {
 
 dependencies {
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.oauth2.client)
     implementation(libs.swagger.annotations.jakarta)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)

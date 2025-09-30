@@ -1,6 +1,6 @@
 package com.example.bankcards.config;
 
-import com.example.bankcards.security.JwtAuthConverter;
+import com.example.shared.security.JwtAuthConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
