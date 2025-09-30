@@ -34,6 +34,7 @@ spring:
           filters:
             - TokenRelay=
             - AddRequestHeader=X-Service-Call, gateway
+            - PreserveHostHeader
         - id: card-service-api-docs
           uri: lb://card-service
           predicates:

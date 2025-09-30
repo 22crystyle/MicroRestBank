@@ -1,5 +1,6 @@
 server:
   port: 0
+  forward-headers-strategy: framework
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

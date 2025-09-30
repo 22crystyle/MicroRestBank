@@ -1,6 +1,5 @@
 package com.example.customer.controller;
 
-import com.example.customer.dto.pagination.PageCustomerResponse;
 import com.example.customer.dto.response.CustomerResponse;
 import com.example.customer.service.CustomerService;
 import com.example.shared.util.JwtPrincipal;
@@ -14,6 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/customers")
@@ -51,7 +56,10 @@ public class CustomerController {
     public ResponseEntity<CustomerResponse> getCustomerByUUID(
             @Parameter(description = "UUID of the customer to retrieve.", required = true)
             @PathVariable UUID uuid) {
-        return ResponseEntity.ok(customerService.getCustomerByUUID(uuid));
+        CustomerResponse customer = customerService.getCustomerByUUID(uuid);
+        customer.add(linkTo(methodOn(CustomerController.class).getCustomerByUUID(uuid)).withSelfRel());
+        customer.add(linkTo(CustomerController.class).withRel("customers"));
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/me")
@@ -70,7 +78,11 @@ public class CustomerController {
     public ResponseEntity<CustomerResponse> getCurrentCustomer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID userId = UUID.fromString(JwtPrincipal.getId(authentication));
-        return ResponseEntity.ok(customerService.getCustomerByUUID(userId));
+        CustomerResponse customer = customerService.getCustomerByUUID(userId);
+        customer.add(linkTo(methodOn(CustomerController.class).getCurrentCustomer()).withSelfRel());
+        customer.add(linkTo(methodOn(CustomerController.class).getCustomerByUUID(customer.getId())).withRel("canonical"));
+        customer.add(linkTo(CustomerController.class).withRel("customers"));
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping
@@ -82,18 +94,21 @@ public class CustomerController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "A paginated list of customers.",
-                            content = @Content(schema = @Schema(implementation = PageCustomerResponse.class))
+                            content = @Content(schema = @Schema(implementation = PagedModel.class))
                     )
             }
     )
-    public ResponseEntity<Page<CustomerResponse>> pagination(
+    public ResponseEntity<PagedModel<EntityModel<CustomerResponse>>> pagination(
             @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
-            @RequestParam(defaultValue = "10") @Min(1) int size
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @Parameter(hidden = true) PagedResourcesAssembler<CustomerResponse> assembler
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<CustomerResponse> customers = customerService.getAllCustomers(pageRequest);
-        return ResponseEntity.ok(customers);
+        return ResponseEntity.ok(assembler.toModel(customers, customer ->
+                EntityModel.of(customer,
+                        linkTo(methodOn(CustomerController.class).getCustomerByUUID(customer.getId())).withSelfRel())));
     }
 }

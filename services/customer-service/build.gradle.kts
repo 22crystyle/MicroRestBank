@@ -3,6 +3,7 @@ dependencies {
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.hateoas)
     implementation(libs.keycloak.admin.client)
     implementation(libs.keycloak.services)
     implementation(libs.spring.kafka)
