@@ -1,9 +1,9 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.pagination.PageCardResponse;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.CardBlockRequest;
+import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.service.CardBlockRequestService;
 import com.example.bankcards.service.CardService;
 import com.example.shared.util.JwtPrincipal;
@@ -20,14 +20,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/cards")
@@ -38,6 +43,8 @@ public class CardController {
 
     private final CardService service;
     private final CardBlockRequestService cardBlockRequestService;
+    private final PagedResourcesAssembler<CardResponse> assembler;
+    private final CardBlockRequestRepository cardBlockRequestRepository;
 
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping
@@ -49,11 +56,11 @@ public class CardController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "A paginated list of cards.",
-                            content = @Content(schema = @Schema(implementation = PageCardResponse.class))
+                            content = @Content(schema = @Schema(implementation = PagedModel.class))
                     )
             }
     )
-    public ResponseEntity<Page<CardResponse>> getCards(
+    public ResponseEntity<PagedModel<EntityModel<CardResponse>>> getCards(
             @Parameter(description = "Page index (0-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Page size", example = "10")
@@ -62,7 +69,19 @@ public class CardController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<CardResponse> dtos = service.getCards(pageRequest, auth);
-        return ResponseEntity.ok(dtos);
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        return ResponseEntity.ok(assembler.toModel(dtos, card -> {
+            EntityModel<CardResponse> model = EntityModel.of(card,
+                    linkTo(methodOn(CardController.class).getCard(card.getId(), auth)).withSelfRel());
+
+            if (isAdmin && cardBlockRequestRepository.existsCardBlockRequestByCard_IdAndStatus(card.getId(), CardBlockRequest.Status.PENDING)) {
+                model.add(linkTo(methodOn(CardController.class).approveCardBlock(card.getId(), auth)).withRel("block-approve"));
+                model.add(linkTo(methodOn(CardController.class).refuseCardBlock(card.getId(), auth)).withRel("block-reject"));
+            }
+            return model;
+        }));
     }
 
     @SecurityRequirement(name = "BearerAuth")
@@ -80,13 +99,25 @@ public class CardController {
                     @ApiResponse(responseCode = "404", description = "Card not found.")
             }
     )
-    public ResponseEntity<CardResponse> getCard(
+    public ResponseEntity<EntityModel<CardResponse>> getCard(
             @Parameter(description = "ID of the card to retrieve", required = true)
             @PathVariable Long id,
             Authentication auth
     ) {
         CardResponse dto = service.getCard(id, auth);
-        return ResponseEntity.ok(dto);
+        EntityModel<CardResponse> model = EntityModel.of(dto,
+                linkTo(methodOn(CardController.class).getCard(id, auth)).withSelfRel(),
+                linkTo(CardController.class).withRel("cards"));
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin && cardBlockRequestRepository.existsCardBlockRequestByCard_IdAndStatus(id, CardBlockRequest.Status.PENDING)) {
+            model.add(linkTo(methodOn(CardController.class).approveCardBlock(id, auth)).withRel("block-approve"));
+            model.add(linkTo(methodOn(CardController.class).refuseCardBlock(id, auth)).withRel("block-reject"));
+        }
+
+        return ResponseEntity.ok(model);
     }
 
     @SecurityRequirement(name = "BearerAuth")
@@ -103,17 +134,20 @@ public class CardController {
                     )
             }
     )
-    public ResponseEntity<CardResponse> createCard(
+    public ResponseEntity<EntityModel<CardResponse>> createCard(
             @Parameter(description = "ID of the user for whom the card is created", required = true)
-            @RequestParam("userId") UUID userId
+            @RequestParam("userId") UUID userId,
+            Authentication auth
     ) {
         CardResponse response = service.createCardForAccountAndGetMaskedResponse(userId);
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(response.id())
-                .toUri();
-        return ResponseEntity.created(uri).body(response);
+        EntityModel<CardResponse> model = EntityModel.of(response,
+                linkTo(methodOn(CardController.class).getCard(response.getId(), auth)).withSelfRel(),
+                linkTo(methodOn(CardController.class).requestCardBlock(response.getId(), auth)).withRel("block-request")
+        );
+
+        return ResponseEntity
+                .created(model.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(model);
     }
 
     @SecurityRequirement(name = "BearerAuth")

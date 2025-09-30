@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 @Data

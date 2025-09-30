@@ -23,7 +23,7 @@ spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot" }
-spring-boot-starter-hateoas = { module = "org.springframework.boot:spring-boot-starter-hateoas", version.ref = "spring-boot"}
+spring-boot-starter-hateoas = { module = "org.springframework.boot:spring-boot-starter-hateoas", version.ref = "spring-boot" }
 
 # --- Spring Cloud (gateway, feign, circuitbreaker, loadbalancer, contract) ---
 spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "spring-cloud" }

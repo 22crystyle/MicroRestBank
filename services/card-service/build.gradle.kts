@@ -5,6 +5,7 @@ dependencies {
     implementation(libs.spring.retry)
     implementation(libs.liquibase.core)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.hateoas)
 
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)

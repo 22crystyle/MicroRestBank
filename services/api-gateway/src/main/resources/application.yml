@@ -33,7 +33,6 @@ spring:
             - Path=/api/v1/customers/**
           filters:
             - TokenRelay=
-            - AddRequestHeader=X-Service-Call, gateway
             - PreserveHostHeader
         - id: card-service-api-docs
           uri: lb://card-service
@@ -47,6 +46,7 @@ spring:
             - Path=/api/v1/cards/**
           filters:
             - TokenRelay=
+            - PreserveHostHeader
             - name: CircuitBreaker
               args:
                 name: cardCircuitBreaker
