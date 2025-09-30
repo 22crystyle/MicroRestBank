@@ -2,6 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 080825-01-create-customers-table
       author: Crystal
+      preConditions:
+        - onFail: HALT
+        - dbms:
+            type: postgresql
+        - not:
+            - tableExists:
+                schemaName: customer_schema
+                tableName: customers
       changes:
         - createTable:
             schemaName: customer_schema

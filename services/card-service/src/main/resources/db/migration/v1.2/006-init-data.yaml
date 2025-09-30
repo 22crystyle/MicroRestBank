@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: 170525-01-init-data
       author: Crystal
+      preConditions:
+        - onFail: HALT
+        - tableExists:
+            schemaName: card_schema
+            tableName: card_statuses
       changes:
         - insert:
             schemaName: card_schema

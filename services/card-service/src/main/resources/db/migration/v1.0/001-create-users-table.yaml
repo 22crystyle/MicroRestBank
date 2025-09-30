@@ -2,6 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 190825-01-create-role
       author: Crystal
+      preConditions:
+        - onFail: HALT
+        - dbms:
+            type: postgresql
+        - not:
+            - tableExists:
+                schemaName: card_schema
+                tableName: users
       changes:
         - createTable:
             schemaName: card_schema

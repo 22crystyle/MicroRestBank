@@ -2,6 +2,20 @@ databaseChangeLog:
   - changeSet:
       id: 190825-01-create-cards
       author: Crystal
+      preConditions:
+        - onFail: HALT
+        - dbms:
+            type: postgresql
+        - not:
+            - tableExists:
+                schemaName: card_schema
+                tableName: cards
+        - tableExists:
+            schemaName: card_schema
+            tableName: users
+        - tableExists:
+            schemaName: card_schema
+            tableName: card_statuses
       changes:
         - createTable:
             schemaName: card_schema
