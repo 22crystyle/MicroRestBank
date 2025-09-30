@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.lombok.mapstruct.binding)
+
+    implementation(libs.spring.doc.mvc)
 }
 
 tasks.test {

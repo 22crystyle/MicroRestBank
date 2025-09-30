@@ -6,7 +6,6 @@ import com.example.auth.dto.request.RegistrationRequest;
 import com.example.auth.dto.response.TokenResponse;
 import com.example.auth.exception.AdminTokenException;
 import com.example.auth.exception.KeycloakTokenException;
-import com.example.auth.exception.UserCreationException;
 import com.example.auth.exception.UserNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
