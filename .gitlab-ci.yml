@@ -1,0 +1,105 @@
+# See https://docs.gitlab.com/ee/ci/yaml/index.html for all available options
+
+# Global variables
+variables:
+  # Using an alpine based image will make the build faster
+  GRADLE_IMAGE: gradle:8.5-jdk21-alpine
+  DOCKER_IMAGE: docker:24.0.5
+  DOCKER_REGISTRY: registry.gitlab.local.net
+  # This will suppress any download progress logs from Gradle.
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+# Define the stages of the pipeline
+stages:
+  - build
+  - test
+  - dockerize
+
+# This template job defines the cache configuration for Gradle
+.gradle-cache:
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  before_script:
+    # Store gradle cache in the project directory
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+
+# --- Build Stage (Parallel) ---
+.build-service-template:
+  stage: build
+  image: $GRADLE_IMAGE
+  extends: .gradle-cache
+  script:
+    # The SERVICE variable must be defined in the job
+    - ./gradlew :services:$SERVICE:bootJar -x test
+    - echo "Artifact size check for $SERVICE:"
+    - du -sh "services/$SERVICE/build/libs/"
+  artifacts:
+    paths:
+      - "services/$SERVICE/build/libs/*.jar"
+    expire_in: 1 hour
+
+build:api-gateway:
+  extends: .build-service-template
+  variables:
+    SERVICE: api-gateway
+
+build:auth-service:
+  extends: .build-service-template
+  variables:
+    SERVICE: auth-service
+
+build:card-service:
+  extends: .build-service-template
+  variables:
+    SERVICE: card-service
+
+build:customer-service:
+  extends: .build-service-template
+  variables:
+    SERVICE: customer-service
+
+build:eureka-server:
+  extends: .build-service-template
+  variables:
+    SERVICE: eureka-server
+
+# This job runs the tests
+test:
+  stage: test
+  image: $GRADLE_IMAGE
+  extends: .gradle-cache
+  script:
+    # Run tests for all services
+    - ./gradlew test
+
+# --- Dockerize Stage (Single Job) ---
+dockerize:all-services:
+  stage: dockerize
+  image: $DOCKER_IMAGE
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $DOCKER_REGISTRY
+  script:
+    - |
+      SERVICES="api-gateway auth-service card-service customer-service eureka-server"
+      for service in $SERVICES; do
+        echo "--------------------------------------------------"
+        echo "Building and pushing Docker image for $service"
+        echo "--------------------------------------------------"
+        IMAGE_NAME="$DOCKER_REGISTRY/restbank/$service"
+        IMAGE_TAG_COMMIT="$IMAGE_NAME:$CI_COMMIT_SHA"
+        IMAGE_TAG_LATEST="$IMAGE_NAME:latest"
+
+        docker build -f "services/$service/Dockerfile" -t "$IMAGE_TAG_COMMIT" -t "$IMAGE_TAG_LATEST" .
+
+        docker push "$IMAGE_TAG_COMMIT"
+        docker push "$IMAGE_TAG_LATEST"
+      done
+  needs:
+    - build:api-gateway
+    - build:auth-service
+    - build:card-service
+    - build:customer-service
+    - build:eureka-server
