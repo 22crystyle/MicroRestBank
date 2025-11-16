@@ -12,7 +12,7 @@ description = "restbank"
 
 allprojects {
     group = "com.example.restbank"
-    version = "1.0.0"
+    version = "0.0.1-SNAPSHOT"
 
     repositories {
         mavenCentral()
