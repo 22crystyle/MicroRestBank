@@ -5,7 +5,7 @@ variables:
   # Using an alpine based image will make the build faster
   GRADLE_IMAGE: gradle:8.5-jdk21-alpine
   DOCKER_IMAGE: docker:24.0.5
-  DOCKER_REGISTRY: registry.gitlab.local.net
+  DOCKER_REGISTRY: registry.gitlab.local.net/restbank/aio
   # This will suppress any download progress logs from Gradle.
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
@@ -80,7 +80,10 @@ dockerize:all-services:
   stage: dockerize
   image: $DOCKER_IMAGE
   before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $DOCKER_REGISTRY
+    - echo $CI_REGISTRY
+    - echo $CI_DEPLOY_USER
+    - echo $CI_DEPLOY_PASSWORD
+    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
   script:
     - |
       SERVICES="api-gateway auth-service card-service customer-service eureka-server"
@@ -88,12 +91,13 @@ dockerize:all-services:
         echo "--------------------------------------------------"
         echo "Building and pushing Docker image for $service"
         echo "--------------------------------------------------"
-        IMAGE_NAME="$DOCKER_REGISTRY/restbank/$service"
+        IMAGE_NAME="$DOCKER_REGISTRY/$service"
         IMAGE_TAG_COMMIT="$IMAGE_NAME:$CI_COMMIT_SHA"
         IMAGE_TAG_LATEST="$IMAGE_NAME:latest"
 
         docker build -f "services/$service/Dockerfile" -t "$IMAGE_TAG_COMMIT" -t "$IMAGE_TAG_LATEST" .
 
+        docker push $IMAGE_NAME
         docker push "$IMAGE_TAG_COMMIT"
         docker push "$IMAGE_TAG_LATEST"
       done
