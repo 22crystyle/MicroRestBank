@@ -1,115 +1,65 @@
+x-spring-base: &spring-base
+  env_file:
+    - ".env"
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+    start_period: 20s
+  networks:
+    - restbank-net
+
 services:
   eureka-server:
+    <<: *spring-base
     image: restbank/eureka-server:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/eureka-server/Dockerfile
     ports:
       - "${EUREKA_PORT:-8761}:8761"
-    env_file:
-      - ".env"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - restbank-net
 
   api-gateway:
+    <<: *spring-base
     image: restbank/api-gateway:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/api-gateway/Dockerfile
     ports:
       - "${API_GATEWAY_PORT:-1024}:1024"
-      - "${API_GATEWAY_MANAGEMENT_PORT:-1042}:8081"
-    env_file:
-      - ".env"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - restbank-net
     depends_on:
-      eureka-server:
-        condition: service_started
       keycloak:
         condition: service_healthy
 
   auth-service:
+    <<: *spring-base
     image: restbank/auth-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/auth-service/Dockerfile
     ports:
       - "${AUTH_SERVICE_PORT:-1025}:1025"
-    env_file:
-      - ".env"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - restbank-net
-    depends_on:
-      eureka-server:
-        condition: service_healthy
-      api-gateway:
-        condition: service_healthy
 
   card-service:
+    <<: *spring-base
     image: restbank/card-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/card-service/Dockerfile
     ports:
       - "${CARD_SERVICE_PORT:-1026}:1026"
-    env_file:
-      - ".env"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - restbank-net
-    depends_on:
-      eureka-server:
-        condition: service_healthy
-      api-gateway:
-        condition: service_healthy
 
   customer-service:
+    <<: *spring-base
     image: restbank/customer-service:${DOCKER_IMAGE_TAG:-1.0.0}
     build:
       context: ../
       dockerfile: services/customer-service/Dockerfile
     ports:
       - "${CUSTOMER_SERVICE_PORT:-1027}:1027"
-    env_file:
-      - ".env"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - restbank-net
-    depends_on:
-      eureka-server:
-        condition: service_healthy
-      api-gateway:
-        condition: service_healthy
 
 networks:
   restbank-net:
+    name: restbank-net
     driver: bridge

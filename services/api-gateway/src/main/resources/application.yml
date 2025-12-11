@@ -5,6 +5,8 @@ spring:
     name: api-gateway
   main:
     web-application-type: reactive
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
   cloud:
     gateway:
       httpclient:
@@ -96,10 +98,6 @@ eureka:
     lease-renewal-interval-in-seconds: 2
     lease-expiration-duration-in-seconds: 5
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health
   server:
     port: 8081
 springdoc:

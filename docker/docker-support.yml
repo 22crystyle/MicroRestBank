@@ -134,4 +134,5 @@ volumes:
 
 networks:
   restbank-net:
+    name: restbank-net
     driver: bridge

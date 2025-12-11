@@ -27,7 +27,7 @@ public class SecurityConfig {
      * An array of paths that are permitted to be accessed without authentication.
      * This includes health checks, API documentation, and authentication endpoints.
      */
-    public static final String[] AUTH_WHITELIST = {
+    private static final String[] AUTH_WHITELIST = {
             "/actuator/health",
             "/v3/api-docs",
             "/api/v1/auth/**"
