@@ -13,7 +13,7 @@ class FullCycleTimePlugin : Plugin<Project> {
         project.tasks.register("fullCycleTime", FullCycleTimeTask::class.java) {
             group = "custom"
             description = "Runs the full cycle: clean, build, docker-compose up, and waits for services to be healthy."
-            dockerDirectory.set(project.layout.projectDirectory.dir("docker"))
+            dockerDirectory.value(project.layout.projectDirectory.dir("docker"))
             dependsOn(project.subprojects.mapNotNull { it.tasks.findByName("clean") })
         }
     }

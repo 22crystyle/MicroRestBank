@@ -1,5 +1,10 @@
-rootProject.name = "RestBank"
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
+includeBuild("build-logic")
+
+rootProject.name = "RestBank"
 
 include(
     "services:auth-service",
@@ -10,19 +15,10 @@ include(
     "shared"
 )
 
-includeBuild("build-src")
-
-pluginManagement {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
         mavenLocal()
+        gradlePluginPortal()
     }
 }

@@ -15,6 +15,9 @@ swagger-annotations = "2.2.36"
 byte-buddy-agent = "1.17.7"
 postgresql = "42.7.7"
 h2 = "2.3.232"
+lombok-plugin = "9.1.0"
+spring-dependency-plugin = "1.1.7"
+openapi-plugin = "1.9.0"
 
 [libraries]
 # --- Spring Boot (starters) ---
@@ -67,3 +70,9 @@ byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "b
 spring-doc-mvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "spring-doc" }
 spring-doc-flux = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "spring-doc" }
 swagger-annotations-jakarta = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swagger-annotations" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency = { id = "io.spring.dependency-management", version.ref = "spring-dependency-plugin" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok-plugin" }
+openapi = { id = "org.springdoc.openapi-gradle-plugin", version.ref = "openapi-plugin" }

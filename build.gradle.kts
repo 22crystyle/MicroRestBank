@@ -5,7 +5,7 @@ plugins {
 }
 
 tasks.named("clean") {
-    dependsOn(gradle.includedBuild("build-src").task(":clean"))
+    dependsOn(gradle.includedBuild("build-logic").task(":clean"))
 }
 
 description = "restbank"
@@ -13,10 +13,6 @@ description = "restbank"
 allprojects {
     group = "com.example.restbank"
     version = "0.0.1-SNAPSHOT"
-
-    repositories {
-        mavenCentral()
-    }
 }
 
 val apiServiceProjects = listOf(
@@ -47,7 +43,7 @@ val localApiGenerationEnv = dockerEnv.toMutableMap().apply {
 }
 
 subprojects {
-    if (project.name != "build-src") {
+    if (project.name != "build-logic") {
         apply(plugin = "java-convention")
 
         version = "0.0.1-SNAPSHOT"
@@ -73,20 +69,6 @@ tasks.register("generateAllApiDocs") {
     group = "Documentation"
     description = "Generates OpenAPI documentation for all applicable services."
     dependsOn(apiServiceProjects.map { ":services:$it:generateOpenApiDocs" })
-}
-
-project(":services:api-gateway") {
-    configurations.named("implementation") {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
-        exclude(group = "org.springframework", module = "spring-webmvc")
-    }
-}
-
-project(":services:auth-service") {
-    configurations.named("implementation") {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
-        exclude(group = "org.springframework", module = "spring-webmvc")
-    }
 }
 
 listOf(
