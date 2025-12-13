@@ -79,10 +79,9 @@ test:
 dockerize:all-services:
   stage: dockerize
   image: $DOCKER_IMAGE
+  rules:
+    - if: $CI_COMMIT_TAG
   before_script:
-    - echo $CI_REGISTRY
-    - echo $CI_DEPLOY_USER
-    - echo $CI_DEPLOY_PASSWORD
     - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
   script:
     - |
@@ -90,15 +89,16 @@ dockerize:all-services:
       for service in $SERVICES; do
         echo "--------------------------------------------------"
         echo "Building and pushing Docker image for $service"
+        echo "Git tag: $CI_COMMIT_TAG"
         echo "--------------------------------------------------"
+      
         IMAGE_NAME="$DOCKER_REGISTRY/$service"
-        IMAGE_TAG_COMMIT="$IMAGE_NAME:$CI_COMMIT_SHA"
+        IMAGE_TAG_VERSION="$IMAGE_NAME:$CI_COMMIT_TAG"
         IMAGE_TAG_LATEST="$IMAGE_NAME:latest"
 
         docker build -f "services/$service/Dockerfile" -t "$IMAGE_TAG_COMMIT" -t "$IMAGE_TAG_LATEST" .
 
-        docker push $IMAGE_NAME
-        docker push "$IMAGE_TAG_COMMIT"
+        docker push "$IMAGE_TAG_VERSION"
         docker push "$IMAGE_TAG_LATEST"
       done
   needs:
