@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":shared"))
+    implementation(project(":libs:api-contract"))
     implementation(libs.keycloak.admin.client)
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.security)

@@ -10,3 +10,7 @@ dependencies {
     implementation(libs.spring.cloud.starter.eureka.server)
     implementation(libs.spring.boot.starter.security)
 }
+
+tasks.named("generateOpenApiDocs") {
+    enabled = false
+}

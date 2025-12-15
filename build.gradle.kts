@@ -1,6 +1,5 @@
 plugins {
     base
-    id("java-convention") apply false
     id("full-cycle-time") apply true
 }
 
@@ -11,73 +10,62 @@ tasks.named("clean") {
 description = "restbank"
 
 allprojects {
-    group = "com.example.restbank"
+    group = "org.restbank"
     version = "0.0.1-SNAPSHOT"
 }
 
-val apiServiceProjects = listOf(
-    "api-gateway",
-    "auth-service",
-    "card-service",
-    "customer-service"
+val apiServiceProjects = setOf(
+    ":services:api-gateway",
+    ":services:auth-service",
+    ":services:card-service",
+    ":services:customer-service"
 )
 
-val dockerEnvFile = file("docker/.env")
-val dockerEnv = if (dockerEnvFile.exists()) {
-    dockerEnvFile.readLines()
-        .map { it.trim() }
-        .filter { it.isNotEmpty() && !it.startsWith("#") }
-        .mapNotNull {
-            val parts = it.split("=", limit = 2)
-            if (parts.size == 2 && parts[0].isNotBlank()) parts[0] to parts[1] else null
-        }.toMap()
-} else {
-    emptyMap<String, String>()
-}
+val dockerEnv = loadEnv(file("docker/.env"))
 
-val localApiGenerationEnv = dockerEnv.toMutableMap().apply {
-    this["KEYCLOAK_ISSUER_URI"] = "http://localhost:${this["KEYCLOAK_HTTP_PORT"]}/realms/bank-realm"
-    this["DB_JDBC_URL"] = "jdbc:postgresql://localhost:${this["POSTGRES_PORT"]}/${this["POSTGRES_DB"]}"
-    this["KAFKA_BOOTSTRAP_SERVER"] = "localhost:${this["KAFKA_PORT"]}"
-    this["EUREKA_SERVICE_URL"] = "http://localhost:${this["EUREKA_SERVER_PORT"]}/eureka"
-}
+val localApiGenerationEnv = dockerEnv + mapOf(
+    "KEYCLOAK_ISSUER_URI" to "http://localhost:${dockerEnv["KEYCLOAK_HTTP_PORT"]}/realms/bank-realm",
+    "DB_JDBC_URL" to "jdbc:postgresql://localhost:${dockerEnv["POSTGRES_PORT"]}/${dockerEnv["POSTGRES_DB"]}",
+    "KAFKA_BOOTSTRAP_SERVER" to "localhost:${dockerEnv["KAFKA_PORT"]}",
+    "EUREKA_SERVICE_URL" to "http://localhost:${dockerEnv["EUREKA_SERVER_PORT"]}/eureka"
+)
 
 subprojects {
-    if (project.name != "build-logic") {
-        apply(plugin = "java-convention")
+    if (!path.startsWith(":services:")) return@subprojects
 
-        version = "0.0.1-SNAPSHOT"
+    tasks.matching { it.name == "clean" }.configureEach {
+        this as Delete
+        delete(layout.projectDirectory.dir("docs"))
+    }
 
-        tasks.withType<Delete> {
-            delete("docs")
-        }
-
-        afterEvaluate {
-            tasks.findByName("generateOpenApiDocs")?.let { task ->
-                task.enabled = project.name in apiServiceProjects
-            }
-            if (project.name in apiServiceProjects) {
-                tasks.withType<JavaExec> {
-                    environment(localApiGenerationEnv)
-                }
-            }
+    if (path in apiServiceProjects) {
+        tasks.withType<JavaExec>().configureEach {
+            environment(localApiGenerationEnv)
         }
     }
 }
 
 tasks.register("generateAllApiDocs") {
-    group = "Documentation"
-    description = "Generates OpenAPI documentation for all applicable services."
-    dependsOn(apiServiceProjects.map { ":services:$it:generateOpenApiDocs" })
+    group = "documentation"
+    description = "Generates OpenAPI documentation for all API services"
+    dependsOn(apiServiceProjects.map { "$it:generateOpenApiDocs" })
 }
 
-listOf(
-    ":services:api-gateway",
-    ":services:auth-service",
-    ":services:card-service",
-    ":services:customer-service"
-).forEach { servicePath ->
+fun loadEnv(file: File): Map<String, String> =
+    if (!file.exists()) emptyMap()
+    else file.readLines()
+        .asSequence()
+        .map(String::trim)
+        .filter { it.isNotEmpty() && !it.startsWith("#") }
+        .mapNotNull {
+            it.split("=", limit = 2)
+                .takeIf { parts -> parts.size == 2 }
+                ?.let { (k, v) -> k to v }
+        }
+        .toMap()
+
+apiServiceProjects.forEach { servicePath ->
     project(servicePath).afterEvaluate {
-        tasks.findByName("forkedSpringBootRun")?.dependsOn(project(":shared").tasks.getByName("jar"))
+        tasks.findByName("forkedSpringBootRun")?.dependsOn(project(":libs:api-contract").tasks.getByName("jar"))
     }
 }

@@ -19,7 +19,6 @@ dependencies {
     implementation(gradleApi())
     implementation(plugin(libs.plugins.spring.boot))
     implementation(plugin(libs.plugins.openapi))
-    implementation(plugin(libs.plugins.lombok))
     implementation(plugin(libs.plugins.spring.dependency))
 }
 

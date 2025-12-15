@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="RestBank.services.customer-service.test" />
+        <module name="RestBank.libs.api-contract.test" />
+        <module name="RestBank.services.api-gateway.test" />
+        <module name="RestBank.services.eureka-server.test" />
+        <module name="RestBank.services.auth-service.test" />
+        <module name="RestBank.services.card-service.test" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.3/52e345c907fbf173b376586c7f8b131d53fa5867/mapstruct-processor-1.6.3.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok-mapstruct-binding/0.2.0/2f1cf9ced7b720ba4996c942b816669e63f0fa4f/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="RestBank.libs.api-contract.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.4.5/e5ae93bf2b951d13c310162351a2818e169b7519/spring-boot-configuration-processor-3.4.5.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="RestBank.services.api-gateway.main" />
+        <module name="RestBank.services.auth-service.main" />
+        <module name="RestBank.services.eureka-server.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.4.5/e5ae93bf2b951d13c310162351a2818e169b7519/spring-boot-configuration-processor-3.4.5.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.3/52e345c907fbf173b376586c7f8b131d53fa5867/mapstruct-processor-1.6.3.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok-mapstruct-binding/0.2.0/2f1cf9ced7b720ba4996c942b816669e63f0fa4f/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="RestBank.services.customer-service.main" />
+        <module name="RestBank.services.card-service.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="RestBank.libs.api-contract" options="-Xlint:-processing" />
+      <module name="RestBank.libs.api-contract.main" options="-Xlint:-processing" />
+      <module name="RestBank.libs.api-contract.test" options="-Xlint:-processing" />
+      <module name="RestBank.libs.main" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.libs.test" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.platform.main" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.platform.test" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.services.api-gateway" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.api-gateway.main" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.api-gateway.test" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.auth-service" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.auth-service.main" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.auth-service.test" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.card-service" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.card-service.main" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.card-service.test" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.customer-service" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.customer-service.main" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.customer-service.test" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.eureka-server" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.eureka-server.main" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.eureka-server.test" options="-parameters -parameters -nowarn -Xlint:-processing" />
+      <module name="RestBank.services.main" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.services.test" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.shared" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.shared.main" options="-Xlint:-processing -parameters -parameters -nowarn" />
+      <module name="RestBank.shared.test" options="-Xlint:-processing -parameters -parameters -nowarn" />
+    </option>
+  </component>
+</project>

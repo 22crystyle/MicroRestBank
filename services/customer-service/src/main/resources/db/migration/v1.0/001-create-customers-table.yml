@@ -78,10 +78,10 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
         - not:
-          - indexExists:
-              schemaName: customer_schema
-              tableName: customers
-              indexName: idx_customers_email
+            - indexExists:
+                schemaName: customer_schema
+                tableName: customers
+                indexName: idx_customers_email
       changes:
         - createIndex:
             schemaName: customer_schema
@@ -103,10 +103,10 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
         - not:
-          - indexExists:
-              schemaName: customer_schema
-              tableName: customers
-              indexName: idx_customers_phone
+            - indexExists:
+                schemaName: customer_schema
+                tableName: customers
+                indexName: idx_customers_phone
       changes:
         - createIndex:
             schemaName: customer_schema

@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":shared"))
+    implementation(project(":libs:api-contract"))
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
