@@ -31,9 +31,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class RegistrationService {
+    private static final String GRANT_TYPE = "grant_type";
+    private static final String PASSWORD = "password";
+    private static final String CLIENT_ID = "client_id";
+    private static final String CLIENT_SECRET = "client_secret";
+    private static final String USERNAME = "username";
+
+    private static final String ERROR = "error";
+    private static final String ERROR_DESCRIPTION = "error_description";
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String ID = "id";
+
     private final WebClient.Builder webClientBuilder;
     private final KeycloakProperties keycloakProperties;
-    private final ObjectMapper MAPPER = new ObjectMapper(); //TODO: SonarQube
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Creates a WebClient instance for communicating with Keycloak.
@@ -57,20 +68,20 @@ public class RegistrationService {
                 .uri("/realms/{realm}/protocol/openid-connect/token", keycloakProperties.realm())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
-                        .fromFormData("grant_type", "password") //TODO: SonarQube
-                        .with("client_id", keycloakProperties.clientId())
-                        .with("client_secret", keycloakProperties.clientSecret())
-                        .with("username", loginRequest.username()) //TODO: SonarQube
-                        .with("password", loginRequest.password()))
+                        .fromFormData(GRANT_TYPE, PASSWORD)
+                        .with(CLIENT_ID, keycloakProperties.clientId())
+                        .with(CLIENT_SECRET, keycloakProperties.clientSecret())
+                        .with(USERNAME, loginRequest.username())
+                        .with(PASSWORD, loginRequest.password()))
                 .retrieve()
                 .onStatus(HttpStatus.UNAUTHORIZED::equals, response -> response.bodyToMono(String.class)
                         .flatMap(body -> {
                             try {
-                                JsonNode node = MAPPER.readTree(body);
+                                JsonNode node = mapper.readTree(body);
                                 Map<String, String> details = new HashMap<>();
-                                if (node.has("error")) details.put("error", node.get("error").asText()); //TODO: SonarQube
-                                if (node.has("error_description")) //TODO: SonarQube
-                                    details.put("error_description", node.get("error_description").asText());
+                                if (node.has(ERROR)) details.put(ERROR, node.get(ERROR).asText());
+                                if (node.has(ERROR_DESCRIPTION))
+                                    details.put(ERROR_DESCRIPTION, node.get(ERROR_DESCRIPTION).asText());
                                 return Mono.error(new KeycloakTokenException(response.statusCode(), details, body));
                             } catch (JsonProcessingException e) {
                                 return Mono.error(new KeycloakTokenException(response.statusCode(), Map.of("message", body), body));
@@ -111,7 +122,7 @@ public class RegistrationService {
      */
     private Mono<Void> createUser(TokenResponse token, RegistrationRequest userRequest) {
         Map<String, Object> user = Map.of(
-                "username", userRequest.username(),
+                USERNAME, userRequest.username(),
                 "email", userRequest.email(),
                 "enabled", true,
                 "firstName", userRequest.firstName(),
@@ -129,14 +140,14 @@ public class RegistrationService {
                         response -> response.bodyToMono(String.class)
                                 .flatMap(body -> {
                                     try {
-                                        JsonNode node = MAPPER.readTree(body);
+                                        JsonNode node = mapper.readTree(body);
                                         Map<String, String> details = new HashMap<>();
-                                        if (node.has("errorMessage")) {
-                                            details.put("error_message", node.get("errorMessage").asText());
-                                        } else if (node.has("error")) {
-                                            details.put("error", node.get("error").asText());
+                                        if (node.has(ERROR_MESSAGE)) {
+                                            details.put("error_message", node.get(ERROR_MESSAGE).asText());
+                                        } else if (node.has(ERROR)) {
+                                            details.put(ERROR, node.get(ERROR).asText());
                                         } else {
-                                            details.put("error", body);
+                                            details.put(ERROR, body);
                                         }
                                         return Mono.error(new KeycloakTokenException(response.statusCode(), details, body));
                                     } catch (JsonProcessingException e) {
@@ -157,7 +168,7 @@ public class RegistrationService {
      */
     private Mono<Void> resetPassword(TokenResponse token, String userId, String password) {
         Map<String, Object> credential = Map.of(
-                "type", "password",
+                "type", PASSWORD,
                 "value", password,
                 "temporary", false
         );
@@ -185,7 +196,7 @@ public class RegistrationService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/{realm}/users")
-                        .queryParam("username", username)
+                        .queryParam(USERNAME, username)
                         .build(keycloakProperties.realm()))
                 .headers(h -> h.setBearerAuth(token.accessToken()))
                 .retrieve()
@@ -193,8 +204,8 @@ public class RegistrationService {
                 })
                 .flatMap(list -> {
                     if (list != null && !list.isEmpty()) {
-                        Map<String, Object> user = list.get(0);
-                        return Mono.just((String) user.get("id"));
+                        Map<String, Object> user = list.getFirst();
+                        return Mono.just((String) user.get(ID));
                     }
                     return Mono.error(new UserNotFoundException(username));
                 });
@@ -212,9 +223,9 @@ public class RegistrationService {
                 .uri("/realms/{realm}/protocol/openid-connect/token", keycloakProperties.realm())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
-                        .fromFormData("grant_type", "client_credentials")
-                        .with("client_id", keycloakProperties.clientId())
-                        .with("client_secret", keycloakProperties.clientSecret()))
+                        .fromFormData(GRANT_TYPE, "client_credentials")
+                        .with(CLIENT_ID, keycloakProperties.clientId())
+                        .with(CLIENT_SECRET, keycloakProperties.clientSecret()))
                 .retrieve()
                 .onStatus(status -> !status.is2xxSuccessful(),
                         resp -> resp.bodyToMono(String.class).defaultIfEmpty("no body")

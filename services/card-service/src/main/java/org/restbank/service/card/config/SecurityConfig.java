@@ -2,7 +2,7 @@ package org.restbank.service.card.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.restbank.libs.api.security.JwtAuthConverter;
+import org.restbank.libs.api.security.JwtConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,7 +44,7 @@ public class SecurityConfig {
     /**
      * A converter to extract authorities from a JWT and configure the authentication token.
      */
-    private final JwtAuthConverter jwtAuthConverter;
+    private final JwtConverter jwtConverter;
 
     /**
      * Defines the security filter chain for the application.
@@ -57,7 +57,7 @@ public class SecurityConfig {
      *         authentication for all other requests.</li>
      *     <li>Sets up exception handling for access denied scenarios.</li>
      *     <li>Configures the OAuth2 resource server to validate JWTs using the provided
-     *         {@link JwtAuthConverter}.</li>
+     *         {@link JwtConverter}.</li>
      * </ul>
      *
      * @param http The {@link HttpSecurity} object to configure.
@@ -76,7 +76,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthConverter)
+                                .jwtAuthenticationConverter(jwtConverter)
                         )
                 );
         return http.build();

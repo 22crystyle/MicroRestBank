@@ -1,11 +1,13 @@
 package org.restbank.libs.api.dto.response;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Map;
 
 @Getter
-public class ValidationErrorResponse extends RestErrorResponse { //TODO: SonarQube
+@EqualsAndHashCode(callSuper = false)
+public class ValidationErrorResponse extends RestErrorResponse {
     private final Map<String, String> errors;
 
     public ValidationErrorResponse(String source, String code, String message, Map<String, String> errors) {

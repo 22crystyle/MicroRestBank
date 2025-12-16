@@ -3,7 +3,13 @@ package org.restbank.service.card.util;
 /**
  * Utility class for masking sensitive information, such as card numbers.
  */
-public class MaskingUtils { //TODO: SonarQube
+public class MaskingUtils {
+    /**
+     * Utility classes should not have public constructors
+     */
+    private MaskingUtils() {
+    }
+
     /**
      * Masks a card number, revealing only the last four digits.
      * Replaces all but the last four digits with asterisks and adds spaces for readability.

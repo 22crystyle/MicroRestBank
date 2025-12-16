@@ -18,6 +18,7 @@ h2 = "2.3.232"
 lombok-plugin = "9.1.0"
 spring-dependency-plugin = "1.1.7"
 openapi-plugin = "1.9.0"
+spring-framework = "6.4.5"
 
 [libraries]
 # --- Spring Boot (starters) ---
@@ -35,6 +36,9 @@ spring-cloud-starter-circuitbreaker-reactor-resilience4j = { module = "org.sprin
 spring-cloud-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux", version.ref = "spring-cloud" }
 spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer", version.ref = "spring-cloud" }
 spring-cloud-starter-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server", version.ref = "spring-cloud" }
+
+# --- Raw Spring Framework ---
+spring-security-oauth2-resource-server = { module = "org.springframework.security:spring-security-oauth2-resource-server", version.ref = "spring-framework" }
 
 # --- Messaging / Kafka ---
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }

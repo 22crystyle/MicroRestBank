@@ -28,5 +28,5 @@ public final class CustomerResponse extends RepresentationModel<CustomerResponse
     /**
      * The timestamp when the customer record was created.
      */
-    private final Instant created_at; //TODO: SonarQube
+    private final Instant createdAt;
 }

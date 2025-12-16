@@ -50,13 +50,13 @@ utilizing Debezium for Change Data Capture (CDC) from the database.
 
 The project is organized into several directories:
 
-- `build-src`: Contains custom Gradle convention plugins.
+- `build-logic`: Contains custom Gradle convention plugins.
 - `docker`: Holds all Docker-related files, including `docker-compose.yml` configurations, Dockerfiles for each service,
   and initialization scripts.
 - `gradle`: Contains the Gradle wrapper and version catalogs.
 - `services`: Includes the source code for each microservice (`api-gateway`, `auth-service`, `card-service`,
   `customer-service`, `eureka-server`).
-- `shared`: A module containing shared code, DTOs, and configurations used across multiple services.
+- `libs/api-contract`: A module containing shared code, DTOs, and configurations used across multiple services.
 
 ## Prerequisites
 
@@ -117,8 +117,7 @@ If you prefer to run the steps manually, follow this sequence:
 ## User Management
 
 While regular users can register via the `POST /api/v1/auth/register` endpoint, administrative users must be created
-through
-the Keycloak Admin Console.
+through the Keycloak Admin Console.
 
 1. Navigate to the Keycloak Admin Console at [http://localhost:7080](http://localhost:7080).
 2. Log in with the bootstrap admin credentials defined in your `docker/.env` file (`KC_ADMIN_USERNAME` and

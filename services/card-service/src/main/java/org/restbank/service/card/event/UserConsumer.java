@@ -15,6 +15,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -53,17 +54,14 @@ public class UserConsumer {
                 after = root;
             }
 
-            String eventTypeStr = after.path("event_type").asText(null);
-            EventType eventType = null;
-            if (eventTypeStr != null) {
-                try { //TODO: SonarQube
-                    eventType = EventType.valueOf(eventTypeStr);
-                } catch (IllegalArgumentException ex) {
-                    log.info("Unknown EventType name: {}", eventTypeStr);
-                }
-            }
+            Optional<EventType> eventTypeOpt =
+                    EventType.from(after.path("event_type").asText(null));
 
-            if (!EventType.CUSTOMER_CREATED.equals(eventType)) return;
+            EventType eventType = eventTypeOpt.orElse(null);
+
+            if (!EventType.CUSTOMER_CREATED.equals(eventType)) {
+                return;
+            }
 
             String outboxId = after.path("id").asText();
             if (outboxId == null || outboxId.isEmpty()) outboxId = after.path("aggregate_id").asText();
@@ -82,8 +80,7 @@ public class UserConsumer {
             processedEventRepository.save(new ProcessedEvent(event.getId(), outboxId, eventType, Instant.now()));
 
         } catch (JsonProcessingException ex) {
-            log.error("Failed to process outbox event", ex);
-            throw new RuntimeException(ex); //TODO: SonarQube
+            log.error("Failed to process restbank.customer_schema.outbox", ex);
         }
     }
 }

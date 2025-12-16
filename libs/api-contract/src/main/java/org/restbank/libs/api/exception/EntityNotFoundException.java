@@ -1,7 +1,7 @@
 package org.restbank.libs.api.exception;
 
 public abstract class EntityNotFoundException extends RuntimeException {
-    public EntityNotFoundException(String message) { //TODO: SonarQube
+    protected EntityNotFoundException(String message) {
         super(message);
     }
 }

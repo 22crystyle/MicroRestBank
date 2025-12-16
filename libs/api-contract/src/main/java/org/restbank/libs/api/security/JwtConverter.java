@@ -2,6 +2,7 @@ package org.restbank.libs.api.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Component
-public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
+public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     /**
      * Converts the provided JWT into an authentication token with extracted authorities.
@@ -29,7 +30,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
      * @param jwt The JWT to convert.
      * @return An {@link AbstractAuthenticationToken} containing the JWT and extracted authorities.
      */
-    public AbstractAuthenticationToken convert(Jwt jwt) {
+    public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
         return new JwtAuthenticationToken(jwt, authorities);
     }

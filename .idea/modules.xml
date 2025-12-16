@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/RestBank.iml" filepath="$PROJECT_DIR$/.idea/RestBank.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/api-contract/RestBank.libs.api-contract.main.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/api-contract/RestBank.libs.api-contract.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/api-gateway/RestBank.services.api-gateway.iml" filepath="$PROJECT_DIR$/.idea/modules/services/api-gateway/RestBank.services.api-gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/api-gateway/RestBank.services.api-gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/api-gateway/RestBank.services.api-gateway.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/auth-service/RestBank.services.auth-service.iml" filepath="$PROJECT_DIR$/.idea/modules/services/auth-service/RestBank.services.auth-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/auth-service/RestBank.services.auth-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/auth-service/RestBank.services.auth-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/card-service/RestBank.services.card-service.iml" filepath="$PROJECT_DIR$/.idea/modules/services/card-service/RestBank.services.card-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/card-service/RestBank.services.card-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/card-service/RestBank.services.card-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/customer-service/RestBank.services.customer-service.iml" filepath="$PROJECT_DIR$/.idea/modules/services/customer-service/RestBank.services.customer-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/customer-service/RestBank.services.customer-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/customer-service/RestBank.services.customer-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/eureka-server/RestBank.services.eureka-server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/eureka-server/RestBank.services.eureka-server.main.iml" />
     </modules>

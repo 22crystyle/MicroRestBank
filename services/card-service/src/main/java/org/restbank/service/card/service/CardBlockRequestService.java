@@ -20,11 +20,6 @@ import java.util.UUID;
  * Service for managing card block requests.
  * Handles creation, approval, and rejection of requests to block bank cards.
  */
-
-/**
- * Service for managing card block requests.
- * Handles creation, approval, and rejection of requests to block bank cards.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,22 +34,13 @@ public class CardBlockRequestService {
      *
      * @param cardId The ID of the card to be blocked.
      * @param userId The ID of the user initiating the block request.
-     * @throws CardNotFoundException if the card with the given ID is not found.
-     * @throws IsNotOwnerException if the user is not the owner of the card.
-     * @throws IllegalArgumentException if a pending block request already exists for the card.
-     */
-    /**
-     * Creates a new card block request for a given card and user.
-     *
-     * @param cardId The ID of the card to be blocked.
-     * @param userId The ID of the user initiating the block request.
      * @throws CardNotFoundException    if the card with the given ID is not found.
      * @throws IsNotOwnerException      if the user is not the owner of the card.
      * @throws IllegalArgumentException if a pending block request already exists for the card.
      */
     @Transactional
     public void createBlockRequest(Long cardId, UUID userId) {
-        log.debug("createBlockRequest called with cardId={} by userId={}", cardId, userId); // TODO: вынести в aop
+        log.debug("createBlockRequest called with cardId={} by userId={}", cardId, userId);
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(cardId));
 

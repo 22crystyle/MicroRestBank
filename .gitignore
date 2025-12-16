@@ -32,4 +32,4 @@ replay_pid*
 /docker/kafka/
 
 !gradle/wrapper/gradle-wrapper.jar
-!docs/
+!/docs/

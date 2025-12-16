@@ -15,6 +15,7 @@ import java.util.Map;
 @Configuration
 @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
 public class SharedOpenApiConfiguration {
+    private static final String PATH_SEPARATOR = "/";
 
     @Value("${springdoc.api-path-segment}")
     private String apiPathSegment;
@@ -23,7 +24,7 @@ public class SharedOpenApiConfiguration {
     private String applicationName;
 
     @Bean
-    public OpenApiCustomizer sharedOpenApiCustomizer() { //TODO: SonarQube
+    public OpenApiCustomizer sharedOpenApiCustomizer() {
         String serviceBaseUrl = "http://localhost:1024/api/v1/" + apiPathSegment;
         String pathPrefixToStrip = "/api/v1/" + apiPathSegment;
 
@@ -35,23 +36,32 @@ public class SharedOpenApiConfiguration {
 
             Map<String, PathItem> paths = openApi.getPaths();
             if (paths != null) {
-                Map<String, PathItem> newPathsMap = new java.util.LinkedHashMap<>();
-                for (Map.Entry<String, PathItem> entry : paths.entrySet()) {
-                    String oldPath = entry.getKey();
-                    if (oldPath.startsWith(pathPrefixToStrip)) {
-                        String newPath = oldPath.substring(pathPrefixToStrip.length());
-                        if (!newPath.isEmpty() && !newPath.startsWith("/")) {
-                            newPath = "/" + newPath; //TODO: SonarQube
-                        }
-                        newPathsMap.put(newPath, entry.getValue());
-                    } else {
-                        newPathsMap.put(oldPath, entry.getValue());
-                    }
-                }
+                Map<String, PathItem> newPathsMap = adjustPaths(paths, pathPrefixToStrip);
                 Paths pathsObject = new Paths();
                 pathsObject.putAll(newPathsMap);
                 openApi.setPaths(pathsObject);
             }
         };
+    }
+
+    private Map<String, PathItem> adjustPaths(Map<String, PathItem> paths, String pathPrefixToStrip) {
+        Map<String, PathItem> newPathsMap = new java.util.LinkedHashMap<>();
+        for (Map.Entry<String, PathItem> entry : paths.entrySet()) {
+            String oldPath = entry.getKey();
+            String newPath = adjustPath(oldPath, pathPrefixToStrip);
+            newPathsMap.put(newPath, entry.getValue());
+        }
+        return newPathsMap;
+    }
+
+    private String adjustPath(String oldPath, String pathPrefixToStrip) {
+        if (oldPath.startsWith(pathPrefixToStrip)) {
+            String newPath = oldPath.substring(pathPrefixToStrip.length());
+            if (!newPath.isEmpty() && !newPath.startsWith(PATH_SEPARATOR)) {
+                newPath = PATH_SEPARATOR + newPath;
+            }
+            return newPath;
+        }
+        return oldPath;
     }
 }

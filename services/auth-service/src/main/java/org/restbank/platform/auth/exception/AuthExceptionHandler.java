@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  */
 @RestControllerAdvice
 public class AuthExceptionHandler {
+    private static final String MESSAGE = "message";
 
     private final String applicationName;
 
@@ -67,7 +68,7 @@ public class AuthExceptionHandler {
     @ExceptionHandler(UserCreationException.class)
     public Mono<ResponseEntity<Object>> handleUserCreationException(UserCreationException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", ex.getMessage()); //TODO: SonarQube
+        body.put(MESSAGE, ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body));
     }
 
@@ -80,7 +81,7 @@ public class AuthExceptionHandler {
     @ExceptionHandler(AdminTokenException.class)
     public Mono<ResponseEntity<Object>> handleAdminTokenException(AdminTokenException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", ex.getMessage());
+        body.put(MESSAGE, ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body));
     }
 
@@ -99,7 +100,7 @@ public class AuthExceptionHandler {
                         error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value"
                 ));
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Validation failed");
+        body.put(MESSAGE, "Validation failed");
         body.put("errors", errors);
         return Mono.just(ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(body));
     }

@@ -48,7 +48,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 400 Bad Request for validation errors
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid( //TODO: SonarQube
+    @SuppressWarnings("java:S2638")
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             @NonNull HttpHeaders headers,
             @NonNull HttpStatusCode status,
@@ -65,7 +66,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    public ResponseEntity<Object> handleExceptionInternal( //TODO: SonarQube
+    @SuppressWarnings("java:S2638")
+    public ResponseEntity<Object> handleExceptionInternal(
             @NonNull Exception ex,
             @Nullable Object body,
             @NonNull HttpHeaders headers,
@@ -74,8 +76,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         RestErrorResponse errorResponse;
 
-        if (body instanceof RestErrorResponse) { //TODO: SonarQube
-            errorResponse = (RestErrorResponse) body;
+        if (body instanceof RestErrorResponse restErrorResponse) {
+            errorResponse = restErrorResponse;
         } else if (body instanceof ProblemDetail) {
             String fullMsg = ex.getMessage();
             String shortMsg = (fullMsg != null && fullMsg.contains(":"))

@@ -47,8 +47,8 @@ public class KeycloakCustomerEventListener {
                 CustomerResponse response = customerService.saveCustomer(json);
                 log.info("Keycloak Admin Listener: Create User {}", response);
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); //TODO: SonarQube
+        } catch (JsonProcessingException ex) {
+            log.error("Failed to process keycloak-admin-events", ex);
         }
     }
 }

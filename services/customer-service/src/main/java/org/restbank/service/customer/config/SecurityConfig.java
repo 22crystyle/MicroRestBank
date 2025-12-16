@@ -1,7 +1,7 @@
 package org.restbank.service.customer.config;
 
 import lombok.RequiredArgsConstructor;
-import org.restbank.libs.api.security.JwtAuthConverter;
+import org.restbank.libs.api.security.JwtConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -29,7 +29,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
     };
 
-    private final JwtAuthConverter jwtAuthConverter;
+    private final JwtConverter jwtConverter;
 
     /**
      * Configures the security filter chain for the application.
@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)));
 
         return http.build();
     }
