@@ -15,7 +15,6 @@ spring:
   main:
     web-application-type: reactive
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: ${DB_JDBC_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}

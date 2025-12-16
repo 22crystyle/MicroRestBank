@@ -16,11 +16,6 @@ import java.util.List;
  * Service responsible for handling card expiry related operations.
  * This includes a scheduled task to mark expired cards.
  */
-
-/**
- * Service responsible for handling card expiry related operations.
- * This includes a scheduled task to mark expired cards.
- */
 @Slf4j
 @Service
 public class CardExpiryService {
@@ -33,10 +28,6 @@ public class CardExpiryService {
         this.cardStatusRepository = cardStatusRepository;
     }
 
-    /**
-     * Scheduled task to mark cards as EXPIRED if their expiry date is in the current month or past.
-     * Runs every minute.
-     */
     /**
      * Scheduled task to mark cards as EXPIRED if their expiry date is in the current month or past.
      * Runs every minute.

@@ -3,10 +3,10 @@ dependencies {
     implementation(libs.spring.boot.starter.oauth2.client)
     implementation(libs.spring.cloud.starter.circuitbreaker.reactor.resilience4j)
     implementation(libs.spring.cloud.starter.loadbalancer)
+    implementation(libs.spring.doc.flux)
     testImplementation(libs.spring.cloud.starter.contract.stub.runner)
     testImplementation(libs.reactor.test)
 
-    implementation(libs.spring.doc.flux)
 }
 
 openApi {

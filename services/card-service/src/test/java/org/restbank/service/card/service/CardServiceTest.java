@@ -3,7 +3,6 @@ package org.restbank.service.card.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -34,13 +33,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -69,35 +68,6 @@ class CardServiceTest {
     }
 
     @Test
-    void createCardForAccount_success() {
-        User user = UserData.entity().withId(ownerId).build();
-        CardStatus status = CardStatusData.entity().withId(1).build();
-        String generatedPan = "5555666677778884";
-        Card savedCard = CardData.entity().withId(10L).build();
-
-        when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
-        when(cardStatusRepository.findById(1)).thenReturn(Optional.of(status));
-        when(cardPanGenerator.generateCardPan()).thenReturn(generatedPan);
-        when(cardRepository.save(any(Card.class))).thenReturn(savedCard);
-
-        Card result = cardService.createCardForAccount(ownerId);
-
-        ArgumentCaptor<Card> captor = ArgumentCaptor.forClass(Card.class);
-        verify(cardRepository).save(captor.capture());
-        Card capturedCard = captor.getValue();
-
-        assertAll("Card properties",
-                () -> assertEquals(generatedPan, capturedCard.getPan()),
-                () -> assertEquals(user, capturedCard.getUser()),
-                () -> assertEquals(YearMonth.now().plusYears(4), capturedCard.getExpiryDate()),
-                () -> assertEquals(BigDecimal.ZERO, capturedCard.getBalance()),
-                () -> assertEquals(status, capturedCard.getStatus())
-        );
-
-        assertEquals(savedCard, result);
-    }
-
-    @Test
     void createCardForAccount_userNotFound_throws() {
         when(userRepository.findById(ownerId)).thenReturn(Optional.empty());
         when(cardPanGenerator.generateCardPan()).thenReturn("0000");
@@ -116,58 +86,6 @@ class CardServiceTest {
 
         assertThrows(CardStatusNotFoundException.class, () -> cardService.createCardForAccount(ownerId));
         verify(cardRepository, never()).save(any());
-    }
-
-    @Test
-    void getCardsByOwner_success() {
-        User user = new User();
-        user.setId(ownerId);
-
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Card c1 = new Card();
-        c1.setId(1L);
-        Page<Card> page = new PageImpl<>(List.of(c1));
-
-        when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
-        when(cardRepository.findAllByUser(user, pageRequest)).thenReturn(page);
-
-        Page<Card> result = cardService.getCardsByOwner(ownerId, pageRequest);
-        assertSame(page, result);
-    }
-
-    @Test
-    void getCardsByOwner_userNotFound_throws() {
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        when(userRepository.findById(ownerId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> cardService.getCardsByOwner(ownerId, pageRequest));
-    }
-
-    @Test
-    void getById_success() {
-        Card card = new Card();
-        card.setId(5L);
-        when(cardRepository.findById(5L)).thenReturn(Optional.of(card));
-
-        Card result = cardService.getById(5L);
-        assertEquals(card, result);
-    }
-
-    @Test
-    void getById_notFound_throws() {
-        when(cardRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(CardNotFoundException.class, () -> cardService.getById(99L));
-    }
-
-    @Test
-    void getAllCards_returnsPage() {
-        PageRequest pr = PageRequest.of(0, 5);
-        Card card = new Card();
-        card.setId(1L);
-        Page<Card> page = new PageImpl<>(List.of(card));
-        when(cardRepository.findAll(pr)).thenReturn(page);
-
-        Page<Card> result = cardService.getAllCards(pr);
-        assertSame(page, result);
     }
 
     @Test
@@ -348,7 +266,7 @@ class CardServiceTest {
         when(cardRepository.save(any(Card.class))).thenReturn(savedCard);
         when(cardMapper.toMaskedResponse(savedCard)).thenReturn(maskedResponse);
 
-        CardResponse result = cardService.createCardForAccountAndGetMaskedResponse(userId);
+        CardResponse result = cardService.createCardForAccount(userId);
 
         assertEquals(maskedResponse, result);
         verify(cardMapper).toMaskedResponse(savedCard);

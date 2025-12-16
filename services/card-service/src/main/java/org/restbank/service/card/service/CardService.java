@@ -46,10 +46,10 @@ public class CardService {
     private final CardMapper cardMapper;
 
     /**
-     * Creates a new card for a given user account.
+     * Creates a new card for a given user account and returns a masked card response.
      *
      * @param userId The ID of the user for whom the card is to be created.
-     * @return The newly created Card entity.
+     * @return A masked CardResponse DTO for the newly created card.
      * @throws UserNotFoundException       if the user with the given ID is not found.
      * @throws CardStatusNotFoundException if the default card status is not found.
      */
@@ -59,7 +59,7 @@ public class CardService {
             maxAttempts = 10,
             backoff = @Backoff(delay = 1000)
     )
-    public Card createCardForAccount(UUID userId) {
+    public CardResponse createCardForAccount(UUID userId) {
         log.debug("createCardForAccount called for userId={}", userId);
 
         Card card = new Card();
@@ -86,55 +86,7 @@ public class CardService {
         log.info("Created card id={} for userId={} panLast4={} expiry={}",
                 saved.getId(), userId, panLast4, saved.getExpiryDate());
 
-        return saved;
-    }
-
-    /**
-     * Retrieves a paginated list of cards owned by a specific user.
-     *
-     * @param id          The ID of the user (owner) whose cards are to be retrieved.
-     * @param pageRequest The pagination information.
-     * @return A Page of Card entities.
-     * @throws UserNotFoundException if the user with the given ID is not found.
-     */
-    @Transactional(readOnly = true)
-    public Page<Card> getCardsByOwner(UUID id, PageRequest pageRequest) {
-        log.debug("getCardsByOwner called for userId={} page={} size={}", id, pageRequest.getPageNumber(), pageRequest.getPageSize());
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-        Page<Card> page = cardRepository.findAllByUser(user, pageRequest);
-        log.info("Returning {} cards for userId={} (page {}, size {})", page.getNumberOfElements(), id, page.getNumber(), page.getSize());
-        return page;
-    }
-
-    /**
-     * Retrieves a card by its ID.
-     *
-     * @param id The ID of the card to retrieve.
-     * @return The Card entity.
-     * @throws CardNotFoundException if the card with the given ID is not found.
-     */
-    @Transactional(readOnly = true)
-    public Card getById(Long id) {
-        log.debug("getById called for cardId={}", id);
-        return cardRepository.findById(id).orElseThrow(() -> {
-            log.warn("Card {} not found", id);
-            return new CardNotFoundException(id);
-        });
-    }
-
-    /**
-     * Retrieves a paginated list of all cards in the system.
-     *
-     * @param pageRequest The pagination information.
-     * @return A Page of Card entities.
-     */
-    @Transactional(readOnly = true)
-    public Page<Card> getAllCards(PageRequest pageRequest) {
-        log.debug("getAllCards called page={} size={}", pageRequest.getPageNumber(), pageRequest.getPageSize());
-        Page<Card> page = cardRepository.findAll(pageRequest);
-        log.info("Returning {} cards (page {}, size {})", page.getNumberOfElements(), page.getNumber(), page.getSize());
-        return page;
+        return cardMapper.toMaskedResponse(saved);
     }
 
     /**
@@ -206,9 +158,11 @@ public class CardService {
 
         Page<Card> cards;
         if (isAdmin) {
-            cards = getAllCards(pageRequest);
+            cards = cardRepository.findAll(pageRequest);
         } else {
-            cards = getCardsByOwner(UUID.fromString(userId), pageRequest);
+            User user = userRepository.findById(UUID.fromString(userId))
+                    .orElseThrow(() -> new UserNotFoundException(UUID.fromString(userId)));
+            cards = cardRepository.findAllByUser(user, pageRequest);
         }
 
         return cards.map(isAdmin
@@ -227,7 +181,7 @@ public class CardService {
      */
     @Transactional(readOnly = true)
     public CardResponse getCard(Long cardId, Authentication auth) {
-        Card card = getById(cardId);
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
         UUID userId = UUID.fromString(JwtPrincipal.getId(auth));
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
@@ -240,17 +194,5 @@ public class CardService {
         } else {
             throw new IsNotOwnerException("You are not authorized to view this card.");
         }
-    }
-
-    /**
-     * Creates a new card for a given user account and returns a masked card response.
-     *
-     * @param userId The ID of the user for whom the card is to be created.
-     * @return A masked CardResponse DTO for the newly created card.
-     */
-    @Transactional
-    public CardResponse createCardForAccountAndGetMaskedResponse(UUID userId) {
-        Card card = createCardForAccount(userId); //TODO: SonarQube
-        return cardMapper.toMaskedResponse(card);
     }
 }

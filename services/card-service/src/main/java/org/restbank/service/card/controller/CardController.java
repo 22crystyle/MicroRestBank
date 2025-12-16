@@ -109,7 +109,7 @@ public class CardController {
      *
      * <p>This endpoint is accessible to any authenticated user. If the user is the owner of the card,
      * the full card details are returned. If the user is an administrator, the details are masked.
-     * Otherwise, an access denied error is thrown.</p>
+     * Otherwise, access denied error is thrown.</p>
      *
      * @param id   The ID of the card to retrieve.
      * @param auth The current authentication object.
@@ -181,7 +181,7 @@ public class CardController {
             @RequestParam("userId") UUID userId,
             Authentication auth
     ) {
-        CardResponse response = service.createCardForAccountAndGetMaskedResponse(userId);
+        CardResponse response = service.createCardForAccount(userId);
         EntityModel<CardResponse> model = EntityModel.of(response,
                 linkTo(methodOn(CardController.class).getCard(response.getId(), auth)).withSelfRel(),
                 linkTo(methodOn(CardController.class).requestCardBlock(response.getId(), auth)).withRel("block-request")

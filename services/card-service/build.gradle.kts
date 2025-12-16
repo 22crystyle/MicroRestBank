@@ -2,24 +2,26 @@ dependencies {
     implementation(project(":libs:api-contract"))
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.spring.retry)
-    implementation(libs.liquibase.core)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.hateoas)
 
+    implementation(libs.spring.cloud.openfeign)
+    implementation(libs.spring.retry)
+    implementation(libs.spring.kafka)
+    implementation(libs.spring.doc.mvc)
+
+    implementation(libs.resilience4j.spring.boot2)
+    implementation(libs.liquibase.core)
+
     implementation(libs.mapstruct)
-    annotationProcessor(libs.mapstruct.processor)
     implementation(libs.lombok.mapstruct.binding)
 
-    implementation(libs.spring.cloud.openfeign)
-    implementation(libs.resilience4j.spring.boot2)
-    implementation(libs.spring.kafka)
+    annotationProcessor(libs.mapstruct.processor)
     runtimeOnly(libs.resilience4j.feign)
 
     runtimeOnly(libs.postgresql)
     runtimeOnly(libs.h2)
 
-    implementation(libs.spring.doc.mvc)
 }
 
 openApi {
