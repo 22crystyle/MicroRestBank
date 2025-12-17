@@ -116,7 +116,7 @@ class CardBlockRequestServiceTest {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(CardNotFoundException.class,
                 () -> service.approveBlockRequest(1L, ownerId));
     }
 
@@ -126,7 +126,7 @@ class CardBlockRequestServiceTest {
                 .thenReturn(Optional.of(pendingRequest));
         when(cardStatusRepository.findByName(CardStatusType.BLOCKED)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(CardNotFoundException.class,
                 () -> service.approveBlockRequest(1L, ownerId));
     }
 
@@ -153,7 +153,7 @@ class CardBlockRequestServiceTest {
         when(cardBlockRequestRepository.findByCard_IdAndStatus(1L, CardBlockRequest.Status.PENDING))
                 .thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(CardNotFoundException.class,
                 () -> service.rejectBlockRequest(1L, ownerId));
     }
 
@@ -163,7 +163,7 @@ class CardBlockRequestServiceTest {
                 .thenReturn(Optional.of(pendingRequest));
         when(cardStatusRepository.findByName(CardStatusType.ACTIVE)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(CardNotFoundException.class,
                 () -> service.rejectBlockRequest(1L, ownerId));
     }
 }
