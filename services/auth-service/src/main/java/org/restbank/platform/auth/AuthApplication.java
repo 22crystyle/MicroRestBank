@@ -4,7 +4,6 @@ import org.restbank.platform.auth.config.KeycloakProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
 /**
  * The main entry point for the Authentication Service.
@@ -25,7 +24,6 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  * is secured using Spring Security.</p>
  */
 @SpringBootApplication(scanBasePackages = {"org.restbank"})
-@EnableWebFluxSecurity
 @EnableConfigurationProperties(KeycloakProperties.class)
 public class AuthApplication {
 

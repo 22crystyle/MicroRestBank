@@ -62,10 +62,9 @@ public class SecurityConfig {
      *
      * @param http The {@link HttpSecurity} object to configure.
      * @return A {@link SecurityFilterChain} that defines the security rules for the application.
-     * @throws Exception if an error occurs during the configuration.
      */
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -103,10 +102,9 @@ public class SecurityConfig {
      *
      * @param authConfig The authentication configuration provided by Spring Boot.
      * @return The configured {@link AuthenticationManager}.
-     * @throws Exception if an error occurs while retrieving the authentication manager.
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) {
         return authConfig.getAuthenticationManager();
     }
 }

@@ -81,11 +81,11 @@ public class CardBlockRequestService {
         log.debug("approveBlockRequest called with cardId={} by processedBy={}", cardId, processedBy);
 
         CardBlockRequest blockRequest = cardBlockRequestRepository.findByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)
-                .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
+                .orElseThrow(() -> new CardNotFoundException("Card block request not found"));
 
         Card card = blockRequest.getCard();
         card.setStatus(cardStatusRepository.findByName(CardStatusType.BLOCKED)
-                .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
+                .orElseThrow(() -> new CardNotFoundException("Card status not found")));
 
         cardRepository.save(card);
 
@@ -112,11 +112,11 @@ public class CardBlockRequestService {
         log.debug("rejectBlockRequest called with cardId={} by processedBy={}", cardId, processedBy);
 
         CardBlockRequest blockRequest = cardBlockRequestRepository.findByCard_IdAndStatus(cardId, CardBlockRequest.Status.PENDING)
-                .orElseThrow(() -> new IllegalArgumentException("Card block request not found"));
+                .orElseThrow(() -> new CardNotFoundException("Card block request not found"));
 
         Card card = blockRequest.getCard();
         card.setStatus(cardStatusRepository.findByName(CardStatusType.ACTIVE)
-                .orElseThrow(() -> new IllegalArgumentException("Card status not found")));
+                .orElseThrow(() -> new CardNotFoundException("Card status not found")));
 
         cardRepository.save(card);
 

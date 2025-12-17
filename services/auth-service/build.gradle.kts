@@ -2,9 +2,16 @@ dependencies {
     implementation(project(":libs:api-contract"))
     implementation(libs.keycloak.admin.client)
     implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.webclient)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.cloud.starter.circuitbreaker.reactor.resilience4j)
 
     implementation(libs.spring.doc.flux)
+}
+
+configurations.all {
+    exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
+    exclude(group = "org.springframework.boot", module = "spring-webmvc")
 }
 
 openApi {

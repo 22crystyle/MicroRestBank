@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -153,7 +154,7 @@ public class CardService {
     public Page<CardResponse> getCards(PageRequest pageRequest, Authentication auth) {
         String userId = JwtPrincipal.getId(auth);
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(
-                a -> a.getAuthority().equals("ROLE_ADMIN")
+                a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN")
         );
 
         Page<Card> cards;
@@ -183,7 +184,7 @@ public class CardService {
     public CardResponse getCard(Long cardId, Authentication auth) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
         UUID userId = UUID.fromString(JwtPrincipal.getId(auth));
-        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
 
         boolean isOwner = card.getUser().getId().equals(userId);
 

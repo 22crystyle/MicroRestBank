@@ -203,7 +203,7 @@ public class RegistrationService {
                 .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
                 })
                 .flatMap(list -> {
-                    if (list != null && !list.isEmpty()) {
+                    if (!list.isEmpty()) {
                         Map<String, Object> user = list.getFirst();
                         return Mono.just((String) user.get(ID));
                     }

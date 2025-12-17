@@ -71,7 +71,7 @@ public class CardExceptionHandler {
      */
     @ExceptionHandler(InvalidAmountException.class)
     public ResponseEntity<RestErrorResponse> handleUnsupportedEntity(InvalidAmountException ex) {
-        RestErrorResponse error = new RestErrorResponse(applicationName, HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+        RestErrorResponse error = new RestErrorResponse(applicationName, HttpStatus.UNPROCESSABLE_CONTENT.toString(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 }

@@ -29,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -90,7 +91,7 @@ public class CardController {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<CardResponse> dtos = service.getCards(pageRequest, auth);
         boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
 
         return ResponseEntity.ok(assembler.toModel(dtos, card -> {
             EntityModel<CardResponse> model = EntityModel.of(card,
@@ -141,7 +142,7 @@ public class CardController {
                 linkTo(CardController.class).withRel("cards"));
 
         boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
 
         if (isAdmin && cardBlockRequestRepository.existsCardBlockRequestByCard_IdAndStatus(id, CardBlockRequest.Status.PENDING)) {
             model.add(linkTo(methodOn(CardController.class).approveCardBlock(id, auth)).withRel("block-approve"));

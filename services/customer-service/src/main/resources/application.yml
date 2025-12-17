@@ -25,9 +25,6 @@ spring:
     show-sql: true
   application:
     name: customer-service
-  data:
-    jdbc:
-      dialect: postgresql
   security:
     oauth2:
       resourceserver:

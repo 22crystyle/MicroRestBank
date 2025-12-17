@@ -23,7 +23,7 @@ stages:
       - .gradle/wrapper
       - .gradle/caches
   before_script:
-    # Store gradle cache in the project directory
+    # Store Gradle cache in the project directory
     - export GRADLE_USER_HOME=`pwd`/.gradle
 
 # --- Build Stage (Parallel) ---

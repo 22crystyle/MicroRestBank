@@ -28,17 +28,12 @@ spring:
       ddl-auto: validate
     show-sql: true
   jackson:
-    serialization:
-      write-dates-as-timestamps: false
     time-zone: UTC
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
-  data:
-    jdbc:
-      dialect: postgresql
   kafka:
     consumer:
       group-id: user-sync-group

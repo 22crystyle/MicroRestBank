@@ -99,6 +99,7 @@ public class CustomerController {
     )
     public ResponseEntity<CustomerResponse> getCurrentCustomer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
         UUID userId = UUID.fromString(JwtPrincipal.getId(authentication));
         CustomerResponse customer = customerService.getCustomerByUUID(userId);
         customer.add(linkTo(methodOn(CustomerController.class).getCurrentCustomer()).withSelfRel());

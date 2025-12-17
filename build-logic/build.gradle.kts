@@ -22,5 +22,5 @@ dependencies {
     implementation(plugin(libs.plugins.spring.dependency))
 }
 
-fun DependencyHandlerScope.plugin(plugin: Provider<PluginDependency>) =
+fun DependencyHandlerScope.plugin(plugin: Provider<PluginDependency>): Provider<String> =
     plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}" }

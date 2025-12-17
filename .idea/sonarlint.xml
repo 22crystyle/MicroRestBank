@@ -4,6 +4,7 @@
     <option name="fileExclusions">
       <list>
         <option value="GLOB:**/build" />
+        <option value="GLOB:**/.gradle/**" />
       </list>
     </option>
   </component>

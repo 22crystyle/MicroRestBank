@@ -1,13 +1,12 @@
 package org.restbank.libs.api.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.restbank.libs.api.dto.response.RestErrorResponse;
 import org.restbank.libs.api.dto.response.ValidationErrorResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.*;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,8 +67,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     @SuppressWarnings("java:S2638")
     public ResponseEntity<Object> handleExceptionInternal(
-            @NonNull Exception ex,
-            @Nullable Object body,
+            @org.jspecify.annotations.NonNull Exception ex,
+            Object body,
             @NonNull HttpHeaders headers,
             @NonNull HttpStatusCode statusCode,
             @NonNull WebRequest request

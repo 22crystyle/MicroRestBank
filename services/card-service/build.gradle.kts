@@ -2,16 +2,16 @@ dependencies {
     implementation(project(":libs:api-contract"))
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.liquibase)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.hateoas)
+    implementation(libs.spring.boot.starter.kafka)
 
     implementation(libs.spring.cloud.openfeign)
     implementation(libs.spring.retry)
-    implementation(libs.spring.kafka)
     implementation(libs.spring.doc.mvc)
 
     implementation(libs.resilience4j.spring.boot2)
-    implementation(libs.liquibase.core)
 
     implementation(libs.mapstruct)
     implementation(libs.lombok.mapstruct.binding)

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.lombok) apply false
 }
 
-val lombok = libs.plugins.lombok.get().pluginId
+val lombok: String = libs.plugins.lombok.get().pluginId
 
 allprojects {
     group = "org.restbank.services"
